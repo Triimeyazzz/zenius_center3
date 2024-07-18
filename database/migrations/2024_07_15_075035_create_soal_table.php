@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('pertanyaan');
             $table->text('jawaban');
             $table->foreignId('kursus_id')->constrained('kursus')->onDelete('cascade');
+            $table->integer('jumlah_poin')->default(0); // Menambahkan kolom jumlah_poin dengan tipe data integer dan nilai default 0
             $table->timestamps();
         });
     }
