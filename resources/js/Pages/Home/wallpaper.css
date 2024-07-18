@@ -1,0 +1,77 @@
+.parallax-bg {
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.testimonial-card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 10px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+.testimonial-card img {
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.testimonial-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+}
+
+.testimonial-card p {
+    font-size: 1rem;
+    color: #555;
+}
+
+.carousel .slide img {
+    width: auto;
+    max-height: 300px;
+}
+
+/* wallpaper.css */
+.navbar-enter {
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.navbar-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.navbar-leave {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.navbar-leave-active {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+.transition-max-height {
+    transition: max-height 0.5s ease-in-out;
+    overflow: hidden;
+}
+
+/* Custom CSS for Testimonials */
+.testimonial-item {
+    max-width: 300px;
+    margin: auto;
+}
+.testimonial-carousel .control-dots {
+    display: none;
+}

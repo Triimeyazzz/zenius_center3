@@ -1,0 +1,25 @@
+.swipeable-card-container {
+    width: 100%;
+    overflow: hidden;
+}
+
+.swipeable-card-inner-container {
+    display: flex;
+}
+
+.swipeable-card {
+    flex: 0 0 auto;
+    width: 300px;
+    height: 200px;
+    background-color: #fff;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-right: 16px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.card-content {
+    padding: 16px;
+}
