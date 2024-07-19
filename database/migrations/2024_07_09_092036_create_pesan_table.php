@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('pesan', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pengguna_id')->constrained('pengguna')->onDelete('cascade');
+            $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
             $table->text('pesan');
             $table->timestamp('dikirim_pada');
             $table->timestamps();

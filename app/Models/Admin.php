@@ -1,5 +1,4 @@
-<?php
-
+<?php 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +11,7 @@ class Admin extends Model
     protected $table = 'admin';
 
     protected $fillable = [
-        'pengguna_id',
+        'users_id',  // Pastikan nama kolom sesuai dengan nama kolom di tabel
     ];
 
     protected $casts = [
@@ -20,9 +19,8 @@ class Admin extends Model
         'updated_at' => 'datetime',
     ];
 
-    public function pengguna()
+    public function user()
     {
-        return $this->belongsTo(Pengguna::class);
+        return $this->belongsTo(User::class, 'users_id');  // Pastikan nama kolom sesuai dengan nama kolom di tabel
     }
 }
-

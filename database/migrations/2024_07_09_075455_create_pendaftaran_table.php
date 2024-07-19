@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('pendaftaran', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pengguna_id')->constrained('pengguna')->onDelete('cascade');
+            $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('kursus_id')->constrained('kursus')->onDelete('cascade');
             $table->timestamp('terdaftar_pada');
             $table->timestamp('selesai_pada')->nullable();

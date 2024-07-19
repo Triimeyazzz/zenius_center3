@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('cicilan', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pembayaran_id')->constrained('pembayaran')->onDelete('cascade');
+            $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
             $table->decimal('jumlah', 8, 2);
             $table->timestamp('dibayar_pada');
             $table->timestamps();

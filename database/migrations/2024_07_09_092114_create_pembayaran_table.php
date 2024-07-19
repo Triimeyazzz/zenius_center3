@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('pembayaran', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pengguna_id')->constrained('pengguna')->onDelete('cascade');
+            $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
             $table->decimal('jumlah', 8, 2);
             $table->enum('status', ['pending', 'selesai', 'batal']);
             $table->timestamps();

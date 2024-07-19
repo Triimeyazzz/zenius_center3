@@ -1,9 +1,9 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Siswa extends Model
 {
@@ -12,7 +12,9 @@ class Siswa extends Model
     protected $table = 'siswa';
 
     protected $fillable = [
-        'pengguna_id',
+        'name',
+        'email',
+        'password',
     ];
 
     protected $casts = [
@@ -20,9 +22,8 @@ class Siswa extends Model
         'updated_at' => 'datetime',
     ];
 
-    public function pengguna()
+    public function user()
     {
-        return $this->belongsTo(Pengguna::class);
+        return $this->belongsTo(User::class, 'users_id');
     }
 }
-
