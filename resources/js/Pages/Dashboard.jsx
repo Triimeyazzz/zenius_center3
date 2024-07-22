@@ -4,7 +4,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import LineChart from '@/Components/LineChart';
-
+import ErrorBoundary from '@/Components/ErrorBoundary';
 export default function Dashboard({ auth }) {
     const [studentData, setStudentData] = useState({
         labels: [],
@@ -41,6 +41,7 @@ export default function Dashboard({ auth }) {
     }, []);
 
     return (
+        <ErrorBoundary>
         <AuthenticatedLayout
             user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Admin Dashboard</h2>}
@@ -80,5 +81,6 @@ export default function Dashboard({ auth }) {
                 </p>
             </footer>
         </AuthenticatedLayout>
+        </ErrorBoundary>
     );
 }

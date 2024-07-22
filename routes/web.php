@@ -37,10 +37,22 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
 Route::middleware('auth')->group(function () {
-    Route::get('/users', [UserController::class, 'index'])->name('users.index');
-    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::get('/users/admin', [UserController::class, 'indexAdmin'])->name('users.admin.index');
+    Route::post('/users/admin', [UserController::class, 'storeAdmin'])->name('users.admin.store');
+
+    Route::get('/users/petugas', [UserController::class, 'indexPetugas'])->name('users.petugas.index');
+    Route::post('/users/petugas', [UserController::class, 'storePetugas'])->name('users.petugas.store');
+
+    Route::get('/users/siswa', [UserController::class, 'indexSiswa'])->name('users.siswa.index');
+    Route::post('/users/siswa', [UserController::class, 'storeSiswa'])->name('users.siswa.store');
+});
+
+
+
+Route::middleware('auth')->group(function () {
+    Route::resource('users', UserController::class);
 });
 
 
