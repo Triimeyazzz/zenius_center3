@@ -9,40 +9,27 @@ class PembayaranController extends Controller
 {
     public function index()
     {
-        $pembayaran = Pembayaran::all();
-        return response()->json($pembayaran);
+        $pembayaran = Pembayaran::where('users_id', auth()->id())->get();
+        return view('pembayaran.index', compact('pembayaran'));
     }
 
     public function create()
     {
-        // Tidak diperlukan untuk API
+        return view('pembayaran.create');
     }
 
     public function store(Request $request)
     {
-        $pembayaran = Pembayaran::create($request->all());
-        return response()->json($pembayaran, 201);
-    }
+        $request->validate([
+            'jumlah' => 'required|numeric|min:0.01',
+        ]);
 
-    public function show(Pembayaran $pembayaran)
-    {
-        return response()->json($pembayaran);
-    }
+        $pembayaran = new Pembayaran();
+        $pembayaran->users_id = auth()->id();
+        $pembayaran->jumlah = $request->jumlah;
+        $pembayaran->status = 'pending';
+        $pembayaran->save();
 
-    public function edit(Pembayaran $pembayaran)
-    {
-        // Tidak diperlukan untuk API
-    }
-
-    public function update(Request $request, Pembayaran $pembayaran)
-    {
-        $pembayaran->update($request->all());
-        return response()->json($pembayaran);
-    }
-
-    public function destroy(Pembayaran $pembayaran)
-    {
-        $pembayaran->delete();
-        return response()->json(null, 204);
+        return redirect()->route('pembayaran.index')->with('success', 'Pembayaran berhasil!');
     }
 }

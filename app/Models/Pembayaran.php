@@ -12,25 +12,13 @@ class Pembayaran extends Model
     protected $table = 'pembayaran';
 
     protected $fillable = [
-        'pengguna_id',
+        'users_id',
         'jumlah',
         'status',
     ];
 
-    protected $casts = [
-        'jumlah' => 'decimal:2',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-    ];
-
-    public function pengguna()
+    public function user()
     {
-        return $this->belongsTo(Pengguna::class);
-    }
-
-    public function cicilan()
-    {
-        return $this->hasMany(Cicilan::class);
+        return $this->belongsTo(User::class, 'users_id');
     }
 }
-

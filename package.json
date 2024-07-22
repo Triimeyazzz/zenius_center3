@@ -30,6 +30,7 @@
         "react-chartjs-2": "^5.2.0",
         "react-helmet": "^6.1.0",
         "react-multi-carousel": "^2.8.5",
-        "react-responsive-carousel": "^3.2.23"
+        "react-responsive-carousel": "^3.2.23",
+        "vite-plugin-html": "^3.2.2"
     }
 }
