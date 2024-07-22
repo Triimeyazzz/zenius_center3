@@ -55,7 +55,7 @@ const Navbar = () => {
                     <div className="lg:flex lg:items-center lg:justify-end lg:flex-grow">
                         <div className="flex flex-col lg:flex-row lg:space-x-8 lg:items-center lg:space-y-4 space-y-4">
                             <NavLink
-                                className='text-yellow-400 hover:text-yellow-800'
+                                className='text-yellow-400 hover:text-yellow-200'
                                 href="/Home"
                                 active={route().current('Home')}
                                 onClick={closeNavbar}
@@ -64,7 +64,7 @@ const Navbar = () => {
                                 Home
                             </NavLink>
                             <NavLink
-                                className='text-yellow-400 hover:text-yellow-800'
+                                className='text-yellow-400 hover:text-yellow-200'
                                 href="/About"
                                 active={route().current('About')}
                                 onClick={closeNavbar}
@@ -72,7 +72,7 @@ const Navbar = () => {
                                 About Us
                             </NavLink>
                             <NavLink
-                                className='text-yellow-400 hover:text-yellow-800    '
+                                className='text-yellow-400 hover:text-yellow-200    '
                                 onClick={scrollToContact}
                             >
                                 Contact

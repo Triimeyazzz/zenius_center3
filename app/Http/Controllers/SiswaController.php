@@ -1,51 +1,54 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Siswa;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use App\Models\User;
 use Inertia\Inertia;
 
 class SiswaController extends Controller
 {
-    // app/Http/Controllers/SiswaController.php
-public function index()
-{
-    $siswa = Siswa::all();
-    return Inertia::render('Siswa/SiswaComponent', [
-        'siswa' => $siswa->toArray(), // Convert to array if necessary
-    ]);
-}
+    // Display a listing of the resource
+    public function index()
+    {
+        $siswa = Siswa::all();
+        return Inertia::render('Siswa/SiswaComponent', [
+            'siswa' => $siswa->toArray(),
+        ]);
+    }
 
+    // Store a newly created resource in storage
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|string',
+        ]);
 
-public function store(Request $request)
-{
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|string|min:8|confirmed',
-        'role' => 'required|string',
-    ]);
+        // Create the user with the role
+        User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => bcrypt($validated['password']),
+            'role' => $validated['role'],
+        ]);
 
-    // Create the admin
-    User::create([
-        'name' => $validated['name'],
-        'email' => $validated['email'],
-        'password' => bcrypt($validated['password']),
-        'role' => $validated['role'],
-    ]);
+        // Redirect or return response
+        return redirect()->route('siswa.index')->with('success', 'Siswa successfully created!');
+    }
 
-    // Redirect or return response
-    return redirect()->route('admin.index')->with('success', 'Admin successfully created!');
-}
-
+    // Display the specified resource
     public function show(Siswa $siswa)
     {
         return response()->json($siswa->load('user'));
     }
 
+    // Update the specified resource in storage
     public function update(Request $request, Siswa $siswa)
     {
         $validator = Validator::make($request->all(), [
@@ -69,6 +72,7 @@ public function store(Request $request)
         return response()->json($siswa);
     }
 
+    // Remove the specified resource from storage
     public function destroy(Siswa $siswa)
     {
         $siswa->user->delete();

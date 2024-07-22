@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Head } from "@inertiajs/react";
 import AppLayout from "@/Layouts/AppLayout";
 import WhatsAppLink from "./WhatsAppLink";
 import AOS from "aos";
@@ -22,6 +23,7 @@ const AboutUs = () => {
 
     return (
         <AppLayout>
+                        <Head title="New Primagama Fatmawati | About" />
             <div className="bg-gray-100 text-gray-800 p-8">
                 <section className="max-w-7xl mx-auto">
                     {/* Hero Section */}
@@ -224,33 +226,36 @@ const AboutUs = () => {
                             <h1 className="text-4xl font-bold text-center mb-12">
                                 Video Perusahaan
                             </h1>
-                            <div className="text-center mb-8">
-                                <button
-                                    onClick={handleStartClick}
-                                    className="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-200 font-medium rounded-lg text-sm px-5 py-2.5 "
-                                >
-                                    Play
-                                </button>
-                            </div>
-                            {showVideo && (
-                                <iframe
-                                    className="w-full md:w-3/4 h-64 rounded-lg shadow-lg mx-auto"
-                                    src="./images/wheels on the bus .mp4"
-                                    title="Company Journey"
-                                    frameBorder="0"
-                                    allow="accelerometer; clipboard-write; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen;"
-                                    allowFullScreen
-                                    autoPlay
-                                ></iframe>
-                            )}
-                            <div className="text-center mt-8">
-                                <button
-                                    onClick={handleCloseClick}
-                                    className="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-200 font-medium rounded-lg text-sm px-5 py-2.5 "
-                                >
-                                    Tutup
-                                </button>
-                            </div>
+                            {!showVideo && (
+                    <div className="text-center mb-8">
+                        <button
+                            onClick={handleStartClick}
+                            className="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-200 font-medium rounded-lg text-sm px-5 py-2.5 "
+                        >
+                            Play
+                        </button>
+                    </div>
+                )}
+                {showVideo && (
+                    <div className="relative w-full md:w-3/4 lg:w-2/3 h-96 mx-auto">
+                        <iframe
+                            className="w-full h-full rounded-lg shadow-lg"
+                            src="./images/wheels on the bus .mp4"
+                            title="Company Journey"
+                            frameBorder="0"
+                            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;"
+                            allowFullScreen
+                        ></iframe>
+                        <div className="text-center mt-8">
+                            <button
+                                onClick={handleCloseClick}
+                                className="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-200 font-medium rounded-lg text-sm px-5 py-2.5 "
+                            >
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                )}
                         </div>
                     </div>
                 </section>

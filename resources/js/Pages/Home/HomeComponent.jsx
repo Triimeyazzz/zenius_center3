@@ -65,6 +65,11 @@ const HomeComponent = ({ displayText }) => {
     
             <AppLayout>
             <div className="mx-auto w-full max-w-screen-xl">
+            <div className="w-full mb-10 h-full">
+                <img 
+                src="./images/spanduk 459x217 cmyk.jpg" 
+                alt="spanduk" />
+            </div>
             <div className="grid grid-cols-1 gap-8 items-center">
                 <div className="text-center z-20" data-aos="fade-up">
                     <Carousel 

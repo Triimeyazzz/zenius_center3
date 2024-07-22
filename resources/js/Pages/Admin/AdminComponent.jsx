@@ -47,7 +47,7 @@ export default function AdminComponent() {
                 <div className="mb-6">
                     <button
                         onClick={() => setIsAdding(!isAdding)}
-                        className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                        className="bg-purple-500 text-white px-4 py-2 rounded-lg"
                     >
                         {isAdding ? "Cancel" : "Add Admin"}
                     </button>
@@ -65,7 +65,7 @@ export default function AdminComponent() {
                                     name="name"
                                     value={data.name}
                                     onChange={(e) => setData('name', e.target.value)}
-                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
                                     required
                                 />
                             </div>
@@ -77,7 +77,7 @@ export default function AdminComponent() {
                                     name="email"
                                     value={data.email}
                                     onChange={(e) => setData('email', e.target.value)}
-                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
                                     required
                                 />
                             </div>
@@ -89,7 +89,7 @@ export default function AdminComponent() {
                                     name="password"
                                     value={data.password}
                                     onChange={(e) => setData('password', e.target.value)}
-                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
                                     required
                                 />
                             </div>
@@ -101,7 +101,7 @@ export default function AdminComponent() {
                                     name="password_confirmation"
                                     value={data.password_confirmation}
                                     onChange={(e) => setData('password_confirmation', e.target.value)}
-                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
                                     required
                                 />
                             </div>
@@ -112,7 +112,7 @@ export default function AdminComponent() {
                                     name="role"
                                     value={data.role}
                                     onChange={(e) => setData('role', e.target.value)}
-                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
                                     required
                                 >
                                     <option value="admin">Admin</option>
@@ -122,7 +122,7 @@ export default function AdminComponent() {
                             </div>
                             <button
                                 type="submit"
-                                className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                                className="bg-purple-500 text-white px-4 py-2 rounded-lg"
                             >
                                 Add Admin
                             </button>

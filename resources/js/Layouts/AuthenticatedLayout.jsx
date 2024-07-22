@@ -93,24 +93,7 @@ export default function Authenticated({ user, header, children }) {
                                     Profile
                                 </NavLink>
                             </li>
-                            <li>
-                                <NavLink
-                                    href={route("admin.index")}  // Ubah ke nama rute yang sesuai
-                                    active={route().current("admin.index")}
-                                    className="block px-4 py-2 rounded-lg hover:bg-gray-200"
-                                >
-                                    Admin
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink
-                                    href={route("siswa.index")}  // Ubah ke nama rute yang sesuai
-                                    active={route().current("siswa.index")}
-                                    className="block px-4 py-2 rounded-lg hover:bg-gray-200"
-                                >
-                                    siswa
-                                </NavLink>
-                            </li>
+                            
                         </ul>
                     </div>
                 </div>
