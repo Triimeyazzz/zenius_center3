@@ -8,17 +8,15 @@ use Inertia\Inertia;
 
 class KursusController extends Controller
 {
-public function index()
-{
-    $kursus = Kursus::all();
-    return Inertia::render('Kursus/KursusListCreate', [
-        'kursus' => $kursus
-    ]);
-}
+    public function index()
+    {
+        $kursus = Kursus::all();
+        return Inertia::render('Kursus/Index', ['kursus' => $kursus]);
+    }
 
     public function create()
     {
-        return Inertia::render('KursusCreate');
+        return Inertia::render('Kursus/Create');
     }
 
     public function store(Request $request)
@@ -26,57 +24,41 @@ public function index()
         $request->validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
-            'gambar' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'gambar' => 'nullable|string|max:255',
         ]);
-    
-        // Store the image if it exists
-        $gambarPath = $request->file('gambar')?->store('gambar', 'public');
-    
-        // Create the new Kursus entry
-        Kursus::create([
-            'judul' => $request->input('judul'),
-            'deskripsi' => $request->input('deskripsi'),
-            'gambar' => $gambarPath,
-        ]);
-    
-        // Redirect back to the index page
+
+        Kursus::create($request->all());
         return redirect()->route('kursus.index');
     }
-        public function show(Kursus $kursus)
+
+    public function show($id)
     {
-        return Inertia::render('KursusShow', [
-            'kursus' => $kursus
-        ]);
+        $kursus = Kursus::findOrFail($id);
+        return Inertia::render('Kursus/Show', ['kursus' => $kursus]);
     }
 
-    public function edit(Kursus $kursus)
+    public function edit($id)
     {
-        return Inertia::render('KursusEdit', [
-            'kursus' => $kursus
-        ]);
+        $kursus = Kursus::findOrFail($id);
+        return Inertia::render('Kursus/Edit', ['kursus' => $kursus]);
     }
 
-    public function update(Request $request, Kursus $kursus)
+    public function update(Request $request, $id)
     {
         $request->validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
-            'gambar' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'gambar' => 'nullable|string|max:255',
         ]);
 
-        $gambarPath = $request->file('gambar')?->store('gambar', 'public');
-
-        $kursus->update([
-            'judul' => $request->input('judul'),
-            'deskripsi' => $request->input('deskripsi'),
-            'gambar' => $gambarPath ?? $kursus->gambar,
-        ]);
-
+        $kursus = Kursus::findOrFail($id);
+        $kursus->update($request->all());
         return redirect()->route('kursus.index');
     }
 
-    public function destroy(Kursus $kursus)
+    public function destroy($id)
     {
+        $kursus = Kursus::findOrFail($id);
         $kursus->delete();
         return redirect()->route('kursus.index');
     }

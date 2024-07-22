@@ -9,20 +9,36 @@ use Inertia\Inertia;
 class UserController extends Controller
 {
     public function index(Request $request)
-    {
-        $role = $request->query('role');
-        $roles = ['admin', 'petugas', 'siswa'];
+{
+    $role = $request->query('role');
+    $search = $request->query('search');
+    $roles = ['admin', 'petugas', 'siswa'];
 
-        $users = $role 
-            ? User::where('role', $role)->get() 
-            : User::all();
+    $query = User::query();
 
-        return Inertia::render('Users/Index', [
-            'users' => $users,
-            'roles' => $roles,
-            'selectedRole' => $role,
-        ]);
+    if ($role) {
+        $query->where('role', $role);
     }
+
+    if ($search) {
+        $query->where('name', 'like', '%' . $search . '%');
+    }
+
+    $users = $query->get();
+
+    // Calculate role counts
+    $roleCounts = User::selectRaw('role, count(*) as count')
+        ->groupBy('role')
+        ->pluck('count', 'role')
+        ->toArray();
+
+    return Inertia::render('Users/Index', [
+        'users' => $users,
+        'roles' => $roles,
+        'selectedRole' => $role,
+        'roleCounts' => $roleCounts,
+    ]);
+}
 
     public function store(Request $request)
     {
@@ -48,11 +64,12 @@ class UserController extends Controller
     }
 
     public function show(User $user)
-    {
-        return Inertia::render('Users/Show', [
-            'user' => $user,
-        ]);
-    }
+{
+    return Inertia::render('Users/Show', [
+        'user' => $user,
+    ]);
+}
+
 
     public function edit(User $user)
     {

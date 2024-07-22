@@ -1,11 +1,13 @@
-// Dashboard.js
 import { useState, useEffect } from 'react';
 import PrimaryButton from '@/Components/PrimaryButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import LineChart from '@/Components/LineChart';
 import ErrorBoundary from '@/Components/ErrorBoundary';
-export default function Dashboard({ auth }) {
+
+export default function Dashboard({ auth, totalAdmins, totalPetugas, totalSiswa, totalCourses }) {
+    console.log('Dashboard props:', { totalAdmins, totalPetugas, totalSiswa, totalCourses }); // Debugging line
+
     const [studentData, setStudentData] = useState({
         labels: [],
         datasets: [
@@ -19,9 +21,8 @@ export default function Dashboard({ auth }) {
     });
 
     useEffect(() => {
-        // Fetch data from API or use static data
         const fetchData = async () => {
-            // Replace with your data fetching logic
+            // Static data for example
             const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
             const data = [10, 70, 50, 20, 30, 80, 60, 70];
             setStudentData({
@@ -53,19 +54,19 @@ export default function Dashboard({ auth }) {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
                         <div className="bg-white shadow overflow-hidden sm:rounded-lg p-4 hover:scale-105 hover:text-sky-400 hover:rotate-12 duration-300">
                             <h3 className="text-lg font-medium text-gray-900">Total Admin</h3>
-                            <p className="text-gray-600">2</p>
+                            <p className="text-gray-600">{totalAdmins || 'Loading...'}</p>
                         </div>
                         <div className="bg-white shadow overflow-hidden sm:rounded-lg p-4 hover:scale-105 hover:text-sky-400 hover:-rotate-12 duration-300">
-                            <h3 className="text-lg font-medium text-gray-900">Total siswa</h3>
-                            <p className="text-gray-600">154</p>
+                            <h3 className="text-lg font-medium text-gray-900">Total Siswa</h3>
+                            <p className="text-gray-600">{totalSiswa || 'Loading...'}</p>
                         </div>
                         <div className="bg-white shadow overflow-hidden sm:rounded-lg p-4 hover:scale-105 hover:text-sky-400 hover:rotate-12 duration-300">
-                            <h3 className="text-lg font-medium text-gray-900">Total kursus</h3>
-                            <p className="text-gray-600">25</p>
+                            <h3 className="text-lg font-medium text-gray-900">Total Kursus</h3>
+                            <p className="text-gray-600">{totalCourses || 'Loading...'}</p>
                         </div>
                         <div className="bg-white shadow overflow-hidden sm:rounded-lg p-4 hover:scale-105 hover:text-sky-400 hover:-rotate-12 duration-300">
-                            <h3 className="text-lg font-medium text-gray-900">Total petugas</h3>
-                            <p className="text-gray-600">10</p>
+                            <h3 className="text-lg font-medium text-gray-900">Total Petugas</h3>
+                            <p className="text-gray-600">{totalPetugas || 'Loading...'}</p>
                         </div>
                     </div>
 
