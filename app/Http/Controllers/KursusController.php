@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Kursus;
@@ -20,46 +19,61 @@ class KursusController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'judul' => 'required|string|max:255',
-            'deskripsi' => 'required|string',
-            'gambar' => 'nullable|string|max:255',
-        ]);
+{
+    $validated = $request->validate([
+        'judul' => 'required|string|max:255',
+        'deskripsi' => 'required|string',
+        'gambar' => 'nullable|image|max:2048', // Adjust the validation as needed
+    ]);
 
-        Kursus::create($request->all());
-        return redirect()->route('kursus.index');
+    // Handle file upload
+    if ($request->hasFile('gambar')) {
+        $file = $request->file('gambar');
+        $filePath = $file->store('kursus_images', 'public'); // Store in public storage
+        $validated['gambar'] = $filePath;
     }
 
-    public function show($id)
+    Kursus::create($validated);
+
+    return redirect()->route('kursus.index')->with('success', 'Kursus created successfully.');
+}
+
+
+    public function show(Kursus $kursus)
     {
-        $kursus = Kursus::findOrFail($id);
         return Inertia::render('Kursus/Show', ['kursus' => $kursus]);
     }
 
-    public function edit($id)
+    public function edit(Kursus $kursus)
     {
-        $kursus = Kursus::findOrFail($id);
         return Inertia::render('Kursus/Edit', ['kursus' => $kursus]);
     }
 
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'judul' => 'required|string|max:255',
-            'deskripsi' => 'required|string',
-            'gambar' => 'nullable|string|max:255',
-        ]);
+    public function update(Request $request, Kursus $kursus)
+{
+    $validated = $request->validate([
+        'judul' => 'required|string|max:255',
+        'deskripsi' => 'required|string',
+        'gambar' => 'nullable|image|max:2048',
+    ]);
 
-        $kursus = Kursus::findOrFail($id);
-        $kursus->update($request->all());
-        return redirect()->route('kursus.index');
+    // Handle file upload
+    if ($request->hasFile('gambar')) {
+        $file = $request->file('gambar');
+        $filePath = $file->store('kursus_images', 'public'); // Store in public storage
+        $validated['gambar'] = $filePath;
     }
 
-    public function destroy($id)
-    {
-        $kursus = Kursus::findOrFail($id);
-        $kursus->delete();
-        return redirect()->route('kursus.index');
-    }
+    $kursus->update($validated);
+
+    return redirect()->route('kursus.index')->with('success', 'Kursus updated successfully.');
+}
+
+public function destroy(Kursus $kursus)
+{
+    $kursus->delete();
+
+    return redirect()->route('kursus.index')->with('success', 'Kursus deleted successfully.');
+}
+
 }

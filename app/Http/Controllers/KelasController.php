@@ -5,59 +5,69 @@ namespace App\Http\Controllers;
 use App\Models\Kelas;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\User;
+
 
 class KelasController extends Controller
 {
     public function index()
     {
-        $kelas = Kelas::with('user')->get();
+        $kelas = Kelas::all();
         return Inertia::render('Kelas/Index', ['kelas' => $kelas]);
     }
 
     public function create()
     {
-        return Inertia::render('Kelas/Create');
+        $users = User::all(); // Ambil semua pengguna
+        return Inertia::render('Kelas/Create', ['users' => $users]);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:kelas',
-            'user_id' => 'required|exists:users,id',
+            'slug' => 'required|string|max:255',
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id',
         ]);
 
-        Kelas::create($request->all());
+        $kelas = Kelas::create([
+            'name' => $validated['name'],
+            'slug' => $validated['slug'],
+        ]);
+
+        // Attach users to kelas
+        $kelas->users()->sync($validated['user_ids']);
 
         return redirect()->route('kelas.index')->with('success', 'Kelas created successfully.');
     }
 
-    public function show(Kelas $kela)
+    public function show(Kelas $kelas)
     {
-        return Inertia::render('Kelas/Show', ['kela' => $kela]);
+        return Inertia::render('Kelas/Show', ['kelas' => $kelas]);
     }
 
-    public function edit(Kelas $kela)
+    public function edit(Kelas $kelas)
     {
-        return Inertia::render('Kelas/Edit', ['kela' => $kela]);
+        return Inertia::render('Kelas/Edit', ['kelas' => $kelas]);
     }
 
-    public function update(Request $request, Kelas $kela)
+    public function update(Request $request, Kelas $kelas)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:kelas,slug,' . $kela->id,
+            'slug' => 'required|string|max:255|unique:kelas,slug,' . $kelas->id,
             'user_id' => 'required|exists:users,id',
         ]);
 
-        $kela->update($request->all());
+        $kelas->update($validated);
 
         return redirect()->route('kelas.index')->with('success', 'Kelas updated successfully.');
     }
 
-    public function destroy(Kelas $kela)
+    public function destroy(Kelas $kelas)
     {
-        $kela->delete();
+        $kelas->delete();
 
         return redirect()->route('kelas.index')->with('success', 'Kelas deleted successfully.');
     }

@@ -104,6 +104,16 @@ export default function Authenticated({ user, header, children }) {
                                     Users
                                 </NavLink>
                             </li>
+                            <li>
+                                <NavLink
+                                    href={route("kursus.index")}
+                                    active={route().current("kursus.index")}
+                                    className="block px-4 py-2 rounded-lg hover:bg-gray-200"
+                                >
+                                    Kursus
+
+                                </NavLink>
+                            </li>
                         </ul>
                     </div>
                 </div>
