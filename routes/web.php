@@ -7,6 +7,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\KursusController;
 use App\Http\Controllers\KelasController;
+use App\Http\Controllers\PelajaranController;
+use App\Http\Controllers\PendaftaranController;
 
 Route::get('/', function () {
     return redirect('/Home');
@@ -44,10 +46,13 @@ Route::middleware('auth')->group(function () {
     // Routes for Kelas and Kursus without admin middleware
     Route::resource('kelas', KelasController::class);
     Route::resource('kursus', KursusController::class);
+    Route::resource('pelajaran', PelajaranController::class);
+    Route::resource('pendaftaran', PendaftaranController::class);
 });
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
     ->middleware(['guest'])
     ->name('login');
+
 
 require __DIR__.'/auth.php';

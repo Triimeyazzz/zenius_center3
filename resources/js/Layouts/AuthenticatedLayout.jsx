@@ -114,6 +114,33 @@ export default function Authenticated({ user, header, children }) {
 
                                 </NavLink>
                             </li>
+                            <li>
+                                <NavLink
+                                    href={route("kelas.index")}
+                                    active={route().current("kelas.index")}
+                                    className="block px-4 py-2 rounded-lg hover:bg-gray-200"
+                                >
+                                    kelas
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink
+                                    href={route("pelajaran.index")}
+                                    active={route().current("pelajaran.index")}
+                                    className="block px-4 py-2 rounded-lg hover:bg-gray-200"
+                                >
+                                    pelajaran
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink
+                                    href={route("pendaftaran.index")}
+                                    active={route().current("pendaftaran.index")}
+                                    className="block px-4 py-2 rounded-lg hover:bg-gray-200"
+                                >
+                                    pendaftaran
+                                </NavLink>
+                            </li>
                         </ul>
                     </div>
                 </div>

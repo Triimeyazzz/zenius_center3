@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,25 +11,20 @@ class Pendaftaran extends Model
     protected $table = 'pendaftaran';
 
     protected $fillable = [
-        'pengguna_id',
+        'users_id',
         'kursus_id',
         'terdaftar_pada',
         'selesai_pada',
     ];
 
-    protected $casts = [
-        'terdaftar_pada' => 'datetime',
-        'selesai_pada' => 'datetime',
-    ];
-
-    public function pengguna()
+    // Define relationships if needed
+    public function user()
     {
-        return $this->belongsTo(Pengguna::class);
+        return $this->belongsTo(User::class, 'users_id');
     }
 
     public function kursus()
     {
-        return $this->belongsTo(Kursus::class);
+        return $this->belongsTo(Kursus::class, 'kursus_id');
     }
 }
-

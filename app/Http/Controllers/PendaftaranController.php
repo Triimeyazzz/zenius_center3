@@ -1,48 +1,65 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Pendaftaran;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Redirect;
 
 class PendaftaranController extends Controller
 {
     public function index()
     {
-        $pendaftaran = Pendaftaran::all();
-        return response()->json($pendaftaran);
+        $pendaftarans = Pendaftaran::with('user', 'kursus')->get();
+        return Inertia::render('Pendaftaran/Index', [
+            'pendaftarans' => $pendaftarans,
+        ]);
     }
 
     public function create()
     {
-        // Tidak diperlukan untuk API
+        return Inertia::render('Pendaftaran/Create');
     }
 
     public function store(Request $request)
     {
-        $pendaftaran = Pendaftaran::create($request->all());
-        return response()->json($pendaftaran, 201);
-    }
+        $request->validate([
+            'users_id' => 'required|exists:users,id',
+            'kursus_id' => 'required|exists:kursus,id',
+            'terdaftar_pada' => 'required|date',
+            'selesai_pada' => 'nullable|date',
+        ]);
 
-    public function show(Pendaftaran $pendaftaran)
-    {
-        return response()->json($pendaftaran);
+        Pendaftaran::create($request->all());
+
+        return Redirect::route('pendaftaran.index');
     }
 
     public function edit(Pendaftaran $pendaftaran)
     {
-        // Tidak diperlukan untuk API
+        return Inertia::render('Pendaftaran/Edit', [
+            'pendaftaran' => $pendaftaran,
+        ]);
     }
 
     public function update(Request $request, Pendaftaran $pendaftaran)
     {
+        $request->validate([
+            'users_id' => 'required|exists:users,id',
+            'kursus_id' => 'required|exists:kursus,id',
+            'terdaftar_pada' => 'required|date',
+            'selesai_pada' => 'nullable|date',
+        ]);
+
         $pendaftaran->update($request->all());
-        return response()->json($pendaftaran);
+
+        return Redirect::route('pendaftaran.index');
     }
 
     public function destroy(Pendaftaran $pendaftaran)
     {
         $pendaftaran->delete();
-        return response()->json(null, 204);
+
+        return Redirect::route('pendaftaran.index');
     }
 }
