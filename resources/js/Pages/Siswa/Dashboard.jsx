@@ -4,6 +4,7 @@ import { Chart, registerables } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { Inertia } from '@inertiajs/inertia-react';
 
+
 // Register chart.js components
 Chart.register(...registerables);
 
@@ -27,7 +28,7 @@ const Dashboard = ({ totalKursus }) => {
       <div className="p-6">
         {/* Header */}
         <header className="text-center mb-6">
-          <h1 className="text-4xl font-bold">Dashboard Sederhana</h1>
+          <h1 className="text-4xl font-bold">Dashboard Siswa</h1>
         </header>
 
         {/* Dashboard Content */}

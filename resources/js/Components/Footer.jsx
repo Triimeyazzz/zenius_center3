@@ -8,7 +8,7 @@ const Footer = () => {
                 <div className="mb-6 md:mb-0 text-center md:text-left">
                     <Link href="/Home">
                         <img
-                            src="images/Logo White.png"
+                            src="/images/Logo White.png"
                             className="h-11 mx-auto md:mx-0"
                             alt="Company Logo"
                         />
