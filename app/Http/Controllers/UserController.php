@@ -5,11 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
+
 
 class UserController extends Controller
 {
     public function index(Request $request)
-    {
+    { 
+        $user = auth()->user();
+        return Inertia::render('./Layouts/StudentLayout', [
+            'user' => $user, // Pass user data to the page component
+        ]);
         $role = $request->query('role');
         $search = $request->query('search');
         $roles = ['admin', 'petugas', 'siswa'];
@@ -108,4 +114,37 @@ class UserController extends Controller
         $user->delete();
         return redirect()->route('users.index');
     }
+    public function editProfile()
+    {
+        $user = auth()->user();
+        return Inertia::render('Siswa/Profile/Edit', [
+            'user' => $user,
+        ]);
+    }
+
+    // Update the profile
+    public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . auth()->id(),
+            'password' => 'nullable|string|min:8|confirmed',
+            'nomor_hp' => 'nullable|string|max:15',
+            'alamat' => 'nullable|string|max:255',
+        ]);
+
+        $user = auth()->user();
+
+        // Update the user's attributes
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password ? bcrypt($request->password) : $user->password,
+            'nomor_hp' => $request->nomor_hp,
+            'alamat' => $request->alamat,
+        ]);
+
+        return redirect()->route('siswa.dashboard');
+    }
+
 }
