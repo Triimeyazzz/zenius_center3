@@ -76,14 +76,14 @@ const StudentLayout = ({ children, user }) => {
                         </button>
                         {dropdownOpen && (
                             <div className="absolute right-0 mt-2 w-48 bg-white text-black border border-gray-300 rounded shadow-lg">
-                                <Link
+                                <a
                                     href="/siswa/profile"
                                     className="block px-4 py-2 hover:bg-gray-100"
                                     onClick={closeDropdown}
                                 >
                                     Profile
-                                </Link>
-                                <Link
+                                </a>
+                                <a
                                     href={route("logout")}
                                     method="post"
                                     as="button"
@@ -91,7 +91,7 @@ const StudentLayout = ({ children, user }) => {
                                     onClick={closeDropdown}
                                 >
                                     Logout
-                                </Link>
+                                </a>
                             </div>
                         )}
                     </div>

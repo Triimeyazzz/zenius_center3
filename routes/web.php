@@ -35,9 +35,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-        Route::get('/dashboard', function () {
-            return Inertia::render('Dashboard');
-        })->name('dashboard');
+
         Route::get('users', [UserController::class, 'index'])->name('users.index');
         Route::get('users/create', [UserController::class, 'create'])->name('users.create');
         Route::post('users', [UserController::class, 'store'])->name('users.store');
@@ -52,25 +50,28 @@ Route::middleware('auth')->group(function () {
         Route::resource('pendaftaran', PendaftaranController::class);
     });
 
+    // Route for admin only
+    Route::middleware([CheckRole::class.':admin'])->group(function () {
+        Route::get('/admin', function () {
+            return Inertia::render('Admin/AdminDashboard');
+        })->name('admin.dashboard');
+    });
+
     // Route for siswa only
     Route::middleware([CheckRole::class.':siswa'])->group(function () {
         Route::get('/siswa/dashboard', function () {
             return Inertia::render('Siswa/Dashboard');
         })->name('siswa.dashboard');
-        // Add these routes within the authenticated middleware group
+        
+        // Route to view the profile
+        Route::get('siswa/profile', [UserController::class, 'editProfile'])->name('siswa.profile.edit');
 
-// Route to view the profile
-Route::get('siswa/profile', [UserController::class, 'editProfile'])->name('siswa.profile.edit');
-
-// Route to update the profile
-Route::patch('siswa/profile', [UserController::class, 'updateProfile'])->name('profile.update');
-// routes/web.php
-
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-        });
+        // Route to update the profile
+        Route::patch('siswa/profile', [UserController::class, 'updateProfile'])->name('profile.update');
     });
 
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
 
 // Non-authenticated or guest routes
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
