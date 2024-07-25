@@ -1,5 +1,5 @@
 import React from "react";
-import { useForm, usePage } from "@inertiajs/inertia-react";
+import { useForm } from "@inertiajs/inertia-react";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
 
 const EditUser = ({ user, roles }) => {
@@ -11,11 +11,15 @@ const EditUser = ({ user, roles }) => {
         nomor_hp: user.nomor_hp || "",
         alamat: user.alamat || "",
         role: user.role || "siswa",
+        profile_picture: null, // Add this to manage file input
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        put(`/users/${user.id}`);
+        put(`/users/${user.id}`, {
+            // Include profile_picture if it's set
+            data: data.profile_picture ? { ...data, profile_picture: data.profile_picture } : data
+        });
     };
 
     return (
@@ -32,10 +36,27 @@ const EditUser = ({ user, roles }) => {
                     <form
                         onSubmit={handleSubmit}
                         className="bg-gray-50 p-6 rounded-lg shadow-md mb-6"
+                        encType="multipart/form-data" // Add this attribute for file uploads
                     >
-                        <h2 className="text-xl font-semibold mb-4">
-                            Edit User
-                        </h2>
+                        <h2 className="text-xl font-semibold mb-4">Edit User</h2>
+
+                        {/* Profile Picture */}
+                        <div className="mb-4">
+                            {user.profile_picture && (
+                                <img
+                                    src={user.profile_picture}
+                                    alt="Profile"
+                                    className="w-24 h-24 object-cover rounded-full mb-2"
+                                />
+                            )}
+                            <label className="block mb-2">Profile Picture:</label>
+                            <input
+                                type="file"
+                                onChange={(e) => setData("profile_picture", e.target.files[0])}
+                                className="w-full p-2 border border-gray-300 rounded-md"
+                            />
+                        </div>
+
                         <label className="block mb-2">Name:</label>
                         <input
                             type="text"
@@ -93,36 +114,23 @@ const EditUser = ({ user, roles }) => {
                             onChange={(e) => setData('role', e.target.value)}
                             className="w-full p-2 border border-gray-300 rounded-md mb-4"
                         >
-                            {roles.map(role => (
+                            {roles.map((role) => (
                                 <option key={role} value={role}>
                                     {role.charAt(0).toUpperCase() + role.slice(1)}
                                 </option>
                             ))}
                         </select>
 
-                        <button 
+                        <button
                             type="submit"
                             disabled={processing}
-                            className="px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg shadow hover:bg-purple-700 transition duration-300"
+                            className="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 transition duration-300"
                         >
-                            Update
+                            Save Changes
                         </button>
-                        <div className="mt-4">
-                            <a
-                                href="/users"
-                                className="text-purple-600 hover:text-purple-800 transition duration-300"
-                            >
-                                Back
-                            </a>
-                        </div>
                     </form>
                 </div>
             </div>
-            <footer className="bg-white border-t border-gray-200 shadow py-8 px-4 sm:px-6 lg:px-8">
-                <p className="text-center text-gray-500">
-                    &copy; 2024 Admin Dashboard - Made with ❤️ by Zema
-                </p>
-            </footer>
         </Authenticated>
     );
 };

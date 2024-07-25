@@ -19,7 +19,9 @@ class User extends Authenticatable
         'nomor_hp',
         'alamat',
         'role',
+        'profile_picture', // Add this line
     ];
+    
 
     protected $hidden = [
         'password',

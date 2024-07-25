@@ -24,7 +24,7 @@ const Edit = ({ user }) => {
 
         {/* Profile Overview */}
         <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">Profile Overview</h2>
+          <h2 className="text-xl font-semibold mb-2">Profile </h2>
           <div className="bg-white p-4 rounded-lg shadow-md space-y-4">
             <div>
               <h3 className="text-sm font-medium text-gray-700">Name</h3>

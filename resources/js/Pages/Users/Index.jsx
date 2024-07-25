@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useForm } from "@inertiajs/inertia-react";
-import { Inertia } from "@inertiajs/inertia";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
+import { Inertia } from "@inertiajs/inertia";
 
 const UserForm = ({
     data,
@@ -14,8 +14,28 @@ const UserForm = ({
     <form
         onSubmit={handleSubmit}
         className="bg-gray-50 p-6 rounded-lg shadow-md mb-6"
+        encType="multipart/form-data" // Ensure this is added for file uploads
     >
         <h2 className="text-xl font-semibold mb-4">Create User</h2>
+
+        {/* Profile Picture */}
+        <div className="mb-4">
+            {data.profile_picture && (
+                <img
+                src={`/storage/${data.profile_picture}`} // Adjust path as needed
+                alt="Profile"
+                className="w-12 h-12 object-cover rounded-full mr-4"
+            />
+            
+            )}
+            <label className="block mb-2">Profile Picture:</label>
+            <input
+                type="file"
+                onChange={(e) => setData("profile_picture", e.target.files[0])}
+                className="w-full p-2 border border-gray-300 rounded-md"
+            />
+        </div>
+
         <label className="block mb-2">Name:</label>
         <input
             type="text"
@@ -102,8 +122,17 @@ const UserList = ({ users }) => (
             users.map((user) => (
                 <li
                     key={user.id}
-                    className="bg-white p-4 rounded-lg shadow-md mb-4 hover:bg-gray-50 transition duration-300"
+                    className="bg-white p-4 rounded-lg shadow-md mb-4 hover:bg-gray-50 transition duration-300 flex items-center"
                 >
+                    {user.profile_picture && (
+                        // Periksa dan pastikan path gambar benar
+<img
+    src={user.profile_picture ? `/storage/${user.profile_picture}` : "/default-profile-picture.png"} 
+    alt="Profile" 
+    className="w-12 h-12 object-cover rounded-full mr-4"
+/>
+
+                    )}
                     <Link
                         href={`/users/${user.id}/edit`}
                         className="text-lg font-medium text-purple-600 hover:underline"
@@ -130,20 +159,39 @@ const Index = ({ users, roles, selectedRole, roleCounts }) => {
         nomor_hp: "",
         alamat: "",
         role: "siswa",
+        profile_picture: null, // Ensure to handle file input
         showCreateForm: false,
     });
 
     const filteredUsers = users.filter(
         (user) =>
-            user.role.includes(roleFilter) &&
+            (roleFilter === "" || user.role === roleFilter) &&
             user.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post("/users");
+        // Handle form submission with file upload
+        const formData = new FormData();
+        formData.append("name", data.name);
+        formData.append("email", data.email);
+        formData.append("password", data.password);
+        formData.append("password_confirmation", data.password_confirmation);
+        formData.append("nomor_hp", data.nomor_hp);
+        formData.append("alamat", data.alamat);
+        formData.append("role", data.role);
+        if (data.profile_picture) {
+            formData.append("profile_picture", data.profile_picture);
+        }
+        Inertia.post("/users", formData, {
+            forceFormData: true, // Ensure FormData is sent
+            onSuccess: () => {
+                // Optionally handle successful navigation or other actions
+                Inertia.visit(route('users.index')); // Redirect to index page
+            }
+        });
     };
-
+    
     return (
         <Authenticated
             auth={users.auth}
@@ -209,7 +257,6 @@ const Index = ({ users, roles, selectedRole, roleCounts }) => {
                             className="w-full p-2 border border-gray-300 rounded-md"
                         />
                     </div>
-
                     <div className="mb-6">
                         <h2 className="text-2xl font-semibold mb-4">
                             User Counts
@@ -235,11 +282,6 @@ const Index = ({ users, roles, selectedRole, roleCounts }) => {
                     <UserList users={filteredUsers} />
                 </div>
             </div>
-            <footer className="bg-white border-t border-gray-200 shadow py-8 px-4 sm:px-6 lg:px-8">
-                <p className="text-center text-gray-500">
-                    &copy; 2024 Admin Dashboard - Made with ❤️ by Zema
-                </p>
-            </footer>
         </Authenticated>
     );
 };

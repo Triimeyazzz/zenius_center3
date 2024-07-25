@@ -1,4 +1,3 @@
-// resources/js/Layouts/StudentLayout.jsx
 import React, { useState } from "react";
 import { Link } from "@inertiajs/react";
 import { Helmet } from "react-helmet"; // For adding metadata
@@ -6,6 +5,7 @@ import Footer from "@/Components/Footer";
 
 const StudentLayout = ({ children, user }) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
@@ -13,6 +13,14 @@ const StudentLayout = ({ children, user }) => {
 
     const closeDropdown = () => {
         setDropdownOpen(false);
+    };
+
+    const toggleMenu = () => {
+        setMenuOpen(!menuOpen);
+    };
+
+    const closeMenu = () => {
+        setMenuOpen(false);
     };
 
     return (
@@ -33,14 +41,39 @@ const StudentLayout = ({ children, user }) => {
             {/* Navbar */}
             <nav className="bg-gradient-to-r from-purple-950 to-blue-800 p-4 sticky top-0 z-50 shadow-md">
                 <div className="container mx-auto flex justify-between items-center">
-                    <Link href="/Home" className="text-white text-lg font-bold flex items-center">
+                    <Link
+                        href="/Home"
+                        className="text-white text-lg font-bold flex items-center"
+                    >
                         <img
                             src="/images/Logo White.png"
                             className="h-11"
                             alt="Logo"
                         />
                     </Link>
-                    <ul className="flex space-x-4">
+
+                    {/* Mobile Menu Button */}
+                    <button
+                        onClick={toggleMenu}
+                        className="lg:hidden text-white flex items-center"
+                    >
+                        <svg
+                            className="w-6 h-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M4 6h16M4 12h16M4 18h16"
+                            />
+                        </svg>
+                    </button>
+
+                    {/* Desktop Menu */}
+                    <ul className="hidden lg:flex space-x-4">
                         <li>
                             <a
                                 href={route("siswa.dashboard")}
@@ -50,11 +83,20 @@ const StudentLayout = ({ children, user }) => {
                             </a>
                         </li>
                     </ul>
+
                     <div className="relative">
                         <button
                             onClick={toggleDropdown}
                             className="text-white flex items-center hover:text-gray-300"
                         >
+                            <img
+                                src={
+                                    user.profile_picture ? `/storage/${user.profile_picture}`
+                                        : "/default-profile-picture.png"
+                                }
+                                alt="Profile"
+                                className="w-12 h-12 object-cover rounded-full mr-4"
+                            />{" "}
                             <span className="mr-2">
                                 {user ? user.name : "Loading..."}
                             </span>
@@ -96,6 +138,35 @@ const StudentLayout = ({ children, user }) => {
                         )}
                     </div>
                 </div>
+
+                {/* Mobile Menu */}
+                {menuOpen && (
+                    <div className="lg:hidden absolute top-16 left-0 right-0 bg-gradient-to-r from-purple-950 to-blue-800 text-white border border-gray-300 rounded-b shadow-lg">
+                        <a
+                            href={route("siswa.dashboard")}
+                            className="block px-4 py-2 hover:bg-gray-200"
+                            onClick={closeMenu}
+                        >
+                            Dashboard
+                        </a>
+                        <a
+                            href="/siswa/profile"
+                            className="block px-4 py-2 hover:bg-gray-200"
+                            onClick={closeMenu}
+                        >
+                            Profile
+                        </a>
+                        <a
+                            href={route("logout")}
+                            method="post"
+                            as="button"
+                            className="block px-4 py-2 hover:bg-gray-200 w-full text-left"
+                            onClick={closeMenu}
+                        >
+                            Logout
+                        </a>
+                    </div>
+                )}
             </nav>
 
             {/* Main Content */}

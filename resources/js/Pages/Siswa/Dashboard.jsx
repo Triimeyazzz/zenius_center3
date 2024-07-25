@@ -1,70 +1,43 @@
 import React from 'react';
 import StudentLayout from '@/Layouts/StudentLayout';
-import { Chart, registerables } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
-import { Inertia } from '@inertiajs/inertia-react';
+import Sidebar from '@/Layouts/SideBar';
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import ErrorBoundary from '@/Components/ErrorBoundary';
 
-
-// Register chart.js components
-Chart.register(...registerables);
-
-const Dashboard = ({ totalKursus }) => {
-  // Example data for the bar chart
-  const data = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [
-      {
-        label: 'Jumlah Siswa',
-        data: [10, 20, 30, 40, 50, 60, 70],
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1,
-      },
-    ],
-  };
-
+const Dashboard = ({ currentUser }) => {
   return (
-    <StudentLayout >
-      <div className="p-6">
-        {/* Header */}
-        <header className="text-center mb-6">
-          <h1 className="text-4xl font-bold">Dashboard Siswa</h1>
-        </header>
-
-        {/* Dashboard Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Info Cards */}
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold">Total Kursus</h2>
-            <p className="text-3xl font-bold">{totalKursus}</p>
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold">Jumlah Siswa</h2>
-            <p className="text-3xl font-bold">120</p>
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold">Kursus Terbaru</h2>
-            <p className="text-3xl font-bold">5</p>
-          </div>
-
-          {/* Chart */}
-          <div className="col-span-1 md:col-span-2 lg:col-span-3 bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Statistik Siswa</h2>
-            <Bar data={data} options={{ responsive: true }} />
-          </div>
+    <ErrorBoundary>
+      <StudentLayout user={currentUser}>
+        <div className="flex">
+          <Sidebar />
+          <main className="w-3/4 p-8">
+            <div className="bg-white shadow-lg p-8 rounded-lg">
+              <h1 className="text-3xl font-bold mb-6">Selamat datang di New Primagama Fatmawati</h1>
+              <ul className="list-disc pl-5 space-y-4">
+                <li className="text-lg">Video dan latihan soal lengkap buat bikin jago UTBK</li>
+                <li className="text-lg">Belajar pake konsep jadi ngerti banget!</li>
+                <li className="text-lg">Latihan soal cocok untuk deliberate practice</li>
+                <li className="text-lg">Enak dipake di PC maupun mobile</li>
+              </ul>
+            </div>
+            <div className="mt-8">
+              <Carousel showThumbs={false} autoPlay infiniteLoop>
+                <div>
+                  <img src="/images/spanduk_459x217_cmyk.jpg" alt="Dashboard 1" className="rounded-lg shadow-lg" />
+                </div>
+                <div>
+                  <img src="/images/path_to_your_image2.png" alt="Dashboard 2" className="rounded-lg shadow-lg" />
+                </div>
+                <div>
+                  <img src="/images/path_to_your_image3.png" alt="Dashboard 3" className="rounded-lg shadow-lg" />
+                </div>
+              </Carousel>
+            </div>
+          </main>
         </div>
-
-        {/* Recent Activities */}
-        <div className="bg-white p-4 mt-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Aktivitas Terbaru</h2>
-          <ul>
-            <li>Update kursus 'React untuk Pemula' - 20 Juli 2024</li>
-            <li>Penambahan 10 siswa baru - 18 Juli 2024</li>
-            <li>Kursus 'Laravel Lanjut' selesai - 15 Juli 2024</li>
-          </ul>
-        </div>
-      </div>
-    </StudentLayout>
+      </StudentLayout>
+    </ErrorBoundary>
   );
 };
 
