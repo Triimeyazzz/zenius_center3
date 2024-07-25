@@ -52,9 +52,9 @@ Route::middleware('auth')->group(function () {
 
     // Route for admin only
     Route::middleware([CheckRole::class.':admin'])->group(function () {
-        Route::get('/admin', function () {
-            return Inertia::render('Admin/AdminDashboard');
-        })->name('admin.dashboard');
+        Route::get('/dashboard', function () {
+            return Inertia::render('Dashboard');
+        })->name('dashboard');
     });
 
     // Route for siswa only
@@ -70,12 +70,15 @@ Route::middleware('auth')->group(function () {
         Route::patch('siswa/profile', [UserController::class, 'updateProfile'])->name('profile.update');
     });
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
 // Non-authenticated or guest routes
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
     ->middleware(['guest'])
     ->name('login');
+
+Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->middleware(['auth'])
+    ->name('logout');
 
 require __DIR__.'/auth.php';

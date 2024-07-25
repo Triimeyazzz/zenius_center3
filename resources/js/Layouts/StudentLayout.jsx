@@ -1,6 +1,6 @@
 // resources/js/Layouts/StudentLayout.jsx
 import React, { useState } from "react";
-import { Link } from "@inertiajs/inertia-react";
+import { Link } from "@inertiajs/react";
 import { Helmet } from "react-helmet"; // For adding metadata
 import Footer from "@/Components/Footer";
 
