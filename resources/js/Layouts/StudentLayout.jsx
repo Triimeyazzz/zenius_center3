@@ -89,14 +89,19 @@ const StudentLayout = ({ children, user }) => {
                             onClick={toggleDropdown}
                             className="text-white flex items-center hover:text-gray-300"
                         >
-                            <img
-                                src={
-                                    user.profile_picture ? `/storage/${user.profile_picture}`
-                                        : "/default-profile-picture.png"
-                                }
-                                alt="Profile"
-                                className="w-12 h-12 object-cover rounded-full mr-4"
-                            />{" "}
+                            {user && user.profile_picture ? (
+                                <img
+                                    src={`/storage/${user.profile_picture}`}
+                                    alt="Profile"
+                                    className="w-12 h-12 object-cover rounded-full mr-4"
+                                />
+                            ) : (
+                                <img
+                                    src="/images/default-profile-picture.png"
+                                    alt="Profile"
+                                    className="w-12 h-12 object-cover rounded-full mr-4"
+                                />
+                            )}
                             <span className="mr-2">
                                 {user ? user.name : "Loading..."}
                             </span>

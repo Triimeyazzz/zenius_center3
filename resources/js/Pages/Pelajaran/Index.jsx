@@ -4,9 +4,12 @@ import React from 'react';
 import { Link } from '@inertiajs/inertia-react';
 import Authenticated from '@/Layouts/AuthenticatedLayout';
 
-const Index = ({ pelajarans }) => {
+const Index = ({ auth,pelajarans }) => {
     return (
-        <Authenticated>
+        <Authenticated
+            user={auth.user}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Pelajaran</h2>}
+        >
             <div className="p-8 bg-gray-100 min-h-screen">
                 <h1 className="text-3xl font-bold mb-6">Daftar Pelajaran</h1>
                 <div className="mb-6">

@@ -24,13 +24,14 @@ export default function Authenticated({ user, header, children }) {
             </Helmet>
             <nav className="bg-white w-64 h-screen border-r border-gray-200 flex flex-col fixed">
                 <div className="flex items-center justify-center h-16 border-b border-gray-200">
-                    <Link href="/">
-                        <img
-                            src="./images/Logo color.png"
-                            alt="logo"
-                            className="h-8 w-auto"
-                        />
-                    </Link>
+                <Link href="/">
+    <img
+        src="/images/Logo color.png"  // Correct path
+        alt="logo"
+        className="h-8 w-auto"
+    />
+</Link>
+
                 </div>
                 <div className="flex-1 overflow-y-auto">
                     <div className="border-t border-gray-200">

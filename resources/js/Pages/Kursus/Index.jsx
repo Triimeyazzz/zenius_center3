@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
-import Authenticated from '@/Layouts/AuthenticatedLayout';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'; // Ubah nama jika perlu
 import { Head } from '@inertiajs/react';
 
-const Index = ({ kursus }) => {
+const Index = ({ auth, kursus }) => {
 
     const handleDelete = (id) => {
         if (confirm('Apakah Anda yakin ingin menghapus kursus ini?')) {
@@ -23,7 +23,8 @@ const Index = ({ kursus }) => {
     };
 
     return (
-        <Authenticated
+        <AuthenticatedLayout
+            user={auth.user} // Mengirimkan user sebagai props ke AuthenticatedLayout
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Kursus</h2>}
         >
             <div className="container mx-auto p-4">
@@ -35,7 +36,7 @@ const Index = ({ kursus }) => {
                     ))}
                 </div>
             </div>
-        </Authenticated>
+        </AuthenticatedLayout>
     );
 };
 

@@ -1,9 +1,9 @@
 import React from "react";
-import { useForm } from "@inertiajs/inertia-react";
+import { useForm, usePage } from "@inertiajs/inertia-react";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
 
-const EditUser = ({ user, roles }) => {
-    const { data, setData, put, processing, errors } = useForm({
+const EditUser = ({ user, roles, auth }) => {
+    const { data, setData, put, delete: destroy, processing, errors } = useForm({
         name: user.name || "",
         email: user.email || "",
         password: "",
@@ -17,22 +17,26 @@ const EditUser = ({ user, roles }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         put(`/users/${user.id}`, {
-            // Include profile_picture if it's set
             data: data.profile_picture ? { ...data, profile_picture: data.profile_picture } : data
         });
     };
 
+    const handleDelete = (e) => {
+        e.preventDefault();
+        if (confirm("Are you sure you want to delete this user?")) {
+            destroy(`/users/${user.id}`, {
+                onSuccess: () => {
+                    // Redirect or perform any other action on success
+                    window.location.href = '/users'; // Redirect to users list or wherever appropriate
+                },
+            });
+        }
+    };
+
     return (
-        <Authenticated
-            auth={user.auth}
-            header={
-                <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                    Edit User
-                </h2>
-            }
-        >
-            <div className="min-h-screen bg-gray-100 p-6">
-                <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+        <Authenticated user={auth.user} header={<h2>Edit Page</h2>}>
+            <div className="py-12">
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <form
                         onSubmit={handleSubmit}
                         className="bg-gray-50 p-6 rounded-lg shadow-md mb-6"
@@ -44,7 +48,7 @@ const EditUser = ({ user, roles }) => {
                         <div className="mb-4">
                             {user.profile_picture && (
                                 <img
-                                    src={user.profile_picture}
+                                    src={`/users/${user.id}/profile_pictures/${user.profile_picture}`}
                                     alt="Profile"
                                     className="w-24 h-24 object-cover rounded-full mb-2"
                                 />
@@ -128,6 +132,16 @@ const EditUser = ({ user, roles }) => {
                         >
                             Save Changes
                         </button>
+
+                        <button
+                            onClick={handleDelete}
+                            className="ml-4 px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow hover:bg-red-700 transition duration-300"
+                        >
+                            Delete User
+                        </button>
+                        <a href="/users" className="ml-4 px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg shadow hover:bg-gray-700 transition duration-300">
+                        Kembali
+                        </a>
                     </form>
                 </div>
             </div>
