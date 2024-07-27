@@ -6,112 +6,107 @@ import Loading from "@/Components/Loading";
 
 const UserForm = ({ data, setData, handleSubmit, roles, processing, errors }) => (
     <form
-    onSubmit={handleSubmit}
-    className="bg-gray-50 p-6 rounded-lg shadow-md mb-6"
-    encType="multipart/form-data" // Ensure this is added for file uploads
->
-    <h2 className="text-xl font-semibold mb-4">Create User</h2>
+        onSubmit={handleSubmit}
+        className="bg-gray-50 p-6 rounded-lg shadow-md mb-6"
+        encType="multipart/form-data"
+    >
+        <h2 className="text-xl font-semibold mb-4">Create User</h2>
 
-    {/* Profile Picture */}
-    <div className="mb-4">
-        {data.profile_picture && (
-            <img
-            src={`/storage/${data.profile_picture}`} // Adjust path as needed
-            alt="Profile"
-            className="w-12 h-12 object-cover rounded-full mr-4"
-        />
-        
-        )}
-        <label className="block mb-2">Profile Picture:</label>
+        {/* Profile Picture */}
+        <div className="mb-4">
+            {data.profile_picture && (
+                <img
+                    src={`/storage/${data.profile_picture}`}
+                    alt="Profile"
+                    className="w-12 h-12 object-cover rounded-full mr-4"
+                />
+            )}
+            <label className="block mb-2">Profile Picture:</label>
+            <input
+                type="file"
+                onChange={(e) => setData("profile_picture", e.target.files[0])}
+                className="w-full p-2 border border-gray-300 rounded-md"
+            />
+        </div>
+
+        <label className="block mb-2">Name:</label>
         <input
-            type="file"
-            onChange={(e) => setData("profile_picture", e.target.files[0])}
-            className="w-full p-2 border border-gray-300 rounded-md"
+            type="text"
+            value={data.name}
+            onChange={(e) => setData("name", e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md mb-4"
         />
-    </div>
+        {errors.name && <div className="text-red-600 mb-4">{errors.name}</div>}
 
-    <label className="block mb-2">Name:</label>
-    <input
-        type="text"
-        value={data.name}
-        onChange={(e) => setData("name", e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded-md mb-4"
-    />
-    {errors.name && <div className="text-red-600 mb-4">{errors.name}</div>}
+        <label className="block mb-2">Email:</label>
+        <input
+            type="email"
+            value={data.email}
+            onChange={(e) => setData("email", e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md mb-4"
+        />
+        {errors.email && <div className="text-red-600 mb-4">{errors.email}</div>}
 
-    <label className="block mb-2">Email:</label>
-    <input
-        type="email"
-        value={data.email}
-        onChange={(e) => setData("email", e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded-md mb-4"
-    />
-    {errors.email && (
-        <div className="text-red-600 mb-4">{errors.email}</div>
-    )}
+        <label className="block mb-2">Password:</label>
+        <input
+            type="password"
+            value={data.password}
+            onChange={(e) => setData("password", e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md mb-4"
+        />
+        {errors.password && <div className="text-red-600 mb-4">{errors.password}</div>}
 
-    <label className="block mb-2">Password:</label>
-    <input
-        type="password"
-        value={data.password}
-        onChange={(e) => setData("password", e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded-md mb-4"
-    />
-    {errors.password && (
-        <div className="text-red-600 mb-4">{errors.password}</div>
-    )}
+        <label className="block mb-2">Confirm Password:</label>
+        <input
+            type="password"
+            value={data.password_confirmation}
+            onChange={(e) => setData("password_confirmation", e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md mb-4"
+        />
 
-    <label className="block mb-2">Confirm Password:</label>
-    <input
-        type="password"
-        value={data.password_confirmation}
-        onChange={(e) => setData("password_confirmation", e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded-md mb-4"
-    />
+        <label className="block mb-2">Phone:</label>
+        <input
+            type="text"
+            value={data.nomor_hp}
+            onChange={(e) => setData("nomor_hp", e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md mb-4"
+        />
 
-    <label className="block mb-2">Phone:</label>
-    <input
-        type="text"
-        value={data.nomor_hp}
-        onChange={(e) => setData("nomor_hp", e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded-md mb-4"
-    />
+        <label className="block mb-2">Address:</label>
+        <input
+            type="text"
+            value={data.alamat}
+            onChange={(e) => setData("alamat", e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md mb-4"
+        />
 
-    <label className="block mb-2">Address:</label>
-    <input
-        type="text"
-        value={data.alamat}
-        onChange={(e) => setData("alamat", e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded-md mb-4"
-    />
+        <label className="block mb-2">Role:</label>
+        <select
+            value={data.role}
+            onChange={(e) => setData("role", e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md mb-4"
+        >
+            {roles.map((role) => (
+                <option key={role} value={role}>
+                    {role.charAt(0).toUpperCase() + role.slice(1)}
+                </option>
+            ))}
+        </select>
 
-    <label className="block mb-2">Role:</label>
-    <select
-        value={data.role}
-        onChange={(e) => setData("role", e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded-md mb-4"
-    >
-        {roles.map((role) => (
-            <option key={role} value={role}>
-                {role.charAt(0).toUpperCase() + role.slice(1)}
-            </option>
-        ))}
-    </select>
-
-    <button
-        type="submit"
-        disabled={processing}
-        className="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 transition duration-300"
-    >
-        Submit
-    </button>
-</form>
+        <button
+            type="submit"
+            disabled={processing}
+            className="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 transition duration-300"
+        >
+            Submit
+        </button>
+    </form>
 );
 
 const UserList = ({ users }) => (
     <ul>
         {users.length === 0 ? (
-            <li className="text-gray-600">No users found.</li>
+            <li className="text-gray-600">No Admin found.</li>
         ) : (
             users.map((user) => (
                 <li
@@ -151,7 +146,7 @@ const Index = ({ users, roles, selectedRole, roleCounts, auth }) => {
         password_confirmation: "",
         nomor_hp: "",
         alamat: "",
-        role: "siswa",
+        role: "admin",
         profile_picture: null,
         showCreateForm: false,
     });
@@ -193,18 +188,11 @@ const Index = ({ users, roles, selectedRole, roleCounts, auth }) => {
     }
 
     return (
-        <Authenticated
-            user={auth.user}
-            header={
-                <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                    Users
-                </h2>
-            }
-        >
-            <div className="min-h-screen bg-gray-100 p-6">
-                <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
-                    <div className="flex justify-between items-center mb-6">
-                        <h1 className="text-3xl font-bold text-gray-800">Users</h1>
+        <Authenticated user={auth.user}>
+            <div className="container mx-auto px-4 py-8 bg-white">
+                <h1 className="text-3xl font-semibold mb-6">Manage Admin</h1>
+                <div className="flex justify-between items-center mb-6">
+                    <div>
                         <button
                             onClick={() =>
                                 setData({
@@ -212,51 +200,33 @@ const Index = ({ users, roles, selectedRole, roleCounts, auth }) => {
                                     showCreateForm: !data.showCreateForm,
                                 })
                             }
-                            className="px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg shadow hover:bg-purple-700 transition duration-300"
+                            className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition duration-300"
                         >
-                            {data.showCreateForm ? "Cancel" : "Create User"}
+                            {data.showCreateForm ? "Batal" : "Buat Pengguna Baru"}
                         </button>
                     </div>
-
-                    {data.showCreateForm && (
-                        <UserForm
-                            data={data}
-                            setData={setData}
-                            handleSubmit={handleSubmit}
-                            roles={roles}
-                            processing={processing}
-                            errors={errors}
-                        />
-                    )}
-
-                    <div className="mb-6">
-                        <label className="block mb-2">Filter by Role:</label>
-                        <select
-                            value={roleFilter}
-                            onChange={(e) => setRoleFilter(e.target.value)}
-                            className="p-2 border border-gray-300 rounded-md"
-                        >
-                            <option value="">All</option>
-                            {roles.map((role) => (
-                                <option key={role} value={role}>
-                                    {role.charAt(0).toUpperCase() + role.slice(1)}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="mb-6">
-                        <label className="block mb-2">Search:</label>
+                    <div>
                         <input
                             type="text"
+                            placeholder="Search by name"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full p-2 border border-gray-300 rounded-md"
+                            className="ml-4 p-2 border border-gray-300 rounded-md"
                         />
                     </div>
-
-                    <div className="mb-6">
-                        <h2 className="text-2xl font-semibold mb-4">User Counts</h2>
+                </div>
+                {data.showCreateForm && (
+                    <UserForm
+                        data={data}
+                        setData={setData}
+                        handleSubmit={handleSubmit}
+                        roles={roles}
+                        processing={processing}
+                        errors={errors}
+                    />
+                )}
+                <div className="mb-6">
+                        <h2 className="text-2xl font-semibold mb-4">Admin Counts</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             {roles.map((role) => (
                                 <div
@@ -273,8 +243,12 @@ const Index = ({ users, roles, selectedRole, roleCounts, auth }) => {
                             ))}
                         </div>
                     </div>
-
-                    <UserList users={filteredUsers} />
+                <div className="grid grid-cols-1 gap-4 ">
+                    <div className="bg-white p-4 rounded-lg shadow-md">
+                        <h2 className="text-2xl font-semibold mb-4">Admin List</h2>
+                        <UserList users={filteredUsers} />
+                    </div>
+                    
                 </div>
             </div>
         </Authenticated>

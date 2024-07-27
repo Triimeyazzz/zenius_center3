@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('nomor_hp')->nullable();
             $table->string('alamat')->nullable();
             $table->string('profile_picture')->nullable();
-            $table->enum('role', ['admin', 'petugas', 'siswa']);
+            $table->enum('role', ['admin', 'petugas']);
             $table->rememberToken();
             $table->timestamps();
         });

@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -11,6 +10,10 @@ use App\Http\Controllers\PelajaranController;
 use App\Http\Controllers\PendaftaranController;
 use App\Http\Middleware\CheckRole;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProgramBimbinganController;
+use App\Http\Controllers\SiswaController;
+use App\Http\Controllers\DataBimbinganController;
+use App\Http\Controllers\TryOutController;
 
 Route::get('/', function () {
     return redirect('/Home');
@@ -44,10 +47,13 @@ Route::middleware('auth')->group(function () {
         Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
         Route::get('users/{user}/show', [UserController::class, 'show'])->name('users.show');
         
-        Route::resource('kelas', KelasController::class);
-        Route::resource('kursus', KursusController::class);
-        Route::resource('pelajaran', PelajaranController::class);
-        Route::resource('pendaftaran', PendaftaranController::class);
+        Route::resource('program-bimbingan', ProgramBimbinganController::class);
+        Route::resource('adminsiswa', SiswaController::class);
+
+Route::resource('data_bimbingan', DataBimbinganController::class);
+Route::resource('try-out', TryOutController::class);
+
+
     });
 
     // Route for admin only
@@ -58,18 +64,6 @@ Route::middleware('auth')->group(function () {
     });
 
     // Route for siswa only
-    Route::middleware([CheckRole::class.':siswa'])->group(function () {
-        Route::get('/siswa/dashboard', function () {
-            return Inertia::render('Siswa/Dashboard');
-        })->name('siswa.dashboard');
-        
-        // Route to view the profile
-        Route::get('siswa/profile', [UserController::class, 'editProfile'])->name('siswa.profile.edit');
-
-        // Route to update the profile
-        Route::patch('siswa/profile', [UserController::class, 'updateProfile'])->name('profile.update');
-    });
-
 });
 
 // Non-authenticated or guest routes

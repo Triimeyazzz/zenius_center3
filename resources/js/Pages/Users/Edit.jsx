@@ -1,8 +1,8 @@
 import React from "react";
-import { useForm, usePage } from "@inertiajs/inertia-react";
+import { useForm } from "@inertiajs/inertia-react";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
 
-const EditUser = ({ user, roles, auth }) => {
+const Edit = ({ user, roles, auth }) => {
     const { data, setData, put, delete: destroy, processing, errors } = useForm({
         name: user.name || "",
         email: user.email || "",
@@ -10,7 +10,7 @@ const EditUser = ({ user, roles, auth }) => {
         password_confirmation: "",
         nomor_hp: user.nomor_hp || "",
         alamat: user.alamat || "",
-        role: user.role || "siswa",
+        role: user.role || "",
         profile_picture: null, // Add this to manage file input
     });
 
@@ -149,4 +149,4 @@ const EditUser = ({ user, roles, auth }) => {
     );
 };
 
-export default EditUser;
+export default Edit;

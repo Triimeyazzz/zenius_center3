@@ -102,44 +102,34 @@ export default function Authenticated({ user, header, children }) {
                                     active={route().current("users.index")}
                                     className="block px-4 py-2 rounded-lg hover:bg-gray-200"
                                 >
-                                    Users
+                                    Admin
                                 </NavLink>
                             </li>
                             <li>
                                 <NavLink
-                                    href={route("kursus.index")}
-                                    active={route().current("kursus.index")}
+                                    href={route("program-bimbingan.index")}
+                                    active={route().current("program-bimbingan.index")}
                                     className="block px-4 py-2 rounded-lg hover:bg-gray-200"
                                 >
-                                    Kursus
-
+                                    Program_Bimbingan
                                 </NavLink>
                             </li>
                             <li>
                                 <NavLink
-                                    href={route("kelas.index")}
-                                    active={route().current("kelas.index")}
+                                    href={route("adminsiswa.index")}
+                                    active={route().current("adminsiswa.index")}
                                     className="block px-4 py-2 rounded-lg hover:bg-gray-200"
                                 >
-                                    kelas
+                                    Siswa
                                 </NavLink>
                             </li>
                             <li>
                                 <NavLink
-                                    href={route("pelajaran.index")}
-                                    active={route().current("pelajaran.index")}
+                                    href={route("data_bimbingan.index")}
+                                    active={route().current("data_bimbingan.index")}
                                     className="block px-4 py-2 rounded-lg hover:bg-gray-200"
                                 >
-                                    pelajaran
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink
-                                    href={route("pendaftaran.index")}
-                                    active={route().current("pendaftaran.index")}
-                                    className="block px-4 py-2 rounded-lg hover:bg-gray-200"
-                                >
-                                    pendaftaran
+                                    Data Bimbingan
                                 </NavLink>
                             </li>
                         </ul>
