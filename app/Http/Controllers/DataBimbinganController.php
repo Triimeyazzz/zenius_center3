@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\DataBimbingan;
@@ -24,16 +23,17 @@ class DataBimbinganController extends Controller
         }
     }
 
-    $dataBimbingan = $query->get();
-    $siswas = Siswa::all();
-    $programBimbingans = ProgramBimbingan::all();
+    $dataBimbingan = $query->with('programBimbingan')->get(); // Eager load the relationship
+    $siswa = Siswa::all();
+    $programBimbingan = ProgramBimbingan::all();
     
     return Inertia::render('DataBimbingan/Index', [
         'dataBimbingan' => $dataBimbingan,
-        'siswas' => $siswas,
-        'programBimbingans' => $programBimbingans,
+        'siswa' => $siswa,
+        'programBimbingan' => $programBimbingan,
     ]);
 }
+
 
 
     public function create()

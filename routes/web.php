@@ -1,4 +1,6 @@
+
 <?php
+
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -34,7 +36,7 @@ Route::get('/Testimoni', function () {
 // Middleware group for authenticated users
 Route::middleware('auth')->group(function () {
     // Routes for admin and petugas only
-    Route::middleware([CheckRole::class.':admin,petugas'])->group(function () {
+    Route::middleware([CheckRole::class . ':admin,petugas'])->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -46,18 +48,28 @@ Route::middleware('auth')->group(function () {
         Route::put('users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
         Route::get('users/{user}/show', [UserController::class, 'show'])->name('users.show');
-        
+
         Route::resource('program-bimbingan', ProgramBimbinganController::class);
-        Route::resource('adminsiswa', SiswaController::class);
 
-Route::resource('data_bimbingan', DataBimbinganController::class);
-Route::resource('try-out', TryOutController::class);
+        Route::resource('try-out', TryOutController::class);
+        
+        
 
+        Route::get('/adminsiswa', [SiswaController::class, 'index'])->name('adminsiswa.index');
+        Route::get('/adminsiswa/create', [SiswaController::class, 'create'])->name('adminsiswa.create');
+        Route::post('/adminsiswa', [SiswaController::class, 'store'])->name('adminsiswa.store');
+        Route::get('/adminsiswa/{siswa}/show', [SiswaController::class, 'show'])->name('adminsiswa.show');
+        Route::get('/adminsiswa/{siswa}/edit', [SiswaController::class, 'edit'])->name('adminsiswa.edit');
+        Route::put('/adminsiswa/{siswa}', [SiswaController::class, 'update'])->name('adminsiswa.update');
+        Route::delete('/adminsiswa/{siswa}', [SiswaController::class, 'destroy'])->name('adminsiswa.destroy');
+        Route::get('/siswa/{siswa}/export-pdf', [SiswaController::class, 'exportPdf'])->name('siswa.exportPdf');
+        Route::get('/get-pdf-url/{siswa}', [SiswaController::class, 'getPdfUrl']);
+        Route::resource('data_bimbingan', DataBimbinganController::class);
 
     });
 
     // Route for admin only
-    Route::middleware([CheckRole::class.':admin'])->group(function () {
+    Route::middleware([CheckRole::class . ':admin'])->group(function () {
         Route::get('/dashboard', function () {
             return Inertia::render('Dashboard');
         })->name('dashboard');
@@ -75,4 +87,4 @@ Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware(['auth'])
     ->name('logout');
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
