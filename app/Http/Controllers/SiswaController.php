@@ -18,7 +18,6 @@ class SiswaController extends Controller
         $search = $request->input('search', '');
 
         $siswa = Siswa::where('nama', 'like', "%$search%")
-            ->orWhere('email', 'like', "%$search%")
             ->get();
 
         return Inertia::render('AdminSiswa/Index', [
