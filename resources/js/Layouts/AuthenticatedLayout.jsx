@@ -141,6 +141,15 @@ export default function Authenticated({ user, header, children }) {
                                     pendaftaran
                                 </NavLink>
                             </li>
+                            <li>
+                                <NavLink
+                                    href={route("pembayaran.index")}
+                                    active={route().current("pembayaran.index")}
+                                    className="block px-4 py-2 rounded-lg hover:bg-gray-200"
+                                >
+                                    pembayaran
+                                </NavLink>
+                            </li>
                         </ul>
                     </div>
                 </div>
