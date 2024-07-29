@@ -67,7 +67,7 @@ const Create = ({ program_bimbingan }) => {
             </div>
             <form onSubmit={handleSubmit} encType="multipart/form-data">
                 {/* Personal Information */}
-                <fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-indigo-50">
+                <fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-purple-50">
                     <legend className="text-xl font-semibold mb-4 text-indigo-700">Informasi Pribadi</legend>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {[
@@ -111,7 +111,7 @@ const Create = ({ program_bimbingan }) => {
                 </fieldset>
 
                 {/* School Information */}
-                <fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-indigo-50">
+                <fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-yellow-50">
                     <legend className="text-xl font-semibold mb-4 text-indigo-700">Informasi Sekolah</legend>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {[

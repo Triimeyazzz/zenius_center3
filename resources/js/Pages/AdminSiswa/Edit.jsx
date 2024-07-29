@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useForm } from '@inertiajs/inertia-react';
 
@@ -141,20 +140,20 @@ const Edit = ({ program_bimbingan, siswa }) => {
                     </div>
                 </fieldset>
 
-                {/* Parents' Information */}
+                {/* Parent Information */}
                 <fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-indigo-50">
                     <legend className="text-xl font-semibold mb-4 text-indigo-700">Informasi Orang Tua</legend>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {[
                             { label: 'Nama Ayah', name: 'nama_ayah', type: 'text' },
                             { label: 'Pekerjaan Ayah', name: 'pekerjaan_ayah', type: 'text' },
-                            { label: 'No. Telepon HP Ayah', name: 'no_telp_hp_ayah', type: 'text' },
-                            { label: 'No. WA/ID LINE Ayah', name: 'no_wa_id_line_ayah', type: 'text' },
+                            { label: 'Nomor HP Ayah', name: 'no_telp_hp_ayah', type: 'text' },
+                            { label: 'ID Line/WA Ayah', name: 'no_wa_id_line_ayah', type: 'text' },
                             { label: 'Email Ayah', name: 'email_ayah', type: 'email' },
                             { label: 'Nama Ibu', name: 'nama_ibu', type: 'text' },
                             { label: 'Pekerjaan Ibu', name: 'pekerjaan_ibu', type: 'text' },
-                            { label: 'No. Telepon HP Ibu', name: 'no_telp_hp_ibu', type: 'text' },
-                            { label: 'No. WA/ID LINE Ibu', name: 'no_wa_id_line_ibu', type: 'text' },
+                            { label: 'Nomor HP Ibu', name: 'no_telp_hp_ibu', type: 'text' },
+                            { label: 'ID Line/WA Ibu', name: 'no_wa_id_line_ibu', type: 'text' },
                             { label: 'Email Ibu', name: 'email_ibu', type: 'email' }
                         ].map(({ label, name, type }) => (
                             <div className="mb-4" key={name}>
@@ -173,55 +172,54 @@ const Edit = ({ program_bimbingan, siswa }) => {
                     </div>
                 </fieldset>
 
-                {/* Program Bimbingan */}
+                {/* Program Bimbingan and Foto */}
                 <fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-indigo-50">
-                    <legend className="text-xl font-semibold mb-4 text-indigo-700">Program Bimbingan</legend>
-                    <div className="mb-4">
-                        <label htmlFor="id_program_bimbingan" className="block text-sm font-medium text-gray-700 mb-1">Program Bimbingan</label>
-                        <select
-                            id="id_program_bimbingan"
-                            name="id_program_bimbingan"
-                            value={data.id_program_bimbingan || ''}
-                            onChange={handleChange}
-                            className="w-full p-3 border border-indigo-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        >
-                            <option value="">Pilih Program Bimbingan</option>
-                            {program_bimbingan.map(program => (
-                                <option key={program.id} value={program.id}>{program.nama}</option>
-                            ))}
-                        </select>
-                        {errors.id_program_bimbingan && <div className="text-red-600 text-sm mt-1">{errors.id_program_bimbingan}</div>}
+                    <legend className="text-xl font-semibold mb-4 text-indigo-700">Program Bimbingan & Foto</legend>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="mb-4">
+                            <label htmlFor="id_program_bimbingan" className="block text-sm font-medium text-gray-700 mb-1">Program Bimbingan</label>
+                            <select
+                                id="id_program_bimbingan"
+                                name="id_program_bimbingan"
+                                value={data.id_program_bimbingan}
+                                onChange={handleChange}
+                                className="w-full p-3 border border-indigo-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            >
+                                {program_bimbingan.map((program) => (
+                                    <option key={program.id} value={program.id}>{program.nama}</option>
+                                ))}
+                            </select>
+                            {errors.id_program_bimbingan && <div className="text-red-600 text-sm mt-1">{errors.id_program_bimbingan}</div>}
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="foto" className="block text-sm font-medium text-gray-700 mb-1">Foto</label>
+                            <input
+                                id="foto"
+                                name="foto"
+                                type="file"
+                                onChange={handleChange}
+                                className="w-full p-3 border border-indigo-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
+                            {errors.foto && <div className="text-red-600 text-sm mt-1">{errors.foto}</div>}
+                            {fotoPreview && (
+                                <img
+                                    src={fotoPreview}
+                                    alt="Foto Preview"
+                                    className="mt-4 max-h-64 w-full object-cover rounded-md shadow-md"
+                                />
+                            )}
+                        </div>
                     </div>
                 </fieldset>
 
-                {/* Foto */}
-                <fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-indigo-50">
-                    <legend className="text-xl font-semibold mb-4 text-indigo-700">Foto</legend>
-                    <div className="mb-4">
-                        <label htmlFor="foto" className="block text-sm font-medium text-gray-700 mb-1">Foto</label>
-                        <input
-                            id="foto"
-                            name="foto"
-                            type="file"
-                            accept="image/*"
-                            onChange={handleChange}
-                            className="w-full p-3 border border-indigo-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        />
-                        {fotoPreview && (
-                            <img src={fotoPreview} alt="Preview" className="mt-4 w-32 h-32 object-cover rounded-md" />
-                        )}
-                        {errors.foto && <div className="text-red-600 text-sm mt-1">{errors.foto}</div>}
-                    </div>
-                </fieldset>
-
-                {/* Submit Button */}
                 <div className="text-center">
                     <button
                         type="submit"
-                        className={`px-6 py-3 text-white font-semibold rounded-md focus:outline-none ${isSubmitting ? 'bg-gray-500' : 'bg-indigo-600 hover:bg-indigo-700'}`}
+                        className={`w-full p-3 bg-indigo-600 text-white rounded-md shadow-md ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500'}`}
                         disabled={isSubmitting}
                     >
-                        {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
+                        {isSubmitting ? 'Updating...' : 'Update Siswa'}
                     </button>
                 </div>
             </form>

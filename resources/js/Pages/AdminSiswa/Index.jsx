@@ -86,7 +86,7 @@ const Index = ({ siswa, auth }) => {
                                 </tr>
                             ) : (
                                 siswa.map((item) => (
-                                    <tr key={item.id}>
+                                    <tr key={item.id} className="hover:bg-gray-100">
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <img src={`storage/${item.foto}`} alt={item.nama} className="w-16 h-16 object-cover rounded-full border-2 border-gray-200" />
                                         </td>
@@ -94,14 +94,14 @@ const Index = ({ siswa, auth }) => {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.email}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.program_bimbingan}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <a href={route('adminsiswa.edit', item.id)} className="text-blue-600 hover:text-blue-900 mr-4">Edit</a>
+                                            <a href={route('adminsiswa.edit', item.id)} className="text-purple-600 hover:text-purple-900 mr-4">Edit</a>
+                                            <a href={route('adminsiswa.show', item.id)} className="text-purple-600 hover:text-purple-900 mr-4">Show</a>
                                             <button
                                                 onClick={() => openModal(item.id)}
                                                 className="btn btn-danger inline-block px-4 py-2 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out"
                                             >
                                                 Hapus
                                             </button>
-                                            <a href={route('adminsiswa.show', item.id)} className="text-blue-600 hover:text-blue-900 ml-4">Show</a>
                                         </td>
                                     </tr>
                                 ))

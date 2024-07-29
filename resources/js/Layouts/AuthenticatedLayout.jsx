@@ -5,33 +5,22 @@ import NavLink from "@/Components/NavLink";
 import { Helmet } from "react-helmet";
 
 export default function Authenticated({ user, header, children }) {
-    const [showingNavigationDropdown, setShowingNavigationDropdown] =
-        useState(false);
+    const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
         <div className="flex bg-gray-100 min-h-screen">
             <Helmet>
                 <title>NewPrimagama Fatmawati</title>
-                <meta
-                    name="description"
-                    content="Bimble Terbaik di Indonesia"
-                />
-                <link
-                    rel="shortcut icon"
-                    href="/images/Reverse.png"
-                    type="image/x-icon"
-                />
+                <meta name="description" content="Bimble Terbaik di Indonesia" />
+                <link rel="shortcut icon" href="/images/Reverse.png" type="image/x-icon" />
             </Helmet>
+            
+            {/* Sidebar */}
             <nav className="bg-white w-64 h-screen border-r border-gray-200 flex flex-col fixed">
                 <div className="flex items-center justify-center h-16 border-b border-gray-200">
-                <Link href="/">
-    <img
-        src="/images/Logo color.png"  // Correct path
-        alt="logo"
-        className="h-8 w-auto"
-    />
-</Link>
-
+                    <Link href="/">
+                        <img src="/images/Logo color.png" alt="logo" className="h-8 w-auto" />
+                    </Link>
                 </div>
                 <div className="flex-1 overflow-y-auto">
                     <div className="border-t border-gray-200">
@@ -43,9 +32,7 @@ export default function Authenticated({ user, header, children }) {
                                             type="button"
                                             className="inline-flex items-center w-full px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:text-gray-900 focus:outline-none transition ease-in-out duration-150"
                                         >
-                                            {user && user.name
-                                                ? user.name
-                                                : "Guest"}
+                                            {user && user.name ? user.name : "Guest"}
                                             <svg
                                                 className="ml-auto h-4 w-4 transform transition-transform duration-200"
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -62,16 +49,8 @@ export default function Authenticated({ user, header, children }) {
                                     </span>
                                 </Dropdown.Trigger>
                                 <Dropdown.Content>
-                                    <Dropdown.Link href={route("profile.edit")}>
-                                        Profile
-                                    </Dropdown.Link>
-                                    <Dropdown.Link
-                                        href={route("logout")}
-                                        method="post"
-                                        as="button"
-                                    >
-                                        Log Out
-                                    </Dropdown.Link>
+                                    <Dropdown.Link href={route("profile.edit")}>Profile</Dropdown.Link>
+                                    <Dropdown.Link href={route("logout")} method="post" as="button">Log Out</Dropdown.Link>
                                 </Dropdown.Content>
                             </Dropdown>
                         </div>
@@ -111,7 +90,7 @@ export default function Authenticated({ user, header, children }) {
                                     active={route().current("program-bimbingan.index")}
                                     className="block px-4 py-2 rounded-lg hover:bg-gray-200"
                                 >
-                                    Program_Bimbingan
+                                    Program Bimbingan
                                 </NavLink>
                             </li>
                             <li>
@@ -132,10 +111,21 @@ export default function Authenticated({ user, header, children }) {
                                     Data Bimbingan
                                 </NavLink>
                             </li>
+                            <li>
+                                <NavLink
+                                    href={route("try_out.index")}
+                                    active={route().current("try_out.index")}
+                                    className="block px-4 py-2 rounded-lg hover:bg-gray-200"
+                                >
+                                    Data Try Out
+                                </NavLink>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </nav>
+
+            {/* Main content area */}
             <div className="flex-1 flex flex-col ml-64">
                 {header && (
                     <header className="bg-white shadow">

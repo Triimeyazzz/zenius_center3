@@ -168,5 +168,4 @@ class SiswaController extends Controller
 
         return redirect()->back()->with('status', 'PDF belum siap.');
     }
-
     }

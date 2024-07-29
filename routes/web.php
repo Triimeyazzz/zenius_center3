@@ -16,6 +16,8 @@ use App\Http\Controllers\ProgramBimbinganController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\DataBimbinganController;
 use App\Http\Controllers\TryOutController;
+use App\Models\Siswa;
+use App\Models\ProgramBimbingan;
 
 Route::get('/', function () {
     return redirect('/Home');
@@ -51,21 +53,35 @@ Route::middleware('auth')->group(function () {
 
         Route::resource('program-bimbingan', ProgramBimbinganController::class);
 
-        Route::resource('try-out', TryOutController::class);
-        
-        
+
+        Route::get('/try_out', [TryOutController::class, 'index'])->name('try_out.index');
+        Route::get('/try_out/{siswa}', [TryOutController::class, 'show']);
+        Route::post('/try_out', [TryOutController::class, 'store']);
+        Route::delete('/try_out/{id}', [TryOutController::class, 'destroy'])->name('try_out.destroy');
+
 
         Route::get('/adminsiswa', [SiswaController::class, 'index'])->name('adminsiswa.index');
         Route::get('/adminsiswa/create', [SiswaController::class, 'create'])->name('adminsiswa.create');
         Route::post('/adminsiswa', [SiswaController::class, 'store'])->name('adminsiswa.store');
         Route::get('/adminsiswa/{siswa}/show', [SiswaController::class, 'show'])->name('adminsiswa.show');
-        Route::get('/adminsiswa/{siswa}/edit', [SiswaController::class, 'edit'])->name('adminsiswa.edit');
+        // routes/web.php
+
+        Route::get('/edit-siswa/{id}', function ($id) {
+            // Assuming you have a method to get the siswa and program_bimbingan data
+            $siswa = Siswa::findOrFail($id);
+            $program_bimbingan = ProgramBimbingan::all();
+
+            return Inertia::render('AdminSiswa/Edit', [
+                'siswa' => $siswa,
+                'program_bimbingan' => $program_bimbingan,
+            ]);
+        })->name('adminsiswa.edit');
         Route::put('/adminsiswa/{siswa}', [SiswaController::class, 'update'])->name('adminsiswa.update');
         Route::delete('/adminsiswa/{siswa}', [SiswaController::class, 'destroy'])->name('adminsiswa.destroy');
         Route::get('/siswa/{siswa}/export-pdf', [SiswaController::class, 'exportPdf'])->name('siswa.exportPdf');
         Route::get('/get-pdf-url/{siswa}', [SiswaController::class, 'getPdfUrl']);
-        Route::resource('data_bimbingan', DataBimbinganController::class);
 
+        Route::resource('data_bimbingan', DataBimbinganController::class);
     });
 
     // Route for admin only
