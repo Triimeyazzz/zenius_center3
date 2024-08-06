@@ -2,13 +2,20 @@ import React from "react";
 import { Link } from "@inertiajs/inertia-react";
 
 const Footer = () => {
+    const phoneNumber = "62818936487"; // Nomor WhatsApp tanpa karakter '+'
+    const message = "Halo aku sudah melihat Penawaran yang ada dan aku sangat tertarik dengan New Primagama Fatmawati"; // Pesan yang ingin dikirim
+
+    // Membuat URL WhatsApp dengan nomor telepon dan pesan
+    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+        message
+    )}`;
     return (
         <footer className="bg-gradient-to-r from-purple-950 to-blue-800 text-white py-8 mt-2">
             <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
                 <div className="mb-6 md:mb-0 text-center md:text-left">
                     <Link href="/Home">
                         <img
-                            src="images/Logo White.png"
+                            src="/images/Logo White.png"
                             className="h-11 mx-auto md:mx-0"
                             alt="Company Logo"
                         />
@@ -73,6 +80,7 @@ const Footer = () => {
                                 <a
                                     href="mailto:info@company.com"
                                     className="hover:text-gray-400"
+                                    target="_blank"
                                 >
                                     example@example.com
                                 </a>
@@ -80,8 +88,9 @@ const Footer = () => {
                             <li>
                                 Nomor Telpon:{" "}
                                 <a
-                                    href="tel:+62818936487"
-                                    className="hover:text-gray-400"
+                                href={url}
+                                className="hover:text-gray-400"
+                                    target="_blank"
                                 >
                                     +62818-9364-87
                                 </a>

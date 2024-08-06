@@ -77,6 +77,14 @@ const Navbar = () => {
                             >
                                 Contact
                             </NavLink>
+                            <NavLink
+                                className='text-yellow-400 hover:text-yellow-200'
+                                href="/login"
+                                active={route().current('Login')}
+                                onClick={closeNavbar}
+                            >
+                                Login
+                            </NavLink>
                             <NavLink component={NotFound} /> {/* Route untuk halaman 404 */}
 
                         </div>

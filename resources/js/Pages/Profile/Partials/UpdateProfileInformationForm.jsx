@@ -82,6 +82,8 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                             </div>
                         )}
                     </div>
+                
+
                 )}
 
                 <div className="flex items-center gap-4">
