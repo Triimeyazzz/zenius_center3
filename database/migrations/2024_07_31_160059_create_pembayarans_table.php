@@ -14,17 +14,13 @@ return new class extends Migration
         Schema::create('pembayarans', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->decimal('total_amount', 10, 2);
+            $table->decimal('total_amount');
             $table->enum('payment_type', ['cash', 'installment']);
             $table->decimal('remaining_amount', 10, 2)->nullable();
             $table->date('due_date')->nullable();
             $table->unsignedBigInteger('siswa_id');
             $table->decimal('jumlah', 8, 2);
-            $table->enum('status', ['pending', 'selesai', 'batal']);
-            $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('siswa_id')->references('id')->on('siswa')->onDelete('cascade');
+             $table->timestamps();
         });
     }
 
@@ -33,11 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('pembayarans', function (Blueprint $table) {
-            $table->dropForeign(['siswa_id']);
-            $table->dropForeign(['user_id']);
-        });
-
         Schema::dropIfExists('pembayarans');
     }
 };
