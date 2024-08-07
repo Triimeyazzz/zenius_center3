@@ -13,8 +13,6 @@ class DataBimbingan extends Model
     
     protected $fillable = [
         'id_siswa',
-        'id_program_bimbingan',
-        'kelas',
         'mulai_bimbingan',
         'jam_bimbingan',
         'hari_bimbingan',
@@ -39,4 +37,5 @@ class DataBimbingan extends Model
     {
         return $this->belongsTo(ProgramBimbingan::class, 'id_program_bimbingan');
     }
+    
 }

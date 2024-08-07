@@ -18,6 +18,10 @@ use App\Http\Controllers\DataBimbinganController;
 use App\Http\Controllers\TryOutController;
 use App\Models\Siswa;
 use App\Models\ProgramBimbingan;
+use App\Http\Controllers\Auth\SiswaLoginController;
+use App\Http\Controllers\SiswaDashboardController;
+use App\Http\Controllers\PresentController;
+use App\Http\Controllers\AbsensiController;
 
 Route::get('/', function () {
     return redirect('/Home');
@@ -42,6 +46,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard/count', [DashboardController::class, 'count']);
+        Route::get('/dashboard/data', [DashboardController::class, 'data']);
 
         Route::get('users', [UserController::class, 'index'])->name('users.index');
         Route::get('users/create', [UserController::class, 'create'])->name('users.create');
@@ -54,34 +61,49 @@ Route::middleware('auth')->group(function () {
         Route::resource('program-bimbingan', ProgramBimbinganController::class);
 
 
-        Route::get('/try_out', [TryOutController::class, 'index'])->name('try_out.index');
-        Route::get('/try_out/{siswa}', [TryOutController::class, 'show']);
-        Route::post('/try_out', [TryOutController::class, 'store']);
-        Route::delete('/try_out/{id}', [TryOutController::class, 'destroy'])->name('try_out.destroy');
-
+        Route::get('tryout', [TryOutController::class, 'index'])->name('tryout.index');
+        Route::get('tryout/{siswa}/progress', [TryOutController::class, 'progress'])->name('tryout.progress');
+        Route::get('tryout/{siswa}/create', [TryOutController::class, 'create'])->name('tryout.create');
+        Route::post('tryout/{siswa}', [TryOutController::class, 'store'])->name('tryout.store');
+        Route::delete('/tryout/{id}', [TryOutController::class, 'destroy'])->name('tryout.destroy');
 
         Route::get('/adminsiswa', [SiswaController::class, 'index'])->name('adminsiswa.index');
         Route::get('/adminsiswa/create', [SiswaController::class, 'create'])->name('adminsiswa.create');
         Route::post('/adminsiswa', [SiswaController::class, 'store'])->name('adminsiswa.store');
         Route::get('/adminsiswa/{siswa}/show', [SiswaController::class, 'show'])->name('adminsiswa.show');
         // routes/web.php
-
         Route::get('/edit-siswa/{id}', function ($id) {
-            // Assuming you have a method to get the siswa and program_bimbingan data
             $siswa = Siswa::findOrFail($id);
             $program_bimbingan = ProgramBimbingan::all();
-
+        
             return Inertia::render('AdminSiswa/Edit', [
                 'siswa' => $siswa,
                 'program_bimbingan' => $program_bimbingan,
             ]);
         })->name('adminsiswa.edit');
+        
         Route::put('/adminsiswa/{siswa}', [SiswaController::class, 'update'])->name('adminsiswa.update');
         Route::delete('/adminsiswa/{siswa}', [SiswaController::class, 'destroy'])->name('adminsiswa.destroy');
         Route::get('/siswa/{siswa}/export-pdf', [SiswaController::class, 'exportPdf'])->name('siswa.exportPdf');
         Route::get('/get-pdf-url/{siswa}', [SiswaController::class, 'getPdfUrl']);
+        Route::get('/adminsiswa/count', [SiswaController::class, 'count']);
 
         Route::resource('data_bimbingan', DataBimbinganController::class);
+
+        Route::get('databimbingan', [DataBimbinganController::class, 'index'])->name('databimbingan.index');
+        Route::get('databimbingan/create', [DataBimbinganController::class, 'create'])->name('databimbingan.create');
+        Route::post('databimbingan', [DataBimbinganController::class, 'store'])->name('databimbingan.store');
+        Route::get('databimbingan/{id}/edit', [DataBimbinganController::class, 'edit'])->name('databimbingan.edit');
+        Route::put('databimbingan/{id}', [DataBimbinganController::class, 'update'])->name('databimbingan.update');
+        Route::delete('/databimbingan/{id}', [DataBimbinganController::class, 'destroy'])->name('databimbingan.destroy');
+
+        Route::resource('absensi', AbsensiController::class);
+
+        Route::get('absensi', [AbsensiController::class, 'index'])->name('absensi.index');
+        Route::get('absensi/create', [AbsensiController::class, 'create'])->name('absensi.create');
+        Route::post('absensi', [AbsensiController::class, 'store'])->name('absensi.store');
+        Route::delete('/absensi/{id}', [AbsensiController::class, 'destroy'])->name('absensi.destroy');
+
     });
 
     // Route for admin only
@@ -102,5 +124,15 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])
 Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware(['auth'])
     ->name('logout');
+
+Route::middleware(['auth:siswa'])->group(function () {
+    // Dashboard siswa
+    Route::get('/siswa/dashboard', [SiswaDashboardController::class, 'index'])->name('siswa.dashboard');
+
+
+    Route::get('/siswa/edit', [SiswaController::class, 'edit'])->name('siswa.edit');
+    Route::post('/siswa/update', [SiswaController::class, 'update'])->name('siswa.update');
+});
+
 
 require __DIR__ . '/auth.php';

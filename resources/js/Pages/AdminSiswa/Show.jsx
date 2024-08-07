@@ -1,7 +1,103 @@
 import React from 'react';
-import { Link } from '@inertiajs/react';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const Show = ({ siswa }) => {
+    const exportToPDF = () => {
+        const doc = new jsPDF();
+        doc.setFontSize(16);
+
+        // Title
+        doc.setFontSize(22);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Detail Siswa', 14, 20);
+        doc.setFont('helvetica', 'normal');
+
+        // Header
+        doc.setFontSize(14);
+        doc.setTextColor(100);
+        doc.text('Informasi Siswa', 14, 40);
+
+        // Student Information
+        const studentData = [
+            ['Nama', siswa.nama],
+            ['Email', siswa.email],
+            ['Jenis Kelamin', siswa.jenis_kelamin],
+            ['Tempat Lahir', siswa.tempat_lahir],
+            ['Tanggal Lahir', new Date(siswa.tanggal_lahir).toLocaleDateString()],
+            ['Alamat', siswa.alamat],
+            ['Kota', siswa.kota],
+        ];
+        doc.autoTable({
+            startY: 50,
+            body: studentData,
+            theme: 'striped',
+            headStyles: { fillColor: [0, 0, 255] },
+            styles: { cellPadding: 5, fontSize: 12, lineColor: [0, 0, 0], lineWidth: 0.1 },
+            margin: { horizontal: 10 },
+            columnStyles: { text: { cellPadding: 3, fontSize: 12, lineWidth: 0.1 } },
+        });
+
+        // School Information
+        doc.setTextColor(100);
+        doc.text('Informasi Sekolah', 14, doc.lastAutoTable.finalY + 10);
+        const schoolData = [
+            ['Nama Sekolah', siswa.nama_sekolah],
+            ['Alamat Sekolah', siswa.alamat_sekolah],
+            ['Kurikulum', siswa.kurikulum],
+        ];
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 20,
+            body: schoolData,
+            theme: 'striped',
+            headStyles: { fillColor: [0, 255, 0] },
+            styles: { cellPadding: 5, fontSize: 12, lineColor: [0, 0, 0], lineWidth: 0.1 },
+            margin: { horizontal: 10 },
+            columnStyles: { text: { cellPadding: 3, fontSize: 12, lineWidth: 0.1 } },
+        });
+
+        // Parent Information
+        doc.setTextColor(100);
+        doc.text('Informasi Orang Tua', 14, doc.lastAutoTable.finalY + 10);
+        const parentData = [
+            ['Nama Ayah', siswa.nama_ayah],
+            ['Nama Ibu', siswa.nama_ibu],
+            ['Pekerjaan Ayah', siswa.pekerjaan_ayah || 'Tidak tersedia'],
+            ['No Telp / HP Ayah', siswa.no_telp_hp_ayah || 'Tidak tersedia'],
+            ['No WA / ID Line Ayah', siswa.no_wa_id_line_ayah || 'Tidak tersedia'],
+            ['Email Ayah', siswa.email_ayah || 'Tidak tersedia'],
+            ['Pekerjaan Ibu', siswa.pekerjaan_ibu || 'Tidak tersedia'],
+            ['No Telp / HP Ibu', siswa.no_telp_hp_ibu || 'Tidak tersedia'],
+            ['No WA / ID Line Ibu', siswa.no_wa_id_line_ibu || 'Tidak tersedia'],
+            ['Email Ibu', siswa.email_ibu || 'Tidak tersedia'],
+        ];
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 20,
+            body: parentData,
+            theme: 'striped',
+            headStyles: { fillColor: [255, 200, 0] },
+            styles: { cellPadding: 5, fontSize: 12, lineColor: [0, 0, 0], lineWidth: 0.1 },
+            margin: { horizontal: 10 },
+            columnStyles: { text: { cellPadding: 3, fontSize: 12, lineWidth: 0.1 } },
+        });
+
+        // Add photo if available
+        if (siswa.foto) {
+            doc.addPage();
+            doc.setFontSize(14);
+            doc.text('Foto Siswa:', 14, 20);
+            const imgData = `/storage/${siswa.foto}`; // Pastikan ini adalah URL yang valid
+            const img = new Image();
+            img.src = imgData;
+            img.onload = () => {
+                doc.addImage(imgData, 'JPEG', 14, 30, 180, 160); // Sesuaikan posisi dan ukuran gambar
+                doc.save(`Detail_Siswa_${siswa.nama}.pdf`);
+            };
+        } else {
+            doc.save(`Detail_Siswa_${siswa.nama}.pdf`);
+        }
+    };
+
     return (
         <div className="container mx-auto p-8">
             <h1 className="text-3xl font-bold mb-6 text-gray-800">Detail Siswa</h1>
@@ -87,21 +183,25 @@ const Show = ({ siswa }) => {
                     </div>
                 </div>
 
-                {/* Photo */}
+                {/* Photo Section */}
                 {siswa.foto && (
-                    <div className="p-6 border-t border-gray-200 bg-gray-50">
-                        <strong className="text-gray-600">Foto:</strong>
-                        <div className="mt-2">
-                            <img src={`/storage/${siswa.foto}`} alt="Foto Siswa" className="w-full max-w-xs h-auto object-cover rounded-lg shadow-md" />
+                    <div className="p-6 bg-gray-100">
+                        <h2 className="text-2xl font-semibold mb-4 text-gray-700">Foto Siswa</h2>
+                        <div className="flex justify-center">
+                            <img src={`/storage/${siswa.foto}`} alt="Foto Siswa" className="w-48 h-48 object-cover rounded-lg" />
                         </div>
                     </div>
                 )}
-            </div>
 
-            <div className="mt-6 flex justify-between items-center">
-                <Link href={route('adminsiswa.index')} className="text-blue-500 hover:underline text-lg">Kembali ke Daftar Siswa</Link>
-                <a href={route('adminsiswa.edit', siswa.id)} className="text-blue-500 hover:underline text-lg">Edit Siswa</a>
-                <a href={route('siswa.exportPdf', siswa.id)} className="text-blue-500 hover:underline text-lg">Export to PDF</a>
+                <div className="p-6 text-center">
+                    <button
+                        onClick={exportToPDF}
+                        className="bg-purple-500 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-600"
+                    >
+                        Export to PDF
+                    </button>
+                    <a href={route('adminsiswa.index')} className="ml-2 bg-purple-500 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-600">Kembali</a>
+                </div>
             </div>
         </div>
     );

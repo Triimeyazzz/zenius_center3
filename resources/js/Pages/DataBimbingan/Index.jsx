@@ -1,29 +1,31 @@
-
 import React, { useState, useEffect } from "react";
-import { Link } from "@inertiajs/inertia-react";
+import { Inertia } from "@inertiajs/inertia";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import DeleteConfirmationModal from "@/Components/DeleteConfirmationModal"; // Adjust the path as needed
-import axios from "axios";
-
-const kelasOptions = [
-    '4SD', '5SD', '6SD', '7SMP', '8SMP', '9SMP', '10SMA', '11SMA', '12SMA', 'Persiapan UTBK'
-];
+import DeleteConfirmationModal from "@/Components/DeleteConfirmationModal";
 
 export default function Index({
     siswa = [],
-    programBimbingans = [],
+    programBimbingan = [],
     dataBimbingan = [],
     auth,
+    kelas_options = [],
 }) {
     const [selectedKelas, setSelectedKelas] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
+    const [siswaNames, setSiswaNames] = useState({});
 
     useEffect(() => {
         console.log('Siswa:', siswa);
-        console.log('Program Bimbingans:', programBimbingans);
+        console.log('Program Bimbingans:', programBimbingan);
         console.log('Data Bimbingan:', dataBimbingan);
-    }, [siswa, programBimbingans, dataBimbingan]);
+
+        const siswaNamesMap = siswa.reduce((map, siswa) => {
+            map[siswa.id] = siswa.nama;
+            return map;
+        }, {});
+        setSiswaNames(siswaNamesMap);
+    }, [siswa, programBimbingan, dataBimbingan]);
 
     const handleFilterChange = (event) => {
         setSelectedKelas(event.target.value);
@@ -36,21 +38,19 @@ export default function Index({
     };
 
     const handleDelete = () => {
-        axios.delete(`/databimbingan/${itemToDelete.id}`)
-            .then(response => {
-                if (response.status === 200) {
-                    window.location.reload();
-                }
-            })
-            .catch(error => {
-                console.error('There was an error deleting the item:', error);
-                alert('Gagal menghapus data. Cek console untuk detail.');
-            })
-            .finally(() => {
+        console.log(`Attempting to delete item with ID: ${itemToDelete.id}`);
+        Inertia.delete(`/databimbingan/${itemToDelete.id}`, {
+            onSuccess: () => {
+                console.log('Item successfully deleted');
                 closeDeleteModal();
-            });
+            },
+            onError: (errors) => {
+                console.error('Error deleting item:', errors);
+                alert("Gagal menghapus siswa. Cek console untuk detail.");
+            }
+        });
     };
-    
+
     const closeDeleteModal = () => {
         setIsModalOpen(false);
         setItemToDelete(null);
@@ -75,23 +75,12 @@ export default function Index({
                             <div className="mb-4 flex items-center">
                                 <a
                                     href="/data_bimbingan/create"
-                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                    className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
                                 >
                                     Tambah Data Bimbingan
                                 </a>
                                 <div className="ml-4">
-                                    <select
-                                        value={selectedKelas}
-                                        onChange={handleFilterChange}
-                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                                    >
-                                        <option value="">Semua Kelas</option>
-                                        {kelasOptions.map((kelas) => (
-                                            <option key={kelas} value={kelas}>
-                                                {kelas}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    {/* Other content */}
                                 </div>
                             </div>
                             <div className="overflow-x-auto">
@@ -103,12 +92,6 @@ export default function Index({
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 Siswa
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Program Bimbingan
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Kelas
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 Mulai Bimbingan
@@ -136,19 +119,7 @@ export default function Index({
                                             </tr>
                                         ) : (
                                             dataBimbingan.map((item) => {
-                                                const siswaName =
-                                                    siswa.find(
-                                                        (s) =>
-                                                            s.id ===
-                                                            item.id_siswa
-                                                    )?.nama || "Unknown";
-                                                const programBimbinganName =
-                                                    programBimbingans.find(
-                                                        (p) =>
-                                                            p.id ===
-                                                            item.id_program_bimbingan
-                                                    )?.nama || "Unknown";
-                                                console.log('Finding program:', item.id_program_bimbingan, programBimbingans);
+                                                const siswaName = siswaNames[item.id_siswa] || "Unknown";
                                                 return (
                                                     <tr key={item.id}>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -156,12 +127,6 @@ export default function Index({
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                             {siswaName}
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                            {programBimbinganName}
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                            {item.kelas}
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                             {item.mulai_bimbingan}
@@ -173,7 +138,7 @@ export default function Index({
                                                             {Array.isArray(item.hari_bimbingan) ? item.hari_bimbingan.join(", ") : JSON.parse(item.hari_bimbingan).join(", ")}
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                            <a href={`/data_bimbingan/${item.id}/edit`} className="text-blue-600 hover:text-blue-900">
+                                                            <a href={`/data_bimbingan/${item.id}/edit`} className="text-purple-600 hover:text-purple-900">
                                                                 Edit
                                                             </a>
                                                             <button 
@@ -183,7 +148,7 @@ export default function Index({
                                                                 Delete
                                                             </button>
                                                         </td>
-                                                    </tr>                                        
+                                                    </tr>
                                                 );
                                             })
                                         )}

@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,9 +12,9 @@ return new class extends Migration
     {
         Schema::create('try_out', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_siswa')->constrained('siswa');
-            $table->string('mata_pelajaran');
-            $table->integer('skor');
+            $table->unsignedBigInteger('id_siswa');
+            $table->foreign('id_siswa')->references('id')->on('siswa')->onDelete('cascade');
+                        $table->string('mata_pelajaran');
             $table->date('tanggal_pelaksanaan');
             $table->timestamps();
         });

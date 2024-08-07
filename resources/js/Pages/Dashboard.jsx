@@ -1,49 +1,64 @@
 import { useState, useEffect } from 'react';
-import PrimaryButton from '@/Components/PrimaryButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import LineChart from '@/Components/LineChart';
 import ErrorBoundary from '@/Components/ErrorBoundary';
 import Loading from '@/Components/Loading';
 
-export default function Dashboard({ auth, totalAdmins, totalPetugas, totalSiswa, totalCourses }) {
-    console.log('Dashboard props:', { totalAdmins, totalPetugas, totalSiswa, totalCourses }); // Debugging line
-
-    const [studentData, setStudentData] = useState({
-        labels: [],
-        datasets: [
-            {
-                label: 'Number of Students',
-                data: [],
-                borderColor: '#7b1fa1',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            },
-        ],
+export default function Dashboard({ auth }) {
+    const [data, setData] = useState({
+        totalAdmins: null,
+        totalSiswa: null,
+        totalCourses: null,
+        admins: [],
+        siswa: [],
+        courses: [],
     });
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const fetchData = async () => {
-            // Static data for example
-            const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-            const data = [10, 70, 50, 20, 30, 80, 60, 70];
-            setStudentData({
-                labels,
-                datasets: [
-                    {
-                        label: 'Number of Students',
-                        data,
-                        borderColor: '#7b1fa1',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    },
-                ],
-            });
-            setIsLoading(false);
+        const fetchCountData = async () => {
+            try {
+                const response = await fetch('/dashboard/count');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const result = await response.json();
+                setData(prev => ({
+                    ...prev,
+                    totalAdmins: result.totalAdmins,
+                    totalSiswa: result.totalSiswa,
+                    totalCourses: result.totalCourses
+                }));
+            } catch (error) {
+                console.error('Error fetching count data:', error);
+            }
         };
-        
+
+        const fetchData = async () => {
+            try {
+                const response = await fetch('/dashboard/data');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const result = await response.json();
+                setData(prev => ({
+                    ...prev,
+                    admins: result.admins,
+                    siswa: result.siswa,
+                    courses: result.courses
+                }));
+            } catch (error) {
+                console.error('Error fetching detailed data:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchCountData();
         fetchData();
     }, []);
-    
+
     if (isLoading) {
         return <Loading />;
     }
@@ -52,39 +67,113 @@ export default function Dashboard({ auth, totalAdmins, totalPetugas, totalSiswa,
         <ErrorBoundary>
             <AuthenticatedLayout
                 user={auth.user}
-                header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Admin Dashboard</h2>}
+                header={<h2 className="font-semibold text-2xl text-gray-900">Admin Dashboard</h2>}
             >
                 <Head title="Dashboard" />
 
-                <div className="py-12">
-                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
-                            <div className="bg-white shadow overflow-hidden sm:rounded-lg p-4 hover:scale-105 hover:text-sky-400 hover:rotate-12 duration-300">
-                                <h3 className="text-lg font-medium text-gray-900">Total Admin</h3>
-                                <p className="text-gray-600">{totalAdmins || 'Loading...'}</p>
+                <div className="py-12 bg-gray-50">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 text-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl">
+                                <h3 className="text-lg font-semibold">Total Admin</h3>
+                                <p className="text-3xl font-bold mt-2">{data.totalAdmins !== null ? data.totalAdmins : 'Loading...'}</p>
+                                <a href="/users" className="text-yellow-300 mt-4 inline-block hover:underline">Lihat Lebih Banyak</a>
                             </div>
-                            <div className="bg-white shadow overflow-hidden sm:rounded-lg p-4 hover:scale-105 hover:text-sky-400 hover:-rotate-12 duration-300">
-                                <h3 className="text-lg font-medium text-gray-900">Total Siswa</h3>
-                                <p className="text-gray-600">{totalSiswa || 'Loading...'}</p>
+                            <div className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl">
+                                <h3 className="text-lg font-semibold">Total Siswa</h3>
+                                <p className="text-3xl font-bold mt-2">{data.totalSiswa !== null ? data.totalSiswa : 'Loading...'}</p>
+                                <a href="/adminsiswa" className="text-purple-300 mt-4 inline-block hover:underline">Lihat Lebih Banyak</a>
                             </div>
-                            <div className="bg-white shadow overflow-hidden sm:rounded-lg p-4 hover:scale-105 hover:text-sky-400 hover:rotate-12 duration-300">
-                                <h3 className="text-lg font-medium text-gray-900">Total Kursus</h3>
-                                <p className="text-gray-600">{totalCourses || 'Loading...'}</p>
-                            </div>
-                            <div className="bg-white shadow overflow-hidden sm:rounded-lg p-4 hover:scale-105 hover:text-sky-400 hover:-rotate-12 duration-300">
-                                <h3 className="text-lg font-medium text-gray-900">Total Petugas</h3>
-                                <p className="text-gray-600">{totalPetugas || 'Loading...'}</p>
+                            <div className="bg-gradient-to-r from-purple-300 via-purple-400 to-purple-500 text-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl">
+                                <h3 className="text-lg font-semibold">Total Kursus</h3>
+                                <p className="text-3xl font-bold mt-2">{data.totalCourses !== null ? data.totalCourses : 'Loading...'}</p>
+                                <a href="/program-bimbingan" className="text-yellow-300 mt-4 inline-block hover:underline">Lihat Lebih Banyak</a>
                             </div>
                         </div>
 
-                        <div className="mt-8">
-                            <LineChart data={studentData} />
+                       
+                        {/* Tables for Admins, Siswa, and Courses */}
+                        <div className="mt-12 space-y-8">
+                            <div>
+                                <h3 className="text-xl font-semibold text-gray-900 mb-4">Admins</h3>
+                                <div className="overflow-x-auto bg-white shadow-lg rounded-lg border border-gray-200">
+                                    <table className="min-w-full divide-y divide-gray-300">
+                                        <thead className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+                                            <tr>
+                                                <th className="px-6 py-3 text-left text-xs font-medium">ID</th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium">Name</th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium">Email</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                            {data.admins.slice(0, 5).map(admin => (
+                                                <tr key={admin.id}>
+                                                    <td className="px-6 py-4 text-sm text-gray-500">{admin.id}</td>
+                                                    <td className="px-6 py-4 text-sm text-gray-500">{admin.name}</td>
+                                                    <td className="px-6 py-4 text-sm text-gray-500">{admin.email}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                    <a href="/users" className="text-purple-600 hover:underline block text-center py-4">Lihat Lebih Banyak</a>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 className="text-xl font-semibold text-gray-900 mb-4">Siswa</h3>
+                                <div className="overflow-x-auto bg-white shadow-lg rounded-lg border border-gray-200">
+                                    <table className="min-w-full divide-y divide-gray-300">
+                                        <thead className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white">
+                                            <tr>
+                                                <th className="px-6 py-3 text-left text-xs font-medium">ID</th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium">Name</th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium">Email</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                            {data.siswa.slice(0, 5).map(siswa => (
+                                                <tr key={siswa.id}>
+                                                    <td className="px-6 py-4 text-sm text-gray-500">{siswa.id}</td>
+                                                    <td className="px-6 py-4 text-sm text-gray-500">{siswa.nama}</td>
+                                                    <td className="px-6 py-4 text-sm text-gray-500">{siswa.email}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                    <a href="/adminsiswa" className="text-yellow-600 hover:underline block text-center py-4">Lihat Lebih Banyak</a>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 className="text-xl font-semibold text-gray-900 mb-4">Program Bimbingan</h3>
+                                <div className="overflow-x-auto bg-white shadow-lg rounded-lg border border-gray-200">
+                                    <table className="min-w-full divide-y divide-gray-300">
+                                        <thead className="bg-gradient-to-r from-purple-600 to-purple-700 text-white">
+                                            <tr>
+                                                <th className="px-6 py-3 text-left text-xs font-medium">ID</th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium">Nama Program</th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium">Keuntungan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                            {data.courses.slice(0, 5).map(course => (
+                                                <tr key={course.id}>
+                                                    <td className="px-6 py-4 text-sm text-gray-500">{course.id}</td>
+                                                    <td className="px-6 py-4 text-sm text-gray-500">{course.nama_program}</td>
+                                                    <td className="px-6 py-4 text-sm text-gray-500">{course.keuntungan}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                    <a href="/program-bimbingan" className="text-purple-700 hover:underline block text-center py-4">Lihat Lebih Banyak</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <footer className="bg-white border-t border-gray-200 shadow py-8 px-4 sm:px-6 lg:px-8">
-                    <p className="text-center text-gray-500">
+                <footer className="bg-white border-t border-gray-200 shadow py-6 px-4 sm:px-6 lg:px-8 mt-12">
+                    <p className="text-center text-gray-500 text-sm">
                         &copy; 2024 Admin Dashboard - Made with ❤️ by Zema
                     </p>
                 </footer>

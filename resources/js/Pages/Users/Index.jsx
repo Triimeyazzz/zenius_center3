@@ -200,7 +200,7 @@ const Index = ({ users, roles, selectedRole, roleCounts, auth }) => {
                                     showCreateForm: !data.showCreateForm,
                                 })
                             }
-                            className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition duration-300"
+                            className="px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg shadow hover:bg-purple-700 transition duration-300"
                         >
                             {data.showCreateForm ? "Batal" : "Buat Pengguna Baru"}
                         </button>
@@ -208,7 +208,7 @@ const Index = ({ users, roles, selectedRole, roleCounts, auth }) => {
                     <div>
                         <input
                             type="text"
-                            placeholder="Search by name"
+                            placeholder="Cari..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="ml-4 p-2 border border-gray-300 rounded-md"
@@ -226,30 +226,24 @@ const Index = ({ users, roles, selectedRole, roleCounts, auth }) => {
                     />
                 )}
                 <div className="mb-6">
-                        <h2 className="text-2xl font-semibold mb-4">Admin Counts</h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                            {roles.map((role) => (
-                                <div
-                                    key={role}
-                                    className="bg-white shadow-lg rounded-lg p-6"
-                                >
-                                    <h3 className="text-lg font-medium text-gray-700 mb-2">
-                                        {role.charAt(0).toUpperCase() + role.slice(1)}
-                                    </h3>
-                                    <p className="text-3xl font-semibold text-indigo-600">
-                                        {roleCounts[role] || 0}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
+                    <h2 className="text-2xl font-semibold mb-4">Admin Counts</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {roles.map((role) => (
+                            <div
+                                key={role}
+                                className="bg-white shadow-lg rounded-lg p-6"
+                            >
+                                <h3 className="text-lg font-medium text-gray-700 mb-2">
+                                    {role.charAt(0).toUpperCase() + role.slice(1)}
+                                </h3>
+                                <p className="text-3xl font-semibold text-indigo-600">
+                                    {roleCounts[role] || 0}
+                                </p>
+                            </div>
+                        ))}
                     </div>
-                <div className="grid grid-cols-1 gap-4 ">
-                    <div className="bg-white p-4 rounded-lg shadow-md">
-                        <h2 className="text-2xl font-semibold mb-4">Admin List</h2>
-                        <UserList users={filteredUsers} />
-                    </div>
-                    
                 </div>
+                <UserList users={filteredUsers} />
             </div>
         </Authenticated>
     );

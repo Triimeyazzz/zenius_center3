@@ -28,10 +28,11 @@ export default function Authenticated({ user, header, children }) {
                             <Dropdown>
                                 <Dropdown.Trigger>
                                     <span className="inline-flex rounded-md w-full">
+                                    <img src={`storage/${user.profile_picture}`} alt={user.nama} className="w-16 h-16 object-cover rounded-full border-2 border-gray-200" />
                                         <button
                                             type="button"
                                             className="inline-flex items-center w-full px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:text-gray-900 focus:outline-none transition ease-in-out duration-150"
-                                        >
+                                        >                
                                             {user && user.name ? user.name : "Guest"}
                                             <svg
                                                 className="ml-auto h-4 w-4 transform transition-transform duration-200"
@@ -113,11 +114,20 @@ export default function Authenticated({ user, header, children }) {
                             </li>
                             <li>
                                 <NavLink
-                                    href={route("try_out.index")}
-                                    active={route().current("try_out.index")}
+                                    href={route("tryout.index")}
+                                    active={route().current("tryout.index")}
                                     className="block px-4 py-2 rounded-lg hover:bg-gray-200"
                                 >
                                     Data Try Out
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink
+                                    href={route("absensi.index")}
+                                    active={route().current("absensi.index")}
+                                    className="block px-4 py-2 rounded-lg hover:bg-gray-200"
+                                >
+                                    Data absensi
                                 </NavLink>
                             </li>
                         </ul>

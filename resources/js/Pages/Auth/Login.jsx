@@ -85,9 +85,6 @@ export default function Login({ status, canResetPassword }) {
                         >
                             Login
                         </button>
-                        <div className="mt-6 text-yellow-500 text-center">
-                            <a href="/register" className="hover:underline">Sign up Here</a>
-                        </div>
                     </form>
                 </div>
             </div>

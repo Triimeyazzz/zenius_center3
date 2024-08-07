@@ -1,18 +1,18 @@
 <?php
-
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
 
-class Siswa extends Model
+class Siswa extends Model implements Authenticatable
 {
-    use HasFactory;
+    use HasFactory, AuthenticatableTrait;
 
     protected $table = 'siswa';
 
-    protected $fillable = [ 
-        'id',
+    protected $fillable = [
         'nama',
         'email',
         'password',
@@ -20,7 +20,7 @@ class Siswa extends Model
         'tempat_lahir',
         'tanggal_lahir',
         'alamat',
-        'no_hp',
+        'no_telpon',
         'kota',
         'no_wa',
         'instagram',
@@ -38,6 +38,34 @@ class Siswa extends Model
         'no_wa_id_line_ibu',
         'email_ibu',
         'id_program_bimbingan',
-        'foto'
+        'foto',
+        'kelas' // Add this line
     ];
+    
+    protected $hidden = [
+        'password',
+    ];
+    
+
+    // Relasi Siswa ke TryOut
+    // app/Models/Siswa.php
+    public function tryOuts()
+    {
+    return $this->hasMany(TryOut::class, 'id_siswa'); // Adjust the foreign key if necessary
+    }
+
+    public function absensis()
+    {
+        return $this->hasMany(Absensi::class, 'siswa_id'); // Adjust the foreign key if necessary
+    }
+    
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($siswa) {
+            $siswa->tryOuts()->delete();
+            $siswa->absensis()->delete();
+        });
+    }
 }

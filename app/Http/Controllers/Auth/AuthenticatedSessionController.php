@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Hash; // Ensure this is included
+use App\Models\Siswa; // Add this line to use the Siswa model
+use Illuminate\Validation\ValidationException;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -29,28 +32,40 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        // Validate the request
+        $credentials = $request->only('email', 'password');
 
-        $request->session()->regenerate();
+        // Try to authenticate as User
+        if (Auth::guard('web')->attempt($credentials)) {
+            $user = Auth::guard('web')->user();
+            $redirectUrl = '';
 
-        $user = Auth::user();
-        $redirectUrl = '';
+            // Set redirect URL based on user role
+            switch ($user->role) {
+                case 'admin':
+                case 'petugas':
+                    $redirectUrl = route('dashboard');
+                    break;
+                default:
+                    $redirectUrl = route('Home'); // Fallback route
+                    break;
+            }
 
-        // Set redirect URL based on user role
-        switch ($user->role) {
-            case 'admin':
-            case 'petugas':
-                $redirectUrl = route('dashboard');
-                break;
-            case 'siswa':
-                $redirectUrl = route('siswa.dashboard'); // Ensure this route exists
-                break;
-            default:
-                $redirectUrl = route('Home'); // Fallback route
-                break;
+            return redirect()->intended($redirectUrl);
         }
 
-        return redirect()->intended($redirectUrl);
+        // Try to authenticate as Siswa
+        if ($siswa = Siswa::where('email', $request->email)->first()) {
+            if (Hash::check($request->password, $siswa->password)) {
+                Auth::guard('siswa')->login($siswa);
+                return redirect()->route('siswa.dashboard'); // Redirect to siswa's dashboard
+            }
+        }
+
+        // If authentication fails
+        throw ValidationException::withMessages([
+            'email' => __('The provided credentials do not match our records.'),
+        ]);
     }
 
     /**

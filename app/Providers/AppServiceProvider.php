@@ -23,5 +23,6 @@ class AppServiceProvider extends ServiceProvider
     {
         // Register middleware
         Route::middleware('role', CheckRole::class);
+        
     }
 }

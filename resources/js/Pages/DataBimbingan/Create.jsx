@@ -13,11 +13,7 @@ export default function Create({ siswas, programBimbingans }) {
 
     const [errors, setErrors] = useState({});
 
-    const kelasOptions = [
-        '4SD', '5SD', '6SD', '7SMP', '8SMP', '9SMP', 
-        '10SMA', '11SMA', '12SMA', 'Persiapan UTBK'
-    ];
-
+    
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm((prev) => ({
@@ -43,8 +39,7 @@ export default function Create({ siswas, programBimbingans }) {
                 // Handle successful form submission
                 setForm({
                     id_siswa: '',
-                    id_program_bimbingan: '',
-                    kelas: '',
+                    
                     mulai_bimbingan: '',
                     jam_bimbingan: '',
                     hari_bimbingan: [],
@@ -81,42 +76,6 @@ export default function Create({ siswas, programBimbingans }) {
                             ))}
                         </select>
                         {errors.id_siswa && <p className="text-red-500 text-sm">{errors.id_siswa}</p>}
-                    </label>
-                    <label className="block text-sm font-medium text-gray-700">
-                        Program Bimbingan
-                        <select
-                            name="id_program_bimbingan"
-                            value={form.id_program_bimbingan}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        >
-                            <option value="">Pilih Program Bimbingan</option>
-                            {programBimbingans.map((program) => (
-                                <option key={program.id} value={program.id}>
-                                    {program.nama}
-                                </option>
-                            ))}
-                        </select>
-                        {errors.id_program_bimbingan && <p className="text-red-500 text-sm">{errors.id_program_bimbingan}</p>}
-                    </label>
-                    <label className="block text-sm font-medium text-gray-700">
-                        Kelas
-                        <select
-                            name="kelas"
-                            value={form.kelas}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        >
-                            <option value="">Pilih Kelas</option>
-                            {kelasOptions.map((kelas) => (
-                                <option key={kelas} value={kelas}>
-                                    {kelas}
-                                </option>
-                            ))}
-                        </select>
-                        {errors.kelas && <p className="text-red-500 text-sm">{errors.kelas}</p>}
                     </label>
                     <label className="block text-sm font-medium text-gray-700">
                         Mulai Bimbingan

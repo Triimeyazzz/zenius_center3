@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('data_bimbingan', function (Blueprint $table) {
+        Schema::create('absensi', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_siswa');
-            $table->foreign('id_siswa')->references('id')->on('siswa')->onDelete('cascade');
-            $table->date('mulai_bimbingan');
-            $table->time('jam_bimbingan');
-            $table->json('hari_bimbingan');
+            $table->foreignId('siswa_id')->constrained('siswa')->onDelete('cascade');
+            $table->date('tanggal');
+            $table->enum('status', ['Hadir', 'Tidak Hadir'])->default('Hadir');
+            $table->string('keterangan')->nullable(); // Keterangan if not present
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('data_bimbingan');
+        Schema::dropIfExists('absensi');
     }
 };

@@ -15,7 +15,7 @@
   
   .loading-spinner {
     border: 16px solid #f3f3f3;
-    border-top: 16px solid #3498db;
+    border-top: 16px solid #7c34db;
     border-radius: 50%;
     width: 80px;
     height: 80px;
@@ -25,7 +25,7 @@
   .loading-text {
     margin-top: 16px;
     font-size: 18px;
-    color: #3498db;
+    color: #7c34db;
     font-weight: bold;
     text-transform: uppercase;
   }

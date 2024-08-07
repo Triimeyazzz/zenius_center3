@@ -1,61 +1,53 @@
 import React, { useState } from 'react';
-import { usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
-const Index = () => {
-    const { siswas, auth } = usePage().props;
-    const [search, setSearch] = useState('');
+const Index = ({ siswas, auth }) => {
+    const [searchTerm, setSearchTerm] = useState('');
 
-    // Filter the list of students based on the search input
-    const filteredSiswas = siswas.filter((siswa) =>
-        siswa.nama.toLowerCase().includes(search.toLowerCase())
+    const filteredSiswas = siswas.filter(siswa =>
+        siswa.nama.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={
-                <h2 className="font-semibold text-xl text-gray-800 leading-tight">Try Out</h2>
-            }
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Try Out</h2>}
         >
-            <div className="p-6 max-w-3xl mx-auto bg-white rounded-lg shadow-md">
-                <h1 className="text-3xl font-bold mb-6 text-gray-800">Pilih Siswa</h1>
+            <div className="p-6 bg-white shadow-md rounded-lg">
+                <h1 className="text-2xl font-bold mb-4 text-gray-800">Pilih Siswa</h1>
                 
                 {/* Search Bar */}
-                <div className="mb-6">
+                <div className="mb-4">
                     <input
                         type="text"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Cari nama siswa..."
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        placeholder="Cari Siswa..."
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
 
                 {/* Student List */}
-                <ul className="space-y-4">
-                    {filteredSiswas.length > 0 ? (
-                        filteredSiswas.map((siswa) => (
-                            <li key={siswa.id} className="flex items-center p-4 border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50">
-                                {/* Profile Picture */}
+                {filteredSiswas.length > 0 ? (
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {filteredSiswas.map(siswa => (
+                            <li key={siswa.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg shadow-sm">
+                                {/* Student Photo */}
                                 <img
-                                    src={siswa.foto ? `/storage/${siswa.foto}` : '/images/default-avatar.png'}
-                                    alt={`${siswa.nama}'s profile`}
-                                    className="w-16 h-w-16 rounded-lg mr-4 object-cover"
-                                    onError={(e) => e.target.src = '/images/default-avatar.png'}
+                                    src={`storage/fotos/${siswa.foto}`}
+                                    alt={siswa.nama}
+                                    className="w-16 h-16 object-cover rounded-full"
                                 />
-                                <a
-                                    href={`/try_out/${siswa.id}`}
-                                    className="text-lg font-medium text-purple-600 hover:underline"
-                                >
+                                {/* Student Name */}
+                                <a href={route('tryout.progress', siswa.id)} className="text-lg font-medium text-blue-600 hover:underline">
                                     {siswa.nama}
                                 </a>
                             </li>
-                        ))
-                    ) : (
-                        <li className="text-gray-500">Tidak ada siswa yang ditemukan</li>
-                    )}
-                </ul>
+                        ))}
+                    </ul>
+                ) : (
+                    <p className="text-gray-600">Tidak ada siswa yang ditemukan.</p>
+                )}
             </div>
         </AuthenticatedLayout>
     );

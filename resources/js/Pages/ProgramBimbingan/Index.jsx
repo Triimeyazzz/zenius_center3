@@ -53,7 +53,7 @@ const Index = ({ auth, programBimbingans }) => {
                             <h1 className="text-2xl font-bold mb-4">Program Bimbingan</h1>
                             <button 
                                 onClick={() => setIsFormVisible(!isFormVisible)} 
-                                className="btn btn-primary mb-4 inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                                className="btn btn-primary mb-4 inline-block px-6 py-2.5 bg-purple-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-purple-700 hover:shadow-lg focus:bg-purple-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-purple-800 active:shadow-lg transition duration-150 ease-in-out"
                             >
                                 {isFormVisible ? 'Tutup Formulir' : 'Tambah Program'}
                             </button>
@@ -84,7 +84,7 @@ const Index = ({ auth, programBimbingans }) => {
                                             <button 
                                                 type="submit" 
                                                 disabled={processing} 
-                                                className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${processing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                className={`bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${processing ? 'opacity-50 cursor-not-allowed' : ''}`}
                                             >
                                                 {processing ? 'Menyimpan...' : 'Simpan'}
                                             </button>

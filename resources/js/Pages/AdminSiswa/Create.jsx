@@ -1,6 +1,7 @@
-
 import React, { useState } from 'react';
 import { useForm } from '@inertiajs/inertia-react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Create = ({ program_bimbingan }) => {
     const { data, setData, post, errors } = useForm({
@@ -12,6 +13,9 @@ const Create = ({ program_bimbingan }) => {
         tanggal_lahir: '',
         alamat: '',
         kota: '',
+        no_telpon: '',
+        no_wa: '',
+        instagram: '',
         nama_sekolah: '',
         alamat_sekolah: '',
         kurikulum: '',
@@ -27,10 +31,11 @@ const Create = ({ program_bimbingan }) => {
         email_ibu: '',
         id_program_bimbingan: '',
         foto: null,
+        kelas: ''  // Add this line
     });
 
     const [fotoPreview, setFotoPreview] = useState(null);
-    const [isSubmitting, setIsSubmitting] = useState(false); // State untuk status pengiriman
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleChange = (e) => {
         const { name, value, type, files } = e.target;
@@ -51,11 +56,19 @@ const Create = ({ program_bimbingan }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setIsSubmitting(true); // Set state menjadi true saat formulir disubmit
+        setIsSubmitting(true);
         post(route('adminsiswa.store'), {
             forceFormData: true,
-            onSuccess: () => setIsSubmitting(false), // Reset state setelah berhasil
-            onError: () => setIsSubmitting(false) // Reset state jika terjadi error
+            onSuccess: () => {
+                setIsSubmitting(false);
+                toast.success('Data berhasil disimpan!');
+            },
+            onError: (errors) => {
+                setIsSubmitting(false);
+                Object.values(errors).forEach(error => {
+                    toast.error(error);
+                });
+            }
         });
     };
 
@@ -78,18 +91,23 @@ const Create = ({ program_bimbingan }) => {
                             { label: 'Tanggal Lahir', name: 'tanggal_lahir', type: 'date' },
                             { label: 'Jenis Kelamin', name: 'jenis_kelamin', type: 'select', options: ['Laki-laki', 'Perempuan'] },
                             { label: 'Alamat', name: 'alamat', type: 'text' },
-                            { label: 'Kota', name: 'kota', type: 'text' }
+                            { label: 'Kota', name: 'kota', type: 'text' },
+                            { label: 'Instagram', name: 'instagram', type: 'text' },
+                            { label: 'No Telepon', name: 'no_telpon', type: 'text' },
+                            { label: 'No WA', name: 'no_wa', type: 'text' },
+                            { label: 'Kelas', name: 'kelas', type: 'select', options: ['Kelas 4 SD', 'Kelas 5 SD', 'Kelas 6 SD', 'Kelas 7 SMP', 'Kelas 8 SMP', 'Kelas 9 SMP', 'Kelas 10 SMA', 'Kelas 11 SMA', 'Kelas 12 SMA', 'Alumni SMA']}
                         ].map(({ label, name, type, options }) => (
                             <div className="mb-4" key={name}>
                                 <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
                                 {type === 'select' ? (
                                     <select
-                                        id={name}
+                                        id={`select-${name}`} // Unique ID
                                         name={name}
                                         value={data[name]}
                                         onChange={handleChange}
                                         className="w-full p-3 border border-indigo-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     >
+                                        <option value="">Pilih {label}</option>
                                         {options.map(option => (
                                             <option key={option} value={option}>{option}</option>
                                         ))}
@@ -167,49 +185,58 @@ const Create = ({ program_bimbingan }) => {
                     </div>
                 </fieldset>
 
-                {/* Program Bimbingan & Foto */}
-                <div className="mb-6">
+{/* Program Bimbingan */}
+<fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-green-50">
+                    <legend className="text-xl font-semibold mb-4 text-indigo-700">Program Bimbingan</legend>
+                    <div className="mb-6">
                     <label htmlFor="id_program_bimbingan" className="block text-sm font-medium text-gray-700 mb-1">Program Bimbingan</label>
                     <select
-                        id="id_program_bimbingan"
+                        id="select-program_bimbingan" // Unique ID
                         name="id_program_bimbingan"
                         value={data.id_program_bimbingan}
                         onChange={handleChange}
                         className="w-full p-3 border border-indigo-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     >
                         <option value="">Pilih Program</option>
-                        {program_bimbingan.map((program) => (
-                            <option key={program.id} value={program.id}>{program.nama}</option>
+                        {program_bimbingan.map(program => (
+                            <option key={program.id} value={program.id}>
+                                {program.nama_program}
+                            </option>
                         ))}
                     </select>
                     {errors.id_program_bimbingan && <div className="text-red-600 text-sm mt-1">{errors.id_program_bimbingan}</div>}
                 </div>
+                </fieldset>
 
-                <div className="mb-6">
-                    <label htmlFor="foto" className="block text-sm font-medium text-gray-700 mb-1">Foto</label>
-                    <input
-                        id="foto"
-                        name="foto"
-                        type="file"
-                        onChange={handleChange}
-                        className="w-full p-3 border border-indigo-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                    {fotoPreview && (
-                        <div className="mt-4">
-                            <img src={fotoPreview} alt="Foto Preview" className="w-32 h-32 object-cover rounded-md border border-indigo-300 shadow-sm" />
-                        </div>
-                    )}
-                    {errors.foto && <div className="text-red-600 text-sm mt-1">{errors.foto}</div>}
-                </div>
+                {/* Photo Upload */}
+                <fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-gray-50">
+                    <legend className="text-xl font-semibold mb-4 text-indigo-700">Foto</legend>
+                    <div className="mb-4">
+                        <label htmlFor="foto" className="block text-sm font-medium text-gray-700 mb-1">Upload Foto</label>
+                        <input
+                            id="foto"
+                            name="foto"
+                            type="file"
+                            onChange={handleChange}
+                            className="w-full p-3 border border-indigo-300 rounded-md shadow-sm"
+                        />
+                        {fotoPreview && <img src={fotoPreview} alt="Preview" className="mt-4 w-32 h-auto" />}
+                        {errors.foto && <div className="text-red-600 text-sm mt-1">{errors.foto}</div>}
+                    </div>
+                </fieldset>
 
                 {/* Submit Button */}
-                <button
-                    type="submit"
-                    className="px-4 py-2 bg-purple-600 text-white font-semibold rounded-md shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-150"
-                >
-                    {isSubmitting ? 'Sedang Mengirim...' : 'Simpan'}
-                </button>
+                <div className="flex justify-center">
+                    <button
+                        type="submit"
+                        className={`px-4 py-2 font-semibold text-white bg-indigo-600 rounded-lg ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Menyimpan...' : 'Simpan'}
+                    </button>
+                </div>
             </form>
+            <ToastContainer />
         </div>
     );
 };

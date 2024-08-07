@@ -1,25 +1,46 @@
 <?php
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\User;
-use Inertia\Inertia;
+use App\Models\Siswa;
+use App\Models\ProgramBimbingan;
 
 class DashboardController extends Controller
 {
-    public function index()
+    /**
+     * Display the dashboard data count.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function count()
     {
-        $totalAdmins = User::where('role', 'admin')->count();
-        $totalPetugas = User::where('role', 'petugas')->count();
-        $totalSiswa = User::where('role', 'siswa')->count();
-        $totalCourses = 25; // Replace with actual data if available
-    
-        return Inertia::render('Dashboard', [
+        $totalAdmins = User::count();
+        $totalSiswa = Siswa::count();
+        $totalCourses = ProgramBimbingan::count();
+
+        return response()->json([
             'totalAdmins' => $totalAdmins,
-            'totalPetugas' => $totalPetugas,
             'totalSiswa' => $totalSiswa,
             'totalCourses' => $totalCourses,
         ]);
     }
-    
 
+    /**
+     * Display the detailed data for admins, students, and courses.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function data()
+    {
+        $admins = User::take(5)->get();
+        $siswa = Siswa::take(5)->get();
+        $courses = ProgramBimbingan::take(5)->get();
+
+        return response()->json([
+            'admins' => $admins,
+            'siswa' => $siswa,
+            'courses' => $courses,
+        ]);
+    }
 }

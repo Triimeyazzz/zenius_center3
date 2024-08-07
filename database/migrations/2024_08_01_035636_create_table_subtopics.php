@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,13 +10,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('data_bimbingan', function (Blueprint $table) {
+        Schema::create('subtopics', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_siswa');
-            $table->foreign('id_siswa')->references('id')->on('siswa')->onDelete('cascade');
-            $table->date('mulai_bimbingan');
-            $table->time('jam_bimbingan');
-            $table->json('hari_bimbingan');
+            $table->foreignId('try_out_id')->constrained('try_out')->onDelete('cascade'); // Change 'try_outs' to 'try_out' if you used a different table name
+            $table->string('sub_mata_pelajaran');
+            $table->integer('skor');
             $table->timestamps();
         });
     }
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('data_bimbingan');
+        Schema::dropIfExists('subtopics');
     }
 };

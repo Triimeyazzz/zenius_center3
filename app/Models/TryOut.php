@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,18 +8,14 @@ class TryOut extends Model
 {
     use HasFactory;
 
-    protected $table = 'try_out';
+    protected $table = 'try_out'; // Change if you used a different table name
+    protected $fillable = ['id_siswa', 'mata_pelajaran', 'tanggal_pelaksanaan'];
 
-    protected $fillable = [
-        'id_siswa',
-        'mata_pelajaran',
-        'skor',
-        'tanggal_pelaksanaan',
+    protected $casts = [
+        'tanggal_pelaksanaan' => 'datetime',
     ];
-
-    // Define the relationship with the Siswa model
-    public function siswa()
+    public function subtopics()
     {
-        return $this->belongsTo(Siswa::class, 'id_siswa');
+        return $this->hasMany(Subtopic::class, 'try_out_id');
     }
 }
