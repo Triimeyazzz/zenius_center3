@@ -23,9 +23,9 @@ class Notifikasi extends Model
         'updated_at' => 'datetime',
     ];
 
-    public function pengguna()
+    public function user()
     {
-        return $this->belongsTo(Pengguna::class);
+        return $this->belongsTo(user::class);
     }
 }
 

@@ -5,7 +5,7 @@ import NavLink from "@/Components/NavLink";
 import { Helmet } from "react-helmet";
 
 export default function Authenticated({ user, header, children }) {
-    const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (
         <div className="flex bg-gray-100 min-h-screen">
@@ -14,9 +14,30 @@ export default function Authenticated({ user, header, children }) {
                 <meta name="description" content="Bimble Terbaik di Indonesia" />
                 <link rel="shortcut icon" href="/images/Reverse.png" type="image/x-icon" />
             </Helmet>
-            
+
+            {/* Mobile Menu Button */}
+            <button 
+                onClick={() => setSidebarOpen(!sidebarOpen)} 
+                className="p-4 md:hidden fixed top-0 left-0 z-50"
+            >
+                <svg
+                    className="h-6 w-6 text-gray-700"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M4 6h16M4 12h16M4 18h16"
+                    />
+                </svg>
+            </button>
+
             {/* Sidebar */}
-            <nav className="bg-white w-64 h-screen border-r border-gray-200 flex flex-col fixed">
+            <nav className={`bg-white w-64 h-screen border-r border-gray-200 fixed top-0 left-0 ${sidebarOpen ? 'block' : 'hidden'} md:block md:top-0`}>
                 <div className="flex items-center justify-center h-16 border-b border-gray-200">
                     <Link href="/">
                         <img src="/images/Logo color.png" alt="logo" className="h-8 w-auto" />
@@ -28,11 +49,11 @@ export default function Authenticated({ user, header, children }) {
                             <Dropdown>
                                 <Dropdown.Trigger>
                                     <span className="inline-flex rounded-md w-full">
-                                    <img src={`storage/${user.profile_picture}`} alt={user.nama} className="w-16 h-16 object-cover rounded-full border-2 border-gray-200" />
+                                        <img src={`storage/${user.profile_picture}`} alt={user.nama} className="w-16 h-16 object-cover rounded-full border-2 border-gray-200" />
                                         <button
                                             type="button"
                                             className="inline-flex items-center w-full px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:text-gray-900 focus:outline-none transition ease-in-out duration-150"
-                                        >                
+                                        >
                                             {user && user.name ? user.name : "Guest"}
                                             <svg
                                                 className="ml-auto h-4 w-4 transform transition-transform duration-200"
@@ -130,13 +151,31 @@ export default function Authenticated({ user, header, children }) {
                                     Data absensi
                                 </NavLink>
                             </li>
+                            <li>
+                                <NavLink
+                                    href={route("messages.index")}
+                                    active={route().current("messages.index")}
+                                    className="block px-4 py-2 rounded-lg hover:bg-gray-200"
+                                >
+                                    Pesan
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink
+                                    href={route("pembayaran.index")}
+                                    active={route().current("pembayaran.index")}
+                                    className="block px-4 py-2 rounded-lg hover:bg-gray-200"
+                                >
+                                    Pembayaran
+                                </NavLink>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </nav>
 
             {/* Main content area */}
-            <div className="flex-1 flex flex-col ml-64">
+            <div className={`flex-1 flex flex-col ${sidebarOpen ? 'ml-64' : 'ml-0'} md:ml-64`}>
                 {header && (
                     <header className="bg-white shadow">
                         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">

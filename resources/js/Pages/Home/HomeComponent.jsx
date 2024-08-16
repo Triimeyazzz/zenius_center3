@@ -20,8 +20,8 @@ import DataHarga from "./DataHarga";
 import { Link } from "@inertiajs/react";
 import Footer from "@/Components/Footer";
 import TestimoniData from "./TestimoniData";
-import Carousel2 from 'react-multi-carousel';
-import 'react-multi-carousel/lib/styles.css';
+import Carousel2 from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
 
 const chunkArray = (arr, size) => {
     const chunkedArr = [];
@@ -32,81 +32,95 @@ const chunkArray = (arr, size) => {
 };
 const responsive = {
     superLargeDesktop: {
-      breakpoint: { max: 4000, min: 3000 },
-      items: 3
+        breakpoint: { max: 4000, min: 3000 },
+        items: 3,
     },
     desktop: {
-      breakpoint: { max: 3000, min: 1024 },
-      items: 3
+        breakpoint: { max: 3000, min: 1024 },
+        items: 3,
     },
     tablet: {
-      breakpoint: { max: 1024, min: 464 },
-      items: 2
+        breakpoint: { max: 1024, min: 464 },
+        items: 2,
     },
     mobile: {
-      breakpoint: { max: 464, min: 0 },
-      items: 1
-    }
-  };  
+        breakpoint: { max: 464, min: 0 },
+        items: 1,
+    },
+};
 
-  
-
-const HomeComponent = ({ displayText }) => {
+const HomeComponent = ({ displayText, ulasanData }) => {
     useEffect(() => {
         AOS.init({ duration: 1000 });
     }, []);
 
     const groupedTestimonials = chunkArray(TestimoniData, 4);
-
-    return (
-        
-        <div className="relative">
-                    <Head title="New Primagama Fatmawati Home" />
-    
-            <AppLayout>
-            <div className="mx-auto w-full max-w-screen-xl">
-            <div className="w-full mb-10 h-full">
-                <img 
-                src="./images/spanduk 459x217 cmyk.jpg" 
-                alt="spanduk" />
-            </div>
-            <div className="grid grid-cols-1 gap-8 items-center">
-                <div className="text-center z-20" data-aos="fade-up">
-                    <Carousel 
-                        autoPlay 
-                        infiniteLoop 
-                        showThumbs={false} 
-                        showStatus={false} 
-                        showArrows={true}
-                        className="mx-auto mb-8 relative top-1 w-full"
+    const renderStars = (rating) => {
+        return (
+            <div className="flex justify-center">
+                {[1, 2, 3, 4, 5].map((star) => (
+                    <svg
+                        key={star}
+                        className={`w-6 h-6 ${
+                            star <= rating ? 'text-yellow-400' : 'text-gray-300'
+                        }`}
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
                     >
-                        <div className="w-full">
-                            <img
-                                src="/images/spanduk 459x217 cmyk.jpg"
-                                alt="Slide 1"
-                                className="object-cover w-full h-[600px]"
-                            />
-                        </div>
-                        <div className="w-full">
-                            <img
-                                src="/images/main1.png"
-                                alt="Slide 2"
-                                className="object-cover w-full h-[600px]"
-                            />
-                        </div>
-                        <div className="w-full">
-                            <img
-                                src="/images/main2.jpg"
-                                alt="Slide 3"
-                                className="object-cover w-full h-[600px]"
-                            />
-                        </div>
-                        {/* Add more slides as needed */}
-                    </Carousel>
-                </div>
-                
+                        <path d="M12 17.27L18.18 21 16.54 13.97 22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                    </svg>
+                ))}
             </div>
-        </div>
+        );
+    };
+    return (
+        <div className="relative">
+            <Head title="New Primagama Fatmawati Home" />
+
+            <AppLayout>
+                <div className="mx-auto w-full max-w-screen-xl">
+                    <div className="w-full mb-10 h-full">
+                        <img
+                            src="./images/spanduk 459x217 cmyk.jpg"
+                            alt="spanduk"
+                        />
+                    </div>
+                    <div className="grid grid-cols-1 gap-8 items-center">
+                        <div className="text-center z-20" data-aos="fade-up">
+                            <Carousel
+                                autoPlay
+                                infiniteLoop
+                                showThumbs={false}
+                                showStatus={false}
+                                showArrows={true}
+                                className="mx-auto mb-8 relative top-1 w-full"
+                            >
+                                <div className="w-full">
+                                    <img
+                                        src="/images/spanduk 459x217 cmyk.jpg"
+                                        alt="Slide 1"
+                                        className="object-cover w-full h-[600px]"
+                                    />
+                                </div>
+                                <div className="w-full">
+                                    <img
+                                        src="/images/main1.png"
+                                        alt="Slide 2"
+                                        className="object-cover w-full h-[600px]"
+                                    />
+                                </div>
+                                <div className="w-full">
+                                    <img
+                                        src="/images/main2.jpg"
+                                        alt="Slide 3"
+                                        className="object-cover w-full h-[600px]"
+                                    />
+                                </div>
+                                {/* Add more slides as needed */}
+                            </Carousel>
+                        </div>
+                    </div>
+                </div>
                 <div className="relative overflow-hidden bg-gray-100 text-black py-16">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-8" data-aos="fade-up">
@@ -156,7 +170,7 @@ const HomeComponent = ({ displayText }) => {
                         </div>
                     </div>
                 </div>
-        
+
                 <div className="bg-white text-gray-800 relative z-30 py-16">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center bg-white">
@@ -319,27 +333,32 @@ const HomeComponent = ({ displayText }) => {
                     </div>
                 </div>
                 <div className="bg-gray-100 text-gray-800 relative z-30 py-16">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="text-center" data-aos="fade-up">
-        <h1 className="text-4xl font-bold mb-4">
-          Biaya Investasi T.P 2024-2025
-        </h1>
-      </div>
-      <Carousel2 responsive={responsive} autoPlay infinite arrows>
-        {DataHarga.map((kelas) => (
-          <div key={kelas.id} className="p-4">
-            <CardHarga
-              title={kelas.title}
-              price={kelas.price}
-              facilities={kelas.facilities}
-              sampai={kelas.sampai}
-              program={kelas.program}
-            />
-          </div>
-        ))}
-      </Carousel2>
-    </div>
-  </div>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center" data-aos="fade-up">
+                            <h1 className="text-4xl font-bold mb-4">
+                                Biaya Investasi T.P 2024-2025
+                            </h1>
+                        </div>
+                        <Carousel2
+                            responsive={responsive}
+                            autoPlay
+                            infinite
+                            arrows
+                        >
+                            {DataHarga.map((kelas) => (
+                                <div key={kelas.id} className="p-4">
+                                    <CardHarga
+                                        title={kelas.title}
+                                        price={kelas.price}
+                                        facilities={kelas.facilities}
+                                        sampai={kelas.sampai}
+                                        program={kelas.program}
+                                    />
+                                </div>
+                            ))}
+                        </Carousel2>
+                    </div>
+                </div>
                 <div className="bg-white text-gray-800 py-16">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-30">
                         <div className="text-center mb-8" data-aos="fade-up">
@@ -348,7 +367,10 @@ const HomeComponent = ({ displayText }) => {
                             </h1>
                         </div>
                         <Carousel
-                            responsive={responsive} autoPlay infinite arrows
+                            responsive={responsive}
+                            autoPlay
+                            infinite
+                            arrows
                         >
                             {groupedTestimonials.map((group, index) => (
                                 <div
@@ -393,7 +415,52 @@ const HomeComponent = ({ displayText }) => {
                     </div>
                 </div>
                 <WhatsAppLink />
-
+                {/* Ulasan Section */}
+                <div className="bg-gray-100 text-gray-800 py-16">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8" data-aos="fade-up">
+            <h1 className="text-4xl font-bold mb-4 text-purple-800">
+                Apa Kata Mereka?
+            </h1>
+        </div>
+        <Carousel
+            responsive={responsive}
+            autoPlay
+            infinite
+            arrows
+            showDots={true}
+            dotListClass="custom-dot-list-style"
+            itemClass="carousel-item-padding-20-px"
+        >
+            {ulasanData.map((ulasan) => (
+                <div
+                    key={ulasan.id}
+                    className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 duration-300"
+                >
+                    <div className="flex items-center justify-center mb-4">
+                        <img
+                            src={`storage/fotos/${ulasan.siswa.foto}`}
+                            alt={`${ulasan.siswa.nama} photo`}
+                            className="w-24 h-24 rounded-full border-4 border-purple-500 shadow-lg"
+                        />
+                    </div>
+                    <h2 className="text-xl font-semibold text-center mb-2 text-purple-900">
+                        {ulasan.siswa.nama}
+                    </h2>
+                    <p className="text-gray-600 mb-2 text-center">
+                        {ulasan.siswa.email}
+                    </p>
+                    <div className="text-center mb-2">
+                        {renderStars(ulasan.penilaian)} {/* Display stars */}
+                    </div>
+                    <p className="text-gray-800 text-center">
+                        {ulasan.komentar}
+                    </p>
+                </div>
+            ))}
+        </Carousel>
+    </div>
+</div>
                 <div
                     className="md:col-span-1 text-center relative top-2"
                     data-aos="fade-left"

@@ -85,7 +85,7 @@ export default function Dashboard({ auth }) {
                                 <a href="/adminsiswa" className="text-purple-300 mt-4 inline-block hover:underline">Lihat Lebih Banyak</a>
                             </div>
                             <div className="bg-gradient-to-r from-purple-300 via-purple-400 to-purple-500 text-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl">
-                                <h3 className="text-lg font-semibold">Total Kursus</h3>
+                                <h3 className="text-lg font-semibold">Total Paket</h3>
                                 <p className="text-3xl font-bold mt-2">{data.totalCourses !== null ? data.totalCourses : 'Loading...'}</p>
                                 <a href="/program-bimbingan" className="text-yellow-300 mt-4 inline-block hover:underline">Lihat Lebih Banyak</a>
                             </div>

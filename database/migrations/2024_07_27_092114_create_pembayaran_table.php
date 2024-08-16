@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('pembayaran', function (Blueprint $table) {
             $table->id();
             $table->foreignId('siswa_id')->constrained('siswa')->onDelete('cascade');
-            $table->decimal('jumlah', 8, 2);
+            $table->decimal('jumlah', 10, 2);
             $table->enum('status', ['pending', 'selesai', 'batal']);
             $table->timestamps();
         });

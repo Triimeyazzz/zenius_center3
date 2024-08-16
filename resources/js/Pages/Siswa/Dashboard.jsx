@@ -6,7 +6,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
-const Dashboard = ({ user, chartLabels = [], chartData = [], absensiLabels = [], absensiData = [], absensiDetails = [] }) => {
+const Dashboard = ({ user, chartLabels = [], chartData = [], absensiLabels = [], absensiData = [], absensiDetails = [], totalToPay, totalPayments, paymentRows: paymentRowsData }) => {
     // Data for the performance chart
     const performanceData = {
         labels: chartLabels,
@@ -95,6 +95,14 @@ const Dashboard = ({ user, chartLabels = [], chartData = [], absensiLabels = [],
         </tr>
     ));
 
+    // Prepare rows for the payment table
+    const paymentRows = paymentRowsData.map((payment, index) => (
+        <tr key={index}>
+            <td className="border px-4 py-2">{payment.tanggal}</td>
+            <td className="border px-4 py-2">{payment.jumlah.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</td>
+        </tr>
+    ));
+
     return (
         <StudentLayout siswa={user}>
             <div className="p-6 bg-yellow-50">
@@ -102,6 +110,35 @@ const Dashboard = ({ user, chartLabels = [], chartData = [], absensiLabels = [],
                 <p className="text-lg mb-6 text-gray-700">
                     Di sini Anda bisa melihat ringkasan absensi Anda serta grafik performa try out Anda. Manfaatkan informasi ini untuk mengevaluasi kemajuan Anda dan merencanakan langkah selanjutnya.
                 </p>
+
+                <div className="bg-white shadow-lg rounded-lg p-4 mb-6 border-t-4 border-purple-500">
+                    <h2 className="text-xl font-semibold mb-2 text-purple-700">Jumlah yang Harus Dibayar</h2>
+                    <p className="text-gray-600 mb-4">
+                        Total pembayaran yang harus Anda lakukan saat ini.
+                    </p>
+                    <p className="text-2xl font-bold text-purple-800">{totalToPay.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</p>
+                </div>
+
+                <div className="bg-white shadow-lg rounded-lg p-4 mb-6 border-t-4 border-green-500">
+                    <h2 className="text-xl font-semibold mb-2 text-green-700">Laporan Pembayaran</h2>
+                    <p className="text-gray-600 mb-4">
+                        Berikut adalah total pembayaran yang telah Anda lakukan serta rinciannya.
+                    </p>
+                    <p className="text-gray-700 mb-4">Total Pembayaran: {totalPayments.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</p>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white border border-gray-300">
+                            <thead>
+                                <tr>
+                                    <th className="border px-4 py-2 text-left">Tanggal</th>
+                                    <th className="border px-4 py-2 text-left">Jumlah</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {paymentRows}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
                 <div className="bg-white shadow-lg rounded-lg p-4 mb-6 border-t-4 border-purple-500">
                     <h2 className="text-xl font-semibold mb-2 text-purple-700">Laporan Absensi Bulanan</h2>
@@ -113,7 +150,7 @@ const Dashboard = ({ user, chartLabels = [], chartData = [], absensiLabels = [],
                             <thead>
                                 <tr>
                                     <th className="border px-4 py-2 text-left">Bulan</th>
-                                <th className="border px-4 py-2 text-left">Jumlah Hari</th>
+                                    <th className="border px-4 py-2 text-left">Jumlah Hari</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -144,11 +181,8 @@ const Dashboard = ({ user, chartLabels = [], chartData = [], absensiLabels = [],
                     </div>
                 </div>
 
-                <div className="bg-white shadow-lg rounded-lg p-4 mb-6 border-t-4 border-yellow-500">
-                    <h2 className="text-xl font-semibold mb-2 text-yellow-700">Performa Try Out</h2>
-                    <p className="text-gray-600 mb-4">
-                        Pantau kemajuan Anda dengan melihat grafik performa try out Anda dari waktu ke waktu.
-                    </p>
+                <div className="bg-white shadow-lg rounded-lg p-4 mb-6 border-t-4 border-purple-500">
+                    <h2 className="text-xl font-semibold mb-2 text-purple-700">Grafik Performa Try Out</h2>
                     <Line data={performanceData} options={performanceOptions} />
                 </div>
             </div>

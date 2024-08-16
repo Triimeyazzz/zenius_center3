@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from '@inertiajs/inertia-react';
 import NavLink from '@/Components/NavLink';
-import './wallpaper.css';  // Pastikan untuk mengimpor file CSS di sini
+import './wallpaper.css';  // Ensure the CSS file is imported
 import NotFound from './NotFound';
+
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        // Example of checking authentication status from local storage
+        const checkAuth = () => {
+            const token = localStorage.getItem('authToken'); // Replace with your auth token check
+            setIsAuthenticated(!!token);
+        };
+        checkAuth();
+    }, []);
 
     const toggleNavbar = () => {
         setIsOpen(!isOpen);
@@ -15,12 +26,12 @@ const Navbar = () => {
     };
 
     const scrollToContact = (e) => {
-        e.preventDefault();  // Mencegah perilaku default dari event klik
+        e.preventDefault();  // Prevent default click behavior
         const contactSection = document.getElementById('Contact');
         if (contactSection) {
             contactSection.scrollIntoView({ behavior: 'smooth' });
         }
-        closeNavbar();  // Menutup navbar setelah scroll
+        closeNavbar();  // Close the navbar after scrolling
     };
 
     return (
@@ -59,7 +70,6 @@ const Navbar = () => {
                                 href="/Home"
                                 active={route().current('Home')}
                                 onClick={closeNavbar}
-                                
                             >
                                 Home
                             </NavLink>
@@ -72,21 +82,30 @@ const Navbar = () => {
                                 About Us
                             </NavLink>
                             <NavLink
-                                className='text-yellow-400 hover:text-yellow-200    '
+                                className='text-yellow-400 hover:text-yellow-200'
                                 onClick={scrollToContact}
                             >
                                 Contact
                             </NavLink>
-                            <NavLink
-                                className='text-yellow-400 hover:text-yellow-200'
-                                href="/login"
-                                active={route().current('Login')}
-                                onClick={closeNavbar}
-                            >
-                                Login
-                            </NavLink>
-                            <NavLink component={NotFound} /> {/* Route untuk halaman 404 */}
-
+                            {isAuthenticated ? (
+                                <NavLink
+                                    className='text-yellow-400 hover:text-yellow-200'
+                                    href="/siswa/dashboard"
+                                    onClick={closeNavbar}
+                                >
+                                    Siswa Dashboard
+                                </NavLink>
+                            ) : (
+                                <NavLink
+                                    className='text-yellow-400 hover:text-yellow-200'
+                                    href="/login"
+                                    active={route().current('Login')}
+                                    onClick={closeNavbar}
+                                >
+                                    Login
+                                </NavLink>
+                            )}
+                            <NavLink component={NotFound} /> {/* Route for 404 page */}
                         </div>
                     </div>
                 </div>

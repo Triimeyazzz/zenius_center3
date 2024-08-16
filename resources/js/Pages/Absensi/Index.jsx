@@ -242,14 +242,7 @@ export default function Index({ absensiGroupedByDate, classes, selectedClass, se
                                 <option key={index} value={kelas}>{kelas}</option>
                             ))}
                         </select>
-                        <select
-                            value={tanggal}
-                            onChange={(e) => setTanggal(e.target.value)}
-                            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        >
-                            <option value="">Pilih Tanggal</option>
-                            {getDateOptions()}
-                        </select>
+                        
                     </div>
                     <div className="flex space-x-4">
                         <select

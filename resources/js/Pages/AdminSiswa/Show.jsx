@@ -3,100 +3,105 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 const Show = ({ siswa }) => {
-    const exportToPDF = () => {
-        const doc = new jsPDF();
-        doc.setFontSize(16);
 
-        // Title
-        doc.setFontSize(22);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Detail Siswa', 14, 20);
-        doc.setFont('helvetica', 'normal');
+const exportToPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(16);
 
-        // Header
-        doc.setFontSize(14);
-        doc.setTextColor(100);
-        doc.text('Informasi Siswa', 14, 40);
+    // Title
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Detail Siswa', 14, 20);
+    doc.setFont('helvetica', 'normal');
 
-        // Student Information
-        const studentData = [
-            ['Nama', siswa.nama],
-            ['Email', siswa.email],
-            ['Jenis Kelamin', siswa.jenis_kelamin],
-            ['Tempat Lahir', siswa.tempat_lahir],
-            ['Tanggal Lahir', new Date(siswa.tanggal_lahir).toLocaleDateString()],
-            ['Alamat', siswa.alamat],
-            ['Kota', siswa.kota],
-        ];
-        doc.autoTable({
-            startY: 50,
-            body: studentData,
-            theme: 'striped',
-            headStyles: { fillColor: [0, 0, 255] },
-            styles: { cellPadding: 5, fontSize: 12, lineColor: [0, 0, 0], lineWidth: 0.1 },
-            margin: { horizontal: 10 },
-            columnStyles: { text: { cellPadding: 3, fontSize: 12, lineWidth: 0.1 } },
-        });
+    // Header
+    doc.setFontSize(14);
+    doc.setTextColor(100);
+    doc.text('Informasi Siswa', 14, 30);
 
-        // School Information
-        doc.setTextColor(100);
-        doc.text('Informasi Sekolah', 14, doc.lastAutoTable.finalY + 10);
-        const schoolData = [
-            ['Nama Sekolah', siswa.nama_sekolah],
-            ['Alamat Sekolah', siswa.alamat_sekolah],
-            ['Kurikulum', siswa.kurikulum],
-        ];
-        doc.autoTable({
-            startY: doc.lastAutoTable.finalY + 20,
-            body: schoolData,
-            theme: 'striped',
-            headStyles: { fillColor: [0, 255, 0] },
-            styles: { cellPadding: 5, fontSize: 12, lineColor: [0, 0, 0], lineWidth: 0.1 },
-            margin: { horizontal: 10 },
-            columnStyles: { text: { cellPadding: 3, fontSize: 12, lineWidth: 0.1 } },
-        });
+    // Student Information
+    const studentData = [
+        ['Nama', siswa.nama],
+        ['Email', siswa.email],
+        ['Jenis Kelamin', siswa.jenis_kelamin],
+        ['Tempat Lahir', siswa.tempat_lahir],
+        ['Tanggal Lahir', new Date(siswa.tanggal_lahir).toLocaleDateString()],
+        ['Alamat', siswa.alamat],
+        ['Kota', siswa.kota],
+    ];
+    doc.autoTable({
+        startY: 40,
+        body: studentData,
+        theme: 'striped',
+        headStyles: { fillColor: [0, 0, 255] },
+        styles: { cellPadding: 5, fontSize: 12, lineColor: [0, 0, 0], lineWidth: 0.1 },
+        margin: { horizontal: 10 },
+        columnStyles: { text: { cellPadding: 3, fontSize: 12, lineWidth: 0.1 } },
+    });
 
-        // Parent Information
-        doc.setTextColor(100);
-        doc.text('Informasi Orang Tua', 14, doc.lastAutoTable.finalY + 10);
-        const parentData = [
-            ['Nama Ayah', siswa.nama_ayah],
-            ['Nama Ibu', siswa.nama_ibu],
-            ['Pekerjaan Ayah', siswa.pekerjaan_ayah || 'Tidak tersedia'],
-            ['No Telp / HP Ayah', siswa.no_telp_hp_ayah || 'Tidak tersedia'],
-            ['No WA / ID Line Ayah', siswa.no_wa_id_line_ayah || 'Tidak tersedia'],
-            ['Email Ayah', siswa.email_ayah || 'Tidak tersedia'],
-            ['Pekerjaan Ibu', siswa.pekerjaan_ibu || 'Tidak tersedia'],
-            ['No Telp / HP Ibu', siswa.no_telp_hp_ibu || 'Tidak tersedia'],
-            ['No WA / ID Line Ibu', siswa.no_wa_id_line_ibu || 'Tidak tersedia'],
-            ['Email Ibu', siswa.email_ibu || 'Tidak tersedia'],
-        ];
-        doc.autoTable({
-            startY: doc.lastAutoTable.finalY + 20,
-            body: parentData,
-            theme: 'striped',
-            headStyles: { fillColor: [255, 200, 0] },
-            styles: { cellPadding: 5, fontSize: 12, lineColor: [0, 0, 0], lineWidth: 0.1 },
-            margin: { horizontal: 10 },
-            columnStyles: { text: { cellPadding: 3, fontSize: 12, lineWidth: 0.1 } },
-        });
+    // School Information
+    doc.setTextColor(100);
+    doc.text('Informasi Sekolah', 14, doc.lastAutoTable.finalY + 10);
+    const schoolData = [
+        ['Nama Sekolah', siswa.nama_sekolah],
+        ['Alamat Sekolah', siswa.alamat_sekolah],
+        ['Kurikulum', siswa.kurikulum],
+    ];
+    doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 20,
+        body: schoolData,
+        theme: 'striped',
+        headStyles: { fillColor: [0, 255, 0] },
+        styles: { cellPadding: 5, fontSize: 12, lineColor: [0, 0, 0], lineWidth: 0.1 },
+        margin: { horizontal: 10 },
+        columnStyles: { text: { cellPadding: 3, fontSize: 12, lineWidth: 0.1 } },
+    });
 
-        // Add photo if available
-        if (siswa.foto) {
+    // Parent Information
+    doc.setTextColor(100);
+    doc.text('Informasi Orang Tua', 14, doc.lastAutoTable.finalY + 10);
+    const parentData = [
+        ['Nama Ayah', siswa.nama_ayah],
+        ['Nama Ibu', siswa.nama_ibu],
+        ['Pekerjaan Ayah', siswa.pekerjaan_ayah || 'Tidak tersedia'],
+        ['No Telp / HP Ayah', siswa.no_telp_hp_ayah || 'Tidak tersedia'],
+        ['No WA / ID Line Ayah', siswa.no_wa_id_line_ayah || 'Tidak tersedia'],
+        ['Email Ayah', siswa.email_ayah || 'Tidak tersedia'],
+        ['Pekerjaan Ibu', siswa.pekerjaan_ibu || 'Tidak tersedia'],
+        ['No Telp / HP Ibu', siswa.no_telp_hp_ibu || 'Tidak tersedia'],
+        ['No WA / ID Line Ibu', siswa.no_wa_id_line_ibu || 'Tidak tersedia'],
+        ['Email Ibu', siswa.email_ibu || 'Tidak tersedia'],
+    ];
+    doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 20,
+        body: parentData,
+        theme: 'striped',
+        headStyles: { fillColor: [255, 200, 0] },
+        styles: { cellPadding: 5, fontSize: 12, lineColor: [0, 0, 0], lineWidth: 0.1 },
+        margin: { horizontal: 10 },
+        columnStyles: { text: { cellPadding: 3, fontSize: 12, lineWidth: 0.1 } },
+    });
+
+    // Add photo if available
+    if (siswa.foto) {
+        const imgData = `/storage/fotos/${siswa.foto}`; // Ensure this is a valid URL
+        const img = new Image();
+        img.src = imgData;
+        img.onload = () => {
             doc.addPage();
             doc.setFontSize(14);
             doc.text('Foto Siswa:', 14, 20);
-            const imgData = `/storage/${siswa.foto}`; // Pastikan ini adalah URL yang valid
-            const img = new Image();
-            img.src = imgData;
-            img.onload = () => {
-                doc.addImage(imgData, 'JPEG', 14, 30, 180, 160); // Sesuaikan posisi dan ukuran gambar
-                doc.save(`Detail_Siswa_${siswa.nama}.pdf`);
-            };
-        } else {
+            doc.addImage(imgData, 'JPEG', 14, 30, 100, 100); // Adjusted size for the image
             doc.save(`Detail_Siswa_${siswa.nama}.pdf`);
-        }
-    };
+        };
+        img.onerror = () => {
+            console.error('Image could not be loaded');
+            doc.save(`Detail_Siswa_${siswa.nama}.pdf`);
+        };
+    } else {
+        doc.save(`Detail_Siswa_${siswa.nama}.pdf`);
+    }
+};
 
     return (
         <div className="container mx-auto p-8">
@@ -188,7 +193,7 @@ const Show = ({ siswa }) => {
                     <div className="p-6 bg-gray-100">
                         <h2 className="text-2xl font-semibold mb-4 text-gray-700">Foto Siswa</h2>
                         <div className="flex justify-center">
-                            <img src={`/storage/${siswa.foto}`} alt="Foto Siswa" className="w-48 h-48 object-cover rounded-lg" />
+                            <img src={`/storage/fotos/${siswa.foto}`} alt="Foto Siswa" className="w-48 h-48 object-cover rounded-lg" />
                         </div>
                     </div>
                 )}

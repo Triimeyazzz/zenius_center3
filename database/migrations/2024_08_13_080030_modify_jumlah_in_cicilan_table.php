@@ -1,10 +1,9 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class ModifyJumlahIncicilanTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +12,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('pesan', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('siswa_id')->constrained('siswa')->onDelete('cascade');
-            $table->text('pesan');
-            $table->timestamp('dikirim_pada');
-            $table->timestamps();
+        Schema::table('cicilan', function (Blueprint $table) {
+            $table->decimal('jumlah', 10, 2)->change();
         });
     }
 
@@ -29,6 +24,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pesan');
+        Schema::table('cicilan', function (Blueprint $table) {
+            $table->decimal('jumlah', 8, 2)->change();
+        });
     }
-};
+}

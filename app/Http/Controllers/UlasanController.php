@@ -4,45 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Models\Ulasan;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+
 
 class UlasanController extends Controller
 {
-    public function index()
-    {
-        $ulasan = Ulasan::all();
-        return response()->json($ulasan);
-    }
-
     public function create()
     {
-        // Tidak diperlukan untuk API
+        return Inertia::render('Ulasan/Create');
     }
 
     public function store(Request $request)
     {
-        $ulasan = Ulasan::create($request->all());
-        return response()->json($ulasan, 201);
-    }
+        $request->validate([
+            'penilaian' => 'required|integer|between:1,5',
+            'komentar' => 'required|string|max:1000',
+        ]);
 
-    public function show(Ulasan $ulasan)
-    {
-        return response()->json($ulasan);
-    }
+        $ulasan = Ulasan::create([
+            'siswa_id' => auth()->id(),
+            'penilaian' => $request->penilaian,
+            'komentar' => $request->komentar,
+        ]);
 
-    public function edit(Ulasan $ulasan)
-    {
-        // Tidak diperlukan untuk API
-    }
-
-    public function update(Request $request, Ulasan $ulasan)
-    {
-        $ulasan->update($request->all());
-        return response()->json($ulasan);
-    }
-
-    public function destroy(Ulasan $ulasan)
-    {
-        $ulasan->delete();
-        return response()->json(null, 204);
+        return redirect()->route('Home.Home')->with('success', 'Ulasan berhasil ditambahkan');
     }
 }

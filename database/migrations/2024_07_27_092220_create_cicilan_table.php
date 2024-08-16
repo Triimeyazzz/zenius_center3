@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('pembayaran_id')->constrained('pembayaran')->onDelete('cascade');
             $table->foreignId('siswa_id')->constrained('siswa')->onDelete('cascade');
-            $table->decimal('jumlah', 8, 2);
+            $table->decimal('jumlah', 10, 2);
             $table->timestamp('dibayar_pada');
             $table->timestamps();
         });

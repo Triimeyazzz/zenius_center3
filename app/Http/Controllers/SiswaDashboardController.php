@@ -8,16 +8,32 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Pembayaran; // Include this model
+
 
 class SiswaDashboardController extends Controller
 {
     public function index()
     {
-        $user = Siswa::with(['tryOuts', 'absensis'])->find(Auth::id());
+        $user = Siswa::with(['tryOuts', 'absensis', 'pembayarans'])->find(Auth::id());
         $tryOuts = $user ? $user->tryOuts : [];
         $absensi = $user ? $user->absensis : [];
+        $pembayarans = $user ? $user->pembayarans : [];
 
-        // Prepare data for charts
+        // Calculate total amount to be paid
+        $totalToPay = $pembayarans->where('status', 'pending')->sum('jumlah');
+        // Calculate total payments
+        $totalPayments = $pembayarans->sum('jumlah');
+
+        // Prepare payment rows
+        $paymentRows = $pembayarans->map(function($payment) {
+            return [
+                'tanggal' => $payment->tanggal,
+                'jumlah' => $payment->jumlah,
+            ];
+        });
+
+        // Prepare data for charts and tables
         $labels = $tryOuts->pluck('tanggal_pelaksanaan')
                           ->map(fn($date) => date('M Y', strtotime($date)))
                           ->unique()
@@ -26,13 +42,11 @@ class SiswaDashboardController extends Controller
             return $tryOuts->where('tanggal_pelaksanaan', 'like', "%{$label}%")->sum('skor');
         });
 
-        // Prepare data for attendance
         $absensiLabels = $absensi->pluck('tanggal')->unique()->values();
         $absensiData = $absensiLabels->map(function ($label) use ($absensi) {
             return $absensi->where('tanggal', $label)->count();
         });
 
-        // Prepare detailed attendance data
         $absensiDetails = $absensi->map(function($record) {
             return [
                 'tanggal' => $record->tanggal,
@@ -47,11 +61,12 @@ class SiswaDashboardController extends Controller
             'chartData' => $data,
             'absensiLabels' => $absensiLabels,
             'absensiData' => $absensiData,
-            'absensiDetails' => $absensiDetails
+            'absensiDetails' => $absensiDetails,
+            'totalToPay' => $totalToPay,
+            'totalPayments' => $totalPayments, // Add this line
+            'paymentRows' => $paymentRows, // Add this line
         ]);
     }
-
-
     public function edit()
     {
         $siswa = Siswa::find(Auth::id()); // Retrieve the authenticated user

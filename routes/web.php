@@ -6,10 +6,6 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\KursusController;
-use App\Http\Controllers\KelasController;
-use App\Http\Controllers\PelajaranController;
-use App\Http\Controllers\PendaftaranController;
 use App\Http\Middleware\CheckRole;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProgramBimbinganController;
@@ -22,14 +18,15 @@ use App\Http\Controllers\Auth\SiswaLoginController;
 use App\Http\Controllers\SiswaDashboardController;
 use App\Http\Controllers\PresentController;
 use App\Http\Controllers\AbsensiController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\PembayaranController;
+use App\Http\Controllers\UlasanController;
+use App\Http\Controllers\HomeController;
 
 Route::get('/', function () {
     return redirect('/Home');
 });
-
-Route::get('/Home', function () {
-    return Inertia::render('Home/HomeComponent');
-})->name('Home');
+Route::get('/Home', [HomeController::class, 'index'])->name('Home.Home');
 
 Route::get('/About', function () {
     return Inertia::render('Home/AboutUs');
@@ -97,15 +94,26 @@ Route::middleware('auth')->group(function () {
         Route::put('databimbingan/{id}', [DataBimbinganController::class, 'update'])->name('databimbingan.update');
         Route::delete('/databimbingan/{id}', [DataBimbinganController::class, 'destroy'])->name('databimbingan.destroy');
 
-        Route::resource('absensi', AbsensiController::class);
 
         Route::get('absensi', [AbsensiController::class, 'index'])->name('absensi.index');
         Route::get('absensi/create', [AbsensiController::class, 'create'])->name('absensi.create');
         Route::post('absensi', [AbsensiController::class, 'store'])->name('absensi.store');
         Route::delete('/absensi/{id}', [AbsensiController::class, 'destroy'])->name('absensi.destroy');
 
-    });
+        Route::get('/messages', [MessageController::class, 'indexAdmin'])->name('messages.index');
+        Route::get('/messages/{receiver_id}', [MessageController::class, 'showConversation'])->name('messages.conversation');
+        Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');    
 
+Route::resource('pembayaran', PembayaranController::class);
+Route::post('pembayaran/{pembayaran}/bayar-cicilan', [PembayaranController::class, 'bayarCicilan'])->name('pembayaran.bayar-cicilan');
+Route::get('pembayaran/create', [PembayaranController::class, 'create'])->name('pembayaran.create');
+Route::post('pembayaran', [PembayaranController::class, 'store'])->name('pembayaran.store');   
+Route::get('pembayaran/financial-summary', [PembayaranController::class, 'financialSummary'])->name('pembayaran.financial-summary');
+Route::delete('/pembayaran/cicilan/{id}', [PembayaranController::class, 'destroyCicilan'])->name('pembayaran.delete-cicilan');
+
+});
+
+    
     // Route for admin only
     Route::middleware([CheckRole::class . ':admin'])->group(function () {
         Route::get('/dashboard', function () {
@@ -132,6 +140,14 @@ Route::middleware(['auth:siswa'])->group(function () {
 
     Route::get('/siswa/edit', [SiswaController::class, 'edit'])->name('siswa.edit');
     Route::post('/siswa/update', [SiswaController::class, 'update'])->name('siswa.update');
+
+    Route::get('/siswa/tryout', [SiswaController::class, 'tryout'])->name('siswa.tryout');
+    Route::get('/siswa/tryout/{id}', [SiswaController::class, 'tryoutDetail'])->name('siswa.tryoutDetail');
+    Route::post('/siswa/tryout/{id}', [SiswaController::class, 'tryoutStore'])->name('siswa.tryoutStore');
+    Route::get('/siswa/messages', [MessageController::class, 'indexStudent'])->name('messages.index.student');
+    Route::post('/siswa/messages', [MessageController::class, 'storeStudent'])->name('messages.store.student');
+    Route::get('/ulasan/create', [UlasanController::class, 'create'])->name('ulasan.create');
+    Route::post('/ulasan', [UlasanController::class, 'store'])->name('ulasan.store');
 });
 
 

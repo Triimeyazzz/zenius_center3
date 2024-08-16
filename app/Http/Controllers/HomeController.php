@@ -1,13 +1,19 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Ulasan;
 use Inertia\Inertia;
-use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
     public function index()
-    {
-        return Inertia::render('Welcome');
-    }
+{
+    // Fetch ulasan data from the database
+    $ulasanData = Ulasan::with('siswa')->latest()->take(5)->get();
+
+    return Inertia::render('Home/HomeComponent', [
+        'ulasanData' => $ulasanData,
+    ]);
+}
+
 }

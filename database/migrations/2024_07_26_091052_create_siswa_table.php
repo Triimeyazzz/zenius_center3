@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -38,6 +39,8 @@ return new class extends Migration
             $table->string('email_ibu')->nullable();
             $table->foreignId('id_program_bimbingan')->constrained('program_bimbingan')->nullable();
             $table->string('foto')->nullable(); // Kolom foto untuk menyimpan nama file foto siswa
+            $table->string('user_id')->nullable(); // Add user_id column
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); // Add foreign key constraint
             $table->timestamps();
         });
     }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -39,26 +40,32 @@ class Siswa extends Model implements Authenticatable
         'email_ibu',
         'id_program_bimbingan',
         'foto',
-        'kelas' // Add this line
+        'kelas',
+    'user_id', // Add this line
     ];
-    
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
     protected $hidden = [
         'password',
     ];
-    
 
-    // Relasi Siswa ke TryOut
-    // app/Models/Siswa.php
     public function tryOuts()
     {
-    return $this->hasMany(TryOut::class, 'id_siswa'); // Adjust the foreign key if necessary
+        return $this->hasMany(TryOut::class, 'id_siswa');
     }
 
     public function absensis()
     {
-        return $this->hasMany(Absensi::class, 'siswa_id'); // Adjust the foreign key if necessary
+        return $this->hasMany(Absensi::class, 'siswa_id');
     }
     
+    public function pembayarans()
+    {
+        return $this->hasMany(Pembayaran::class, 'siswa_id'); // Adjust 'siswa_id' to the actual foreign key
+    }
     protected static function boot()
     {
         parent::boot();
@@ -66,6 +73,22 @@ class Siswa extends Model implements Authenticatable
         static::deleting(function ($siswa) {
             $siswa->tryOuts()->delete();
             $siswa->absensis()->delete();
+            $siswa->messages()->delete();
+            $siswa->delete();
         });
     }
+
+    public function sentMessages()
+{
+    return $this->morphMany(Message::class, 'sender');
+}
+
+public function receivedMessages()
+{
+    return $this->morphMany(Message::class, 'receiver');
+}
+public function getFormattedIdAttribute()
+{
+    return str_pad($this->id, 3, '0', STR_PAD_LEFT);
+}
 }

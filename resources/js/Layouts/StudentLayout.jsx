@@ -33,7 +33,11 @@ const StudentLayout = ({ children, siswa }) => {
             </svg>
           </button>
 
-          
+          <div className="hidden lg:flex space-x-4">
+            <Link href="/siswa/dashboard" className="text-white hover:text-gray-300">Dashboard</Link>
+            <Link href="/siswa/messages" className="text-white hover:text-gray-300">Messages</Link>
+            <Link href="/ulasan/create" className="text-white hover:text-gray-300">Ulasan</Link>
+          </div>
 
           <div className="relative">
             <button onClick={toggleDropdown} className="text-white flex items-center hover:text-gray-300">
@@ -49,21 +53,21 @@ const StudentLayout = ({ children, siswa }) => {
             </button>
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white text-black border border-gray-300 rounded shadow-lg">
-                <a href="/siswa/edit" className="block px-4 py-2 hover:bg-gray-100" onClick={closeDropdown}>
+                <Link href="/siswa/edit" className="block px-4 py-2 hover:bg-gray-100" onClick={closeDropdown}>
                   Profile
-                </a>
-                <a href={route("logout")} method="post" as="button" className="block px-4 py-2 hover:bg-gray-100 w-full text-left" onClick={closeDropdown}>
+                </Link>
+                <Link href={route("logout")} method="post" as="button" className="block px-4 py-2 hover:bg-gray-100 w-full text-left" onClick={closeDropdown}>
                   Logout
-                </a>
+                </Link>
               </div>
             )}
           </div>
         </div>
-
-        
       </nav>
 
-      <main className="flex-grow container mx-auto p-6">{children}</main>
+      <main className="flex-grow container mx-auto p-6">
+        {children}
+      </main>
 
       <Footer />
     </div>

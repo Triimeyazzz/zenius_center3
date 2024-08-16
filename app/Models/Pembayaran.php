@@ -10,15 +10,15 @@ class Pembayaran extends Model
     use HasFactory;
 
     protected $table = 'pembayaran';
+    protected $fillable = ['siswa_id', 'jumlah', 'status'];
 
-    protected $fillable = [
-        'users_id',
-        'jumlah',
-        'status',
-    ];
-
-    public function user()
+    public function siswa()
     {
-        return $this->belongsTo(User::class, 'users_id');
+        return $this->belongsTo(Siswa::class);
+    }
+
+    public function cicilan()
+    {
+        return $this->hasMany(Cicilan::class);
     }
 }
