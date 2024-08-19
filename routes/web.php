@@ -8,12 +8,10 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Middleware\CheckRole;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProgramBimbinganController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\DataBimbinganController;
 use App\Http\Controllers\TryOutController;
 use App\Models\Siswa;
-use App\Models\ProgramBimbingan;
 use App\Http\Controllers\Auth\SiswaLoginController;
 use App\Http\Controllers\SiswaDashboardController;
 use App\Http\Controllers\PresentController;
@@ -55,7 +53,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
         Route::get('users/{user}/show', [UserController::class, 'show'])->name('users.show');
 
-        Route::resource('program-bimbingan', ProgramBimbinganController::class);
 
 
         Route::get('tryout', [TryOutController::class, 'index'])->name('tryout.index');
@@ -68,33 +65,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/adminsiswa/create', [SiswaController::class, 'create'])->name('adminsiswa.create');
         Route::post('/adminsiswa', [SiswaController::class, 'store'])->name('adminsiswa.store');
         Route::get('/adminsiswa/{siswa}/show', [SiswaController::class, 'show'])->name('adminsiswa.show');
-        // routes/web.php
-        Route::get('/edit-siswa/{id}', function ($id) {
-            $siswa = Siswa::findOrFail($id);
-            $program_bimbingan = ProgramBimbingan::all();
-        
-            return Inertia::render('AdminSiswa/Edit', [
-                'siswa' => $siswa,
-                'program_bimbingan' => $program_bimbingan,
-            ]);
-        })->name('adminsiswa.edit');
-        
+        Route::get('/adminsiswa/{id}/edit', [SiswaController::class, 'edit'])->name('adminsiswa.edit');
         Route::put('/adminsiswa/{siswa}', [SiswaController::class, 'update'])->name('adminsiswa.update');
         Route::delete('/adminsiswa/{siswa}', [SiswaController::class, 'destroy'])->name('adminsiswa.destroy');
         Route::get('/siswa/{siswa}/export-pdf', [SiswaController::class, 'exportPdf'])->name('siswa.exportPdf');
         Route::get('/get-pdf-url/{siswa}', [SiswaController::class, 'getPdfUrl']);
         Route::get('/adminsiswa/count', [SiswaController::class, 'count']);
 
-        Route::resource('data_bimbingan', DataBimbinganController::class);
-
-        Route::get('databimbingan', [DataBimbinganController::class, 'index'])->name('databimbingan.index');
-        Route::get('databimbingan/create', [DataBimbinganController::class, 'create'])->name('databimbingan.create');
-        Route::post('databimbingan', [DataBimbinganController::class, 'store'])->name('databimbingan.store');
-        Route::get('databimbingan/{id}/edit', [DataBimbinganController::class, 'edit'])->name('databimbingan.edit');
-        Route::put('databimbingan/{id}', [DataBimbinganController::class, 'update'])->name('databimbingan.update');
-        Route::delete('/databimbingan/{id}', [DataBimbinganController::class, 'destroy'])->name('databimbingan.destroy');
-
-
+        
         Route::get('absensi', [AbsensiController::class, 'index'])->name('absensi.index');
         Route::get('absensi/create', [AbsensiController::class, 'create'])->name('absensi.create');
         Route::post('absensi', [AbsensiController::class, 'store'])->name('absensi.store');
@@ -110,7 +88,10 @@ Route::get('pembayaran/create', [PembayaranController::class, 'create'])->name('
 Route::post('pembayaran', [PembayaranController::class, 'store'])->name('pembayaran.store');   
 Route::get('pembayaran/financial-summary', [PembayaranController::class, 'financialSummary'])->name('pembayaran.financial-summary');
 Route::delete('/pembayaran/cicilan/{id}', [PembayaranController::class, 'destroyCicilan'])->name('pembayaran.delete-cicilan');
+Route::post('/pembayaran/{pembayaran}/batal', [PembayaranController::class, 'batal'])->name('pembayaran.batal');
 
+Route::get('/ulasan/createAdmin', [UlasanController::class, 'createAdmin'])->name('ulasan.createAdmin');
+Route::post('/ulasan/storeAdmin', [UlasanController::class, 'storeAdmin'])->name('ulasan.storeAdmin');
 });
 
     

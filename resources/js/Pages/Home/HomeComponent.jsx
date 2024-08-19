@@ -62,7 +62,7 @@ const HomeComponent = ({ displayText, ulasanData }) => {
                     <svg
                         key={star}
                         className={`w-6 h-6 ${
-                            star <= rating ? 'text-yellow-400' : 'text-gray-300'
+                            star <= rating ? "text-yellow-400" : "text-gray-300"
                         }`}
                         fill="currentColor"
                         viewBox="0 0 24 24"
@@ -417,63 +417,64 @@ const HomeComponent = ({ displayText, ulasanData }) => {
                 <WhatsAppLink />
                 {/* Ulasan Section */}
                 <div className="bg-gray-100 text-gray-800 py-16">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8" data-aos="fade-up">
-            <h1 className="text-4xl font-bold mb-4 text-purple-800">
-                Apa Kata Mereka?
-            </h1>
-        </div>
-        <Carousel
-            responsive={responsive}
-            autoPlay
-            infinite
-            arrows
-            showDots={true}
-            dotListClass="custom-dot-list-style"
-            itemClass="carousel-item-padding-20-px"
-        >
-            {ulasanData.map((ulasan) => (
-                <div
-                    key={ulasan.id}
-                    className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 duration-300"
-                >
-                    <div className="flex items-center justify-center mb-4">
-                        <img
-                            src={`storage/fotos/${ulasan.siswa.foto}`}
-                            alt={`${ulasan.siswa.nama} photo`}
-                            className="w-24 h-24 rounded-full border-4 border-purple-500 shadow-lg"
-                        />
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-8" data-aos="fade-up">
+                            <h1 className="text-4xl font-bold mb-4 text-purple-800">
+                                Apa Kata Mereka?
+                            </h1>
+                        </div>
+                        <Carousel
+                            responsive={responsive}
+                            autoPlay
+                            infinite
+                            arrows
+                            showDots={true}
+                            dotListClass="custom-dot-list-style"
+                            itemClass="carousel-item-padding-20-px"
+                        >
+                            {ulasanData.map((ulasan) => (
+                                <div
+                                    key={ulasan.id}
+                                    className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 duration-300"
+                                >
+                                    <div className="flex items-center justify-center mb-4">
+                                        <img
+                                            src={`storage/fotos/${ulasan.siswa.foto}`}
+                                            alt={`${ulasan.siswa.nama} photo`}
+                                            className="w-24 h-24 rounded-full border-4 border-purple-500 shadow-lg"
+                                        />
+                                    </div>
+                                    <h2 className="text-xl font-semibold text-center mb-2 text-purple-900">
+                                        {ulasan.siswa.nama}
+                                    </h2>
+                                    <p className="text-gray-600 mb-2 text-center">
+                                        {ulasan.siswa.email}
+                                    </p>
+                                    <div className="text-center mb-2">
+                                        {renderStars(ulasan.penilaian)}{" "}
+                                        {/* Display stars */}
+                                    </div>
+                                    <p className="text-gray-800 text-center">
+                                        {ulasan.komentar}
+                                    </p>
+                                </div>
+                            ))}
+                        </Carousel>
                     </div>
-                    <h2 className="text-xl font-semibold text-center mb-2 text-purple-900">
-                        {ulasan.siswa.nama}
-                    </h2>
-                    <p className="text-gray-600 mb-2 text-center">
-                        {ulasan.siswa.email}
-                    </p>
-                    <div className="text-center mb-2">
-                        {renderStars(ulasan.penilaian)} {/* Display stars */}
-                    </div>
-                    <p className="text-gray-800 text-center">
-                        {ulasan.komentar}
-                    </p>
                 </div>
-            ))}
-        </Carousel>
-    </div>
-</div>
                 <div
                     className="md:col-span-1 text-center relative top-2"
                     data-aos="fade-left"
                 >
                     <div style={{ overflow: "hidden" }}>
                         <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.806268294965!2d106.7925888740973!3d-6.289176161555781!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f1ead17c309f%3A0xc1f346ea893a18be!2sZENIUS%20CENTER!5e0!3m2!1sid!2sid!4v1720591356159!5m2!1sid!2sid"
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3310.002367157647!2d106.79258077409723!3d-6.289176161555731!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f1a3b89448c9%3A0x3d08c6224ca74cd0!2sNew%20Primagama%20-%20Fatmawati%20-%20Jakarta%20Selatan!5e1!3m2!1sid!2sid!4v1723790365731!5m2!1sid!2sid"
                             width="100%"
                             height="450"
                             style={{ border: 0 }}
-                            allowFullScreen=""
+                            allowfullscreen=""
                             loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
+                            referrerpolicy="no-referrer-when-downgrade"
                         ></iframe>
                     </div>
                 </div>

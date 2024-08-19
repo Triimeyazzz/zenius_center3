@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "@inertiajs/inertia-react";
 
-const Edit = ({ program_bimbingan, siswa }) => {
+const Edit = ({  siswa }) => {
     const { data, setData, put, errors } = useForm({
         nama: siswa.nama || "",
         email: siswa.email || "",
@@ -24,7 +24,6 @@ const Edit = ({ program_bimbingan, siswa }) => {
         no_telp_hp_ibu: siswa.no_telp_hp_ibu || "",
         no_wa_id_line_ibu: siswa.no_wa_id_line_ibu || "",
         email_ibu: siswa.email_ibu || "",
-        id_program_bimbingan: siswa.id_program_bimbingan || "",
         foto: null,
     });
 
@@ -282,40 +281,7 @@ const Edit = ({ program_bimbingan, siswa }) => {
                     </div>
                 </fieldset>
 
-                {/* Program Bimbingan */}
-                <fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-indigo-50">
-                    <legend className="text-xl font-semibold mb-4 text-indigo-700">
-                        Program Bimbingan
-                    </legend>
-                    <div className="mb-4">
-                        <label
-                            htmlFor="id_program_bimbingan"
-                            className="block text-sm font-medium text-gray-700 mb-1"
-                        >
-                            Pilih Program Bimbingan
-                        </label>
-                        <select
-                            id="id_program_bimbingan"
-                            name="id_program_bimbingan"
-                            value={data.id_program_bimbingan}
-                            onChange={handleChange}
-                            className="w-full p-3 border border-indigo-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        >
-                            <option value="">Pilih Program Bimbingan</option>
-                            {program_bimbingan.map((program) => (
-                                <option key={program.id} value={program.id}>
-                                    {program.nama_program}
-                                </option>
-                            ))}
-                        </select>
-                        {errors.id_program_bimbingan && (
-                            <div className="text-red-600 text-sm mt-1">
-                                {errors.id_program_bimbingan}
-                            </div>
-                        )}
-                    </div>
-                </fieldset>
-
+                
                 {/* Foto */}
                 <fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-indigo-50">
                     <legend className="text-xl font-semibold mb-4 text-indigo-700">

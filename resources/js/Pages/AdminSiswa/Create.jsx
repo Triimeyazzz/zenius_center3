@@ -3,7 +3,7 @@ import { useForm } from '@inertiajs/inertia-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const Create = ({ program_bimbingan }) => {
+const Create = ({ siswas }) => {
     const { data, setData, post, errors } = useForm({
         nama: '',
         email: '',
@@ -29,9 +29,11 @@ const Create = ({ program_bimbingan }) => {
         no_telp_hp_ibu: '',
         no_wa_id_line_ibu: '',
         email_ibu: '',
-        id_program_bimbingan: '',
         foto: null,
-        kelas: ''  // Add this line
+        kelas: '',
+        mulai_bimbingan: '',
+        jam_bimbingan: '',
+        hari_bimbingan: [], // Handle multiple selections
     });
 
     const [fotoPreview, setFotoPreview] = useState(null);
@@ -48,6 +50,12 @@ const Create = ({ program_bimbingan }) => {
             };
             if (file) {
                 reader.readAsDataURL(file);
+            }
+        } else if (type === 'checkbox') {
+            if (e.target.checked) {
+                setData(name, [...data[name], value]);
+            } else {
+                setData(name, data[name].filter(day => day !== value));
             }
         } else {
             setData(name, value);
@@ -71,8 +79,7 @@ const Create = ({ program_bimbingan }) => {
             }
         });
     };
-
-    return (
+        return (
         <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
             <div className="text-center mb-6">
                 <img src="/images/Reverse.png" alt="Logo" className="mx-auto mb-4 w-32 h-auto" />
@@ -185,28 +192,58 @@ const Create = ({ program_bimbingan }) => {
                     </div>
                 </fieldset>
 
-{/* Program Bimbingan */}
-<fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-green-50">
-                    <legend className="text-xl font-semibold mb-4 text-indigo-700">Program Bimbingan</legend>
-                    <div className="mb-6">
-                    <label htmlFor="id_program_bimbingan" className="block text-sm font-medium text-gray-700 mb-1">Program Bimbingan</label>
-                    <select
-                        id="select-program_bimbingan" // Unique ID
-                        name="id_program_bimbingan"
-                        value={data.id_program_bimbingan}
-                        onChange={handleChange}
-                        className="w-full p-3 border border-indigo-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                        <option value="">Pilih Program</option>
-                        {program_bimbingan.map(program => (
-                            <option key={program.id} value={program.id}>
-                                {program.nama_program}
-                            </option>
-                        ))}
-                    </select>
-                    {errors.id_program_bimbingan && <div className="text-red-600 text-sm mt-1">{errors.id_program_bimbingan}</div>}
-                </div>
+                {/* Bimbingan Information */}
+                <fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-gray-50">
+                    <legend className="text-xl font-semibold mb-4 text-indigo-700">Informasi Bimbingan</legend>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="mb-4">
+                            <label htmlFor="mulai_bimbingan" className="block text-sm font-medium text-gray-700 mb-1">Mulai Bimbingan</label>
+                            <input
+                                id="mulai_bimbingan"
+                                name="mulai_bimbingan"
+                                type="date"
+                                value={data.mulai_bimbingan}
+                                onChange={handleChange}
+                                className="w-full p-3 border border-indigo-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
+                            {errors.mulai_bimbingan && <div className="text-red-600 text-sm mt-1">{errors.mulai_bimbingan}</div>}
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="jam_bimbingan" className="block text-sm font-medium text-gray-700 mb-1">Jam Bimbingan</label>
+                            <input
+                                id="jam_bimbingan"
+                                name="jam_bimbingan"
+                                type="time"
+                                value={data.jam_bimbingan}
+                                onChange={handleChange}
+                                className="w-full p-3 border border-indigo-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
+                            {errors.jam_bimbingan && <div className="text-red-600 text-sm mt-1">{errors.jam_bimbingan}</div>}
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="hari_bimbingan" className="block text-sm font-medium text-gray-700 mb-1">Hari Bimbingan</label>
+                            <div>
+                                {['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'].map(day => (
+                                    <label key={day} className="inline-flex items-center mr-4">
+                                        <input
+                                            type="checkbox"
+                                            name="hari_bimbingan"
+                                            value={day}
+                                            checked={data.hari_bimbingan.includes(day)}
+                                            onChange={handleChange}
+                                            className="form-checkbox"
+                                        />
+                                        <span className="ml-2">{day}</span>
+                                    </label>
+                                ))}
+                            </div>
+                            {errors.hari_bimbingan && <div className="text-red-600 text-sm mt-1">{errors.hari_bimbingan}</div>}
+                        </div>
+                    </div>
                 </fieldset>
+
 
                 {/* Photo Upload */}
                 <fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-gray-50">

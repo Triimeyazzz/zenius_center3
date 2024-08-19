@@ -5,7 +5,7 @@ import DeleteConfirmationModal from "@/Components/DeleteConfirmationModal";
 import { CSVLink } from "react-csv"; // Add this import
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const Index = ({ siswa = [], program_bimbingan = [], auth }) => {
+const Index = ({ siswa = [],  auth }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSiswaId, setSelectedSiswaId] = useState(null);
     const [search, setSearch] = useState("");
@@ -50,10 +50,7 @@ const Index = ({ siswa = [], program_bimbingan = [], auth }) => {
             TglLahir: item.tanggal_lahir,
             Alamat: item.alamat,
             NoTelp: item.no_telpon,
-            ProgramBimbingan:
-                program_bimbingan.find(
-                    (p) => p.id === item.id_program_bimbingan
-                )?.nama_program || "N/A",
+            
         }));
     };
 
@@ -130,9 +127,6 @@ const Index = ({ siswa = [], program_bimbingan = [], auth }) => {
                                     No. Telp
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider border-b border-gray-200">
-                                    Program Bimbingan
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider border-b border-gray-200">
                                     Action
                                 </th>
                             </tr>
@@ -182,13 +176,7 @@ const Index = ({ siswa = [], program_bimbingan = [], auth }) => {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {item.no_telpon}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {program_bimbingan.find(
-                                                (p) =>
-                                                    p.id ===
-                                                    item.id_program_bimbingan
-                                            )?.nama_program || "N/A"}
-                                        </td>
+                                        
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center space-x-4">
                                             <a
                                                 href={route(

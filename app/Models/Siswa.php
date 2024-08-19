@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -38,19 +37,25 @@ class Siswa extends Model implements Authenticatable
         'no_telp_hp_ibu',
         'no_wa_id_line_ibu',
         'email_ibu',
-        'id_program_bimbingan',
         'foto',
-        'kelas',
-    'user_id', // Add this line
+        'user_id',
+        'mulai_bimbingan', // Add this line
+        'jam_bimbingan', // Add this line
+        'hari_bimbingan', // Add this line
+    ];
+
+    protected $hidden = [
+        'password',
+    ];
+
+    protected $casts = [
+        'hari_bimbingan' => 'array', // Automatically cast to array when retrieved from the database
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-    protected $hidden = [
-        'password',
-    ];
 
     public function tryOuts()
     {
@@ -61,11 +66,12 @@ class Siswa extends Model implements Authenticatable
     {
         return $this->hasMany(Absensi::class, 'siswa_id');
     }
-    
+
     public function pembayarans()
     {
-        return $this->hasMany(Pembayaran::class, 'siswa_id'); // Adjust 'siswa_id' to the actual foreign key
+        return $this->hasMany(Pembayaran::class, 'siswa_id');
     }
+
     protected static function boot()
     {
         parent::boot();
@@ -74,21 +80,21 @@ class Siswa extends Model implements Authenticatable
             $siswa->tryOuts()->delete();
             $siswa->absensis()->delete();
             $siswa->messages()->delete();
-            $siswa->delete();
         });
     }
 
     public function sentMessages()
-{
-    return $this->morphMany(Message::class, 'sender');
-}
+    {
+        return $this->morphMany(Message::class, 'sender');
+    }
 
-public function receivedMessages()
-{
-    return $this->morphMany(Message::class, 'receiver');
-}
-public function getFormattedIdAttribute()
-{
-    return str_pad($this->id, 3, '0', STR_PAD_LEFT);
-}
+    public function receivedMessages()
+    {
+        return $this->morphMany(Message::class, 'receiver');
+    }
+
+    public function getFormattedIdAttribute()
+    {
+        return str_pad($this->id, 3, '0', STR_PAD_LEFT);
+    }
 }

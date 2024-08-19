@@ -116,5 +116,15 @@ public function destroyCicilan($id)
 
     return response()->json(['success' => true]);
 }
+public function cancel($id)
+{
+    $Pembayaran =Pembayaran::findOrFail($id);
+    if ($Pembayaran->status !== 'selesai') {
+        $Pembayaran->status = 'dibatalkan'; // Set status to canceled
+        $Pembayaran->save();
+        // Handle any additional logic here, e.g., notify users
+    }
+    return redirect()->route('pembayaran.index')->with('status', 'Pembayaran berhasil dibatalkan');
+}
 
 }

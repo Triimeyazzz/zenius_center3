@@ -106,15 +106,7 @@ export default function Authenticated({ user, header, children }) {
                                     Admin
                                 </NavLink>
                             </li>
-                            <li>
-                                <NavLink
-                                    href={route("program-bimbingan.index")}
-                                    active={route().current("program-bimbingan.index")}
-                                    className="block px-4 py-2 rounded-lg hover:bg-gray-200"
-                                >
-                                    Program Bimbingan
-                                </NavLink>
-                            </li>
+                            
                             <li>
                                 <NavLink
                                     href={route("adminsiswa.index")}
@@ -124,15 +116,7 @@ export default function Authenticated({ user, header, children }) {
                                     Siswa
                                 </NavLink>
                             </li>
-                            <li>
-                                <NavLink
-                                    href={route("data_bimbingan.index")}
-                                    active={route().current("data_bimbingan.index")}
-                                    className="block px-4 py-2 rounded-lg hover:bg-gray-200"
-                                >
-                                    Data Bimbingan
-                                </NavLink>
-                            </li>
+                            
                             <li>
                                 <NavLink
                                     href={route("tryout.index")}
@@ -169,6 +153,16 @@ export default function Authenticated({ user, header, children }) {
                                     Pembayaran
                                 </NavLink>
                             </li>
+                            <li>
+                                <NavLink
+                                    href={route("ulasan.createAdmin")}
+                                    active={route().current("ulasan.createAdmin")}
+                                    className="block px-4 py-2 rounded-lg hover:bg-gray-200"
+                                >
+                                    Ulasan 
+                                </NavLink>
+                            </li>
+                            
                         </ul>
                     </div>
                 </div>

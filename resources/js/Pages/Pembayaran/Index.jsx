@@ -148,7 +148,7 @@ export default function Index({ pembayaran, totalPemasukan, totalTagihan, sisaTa
                 <div className="bg-white shadow-md rounded-lg px-6 pt-4 pb-6 mb-6">
                     <input
                         type="text"
-                        placeholder="Search by siswa name..."
+                        placeholder="Cari siswa sesuai nama..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="border p-2 mb-4 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -173,6 +173,7 @@ export default function Index({ pembayaran, totalPemasukan, totalTagihan, sisaTa
                                         <a href={route('pembayaran.show', p.id)} className="text-blue-600 hover:text-blue-800">
                                             Detail
                                         </a>
+                                        
                                     </td>
                                 </tr>
                             ))}

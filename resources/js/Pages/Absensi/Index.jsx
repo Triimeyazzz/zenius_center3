@@ -33,9 +33,9 @@ export default function Index({ absensiGroupedByDate, classes, selectedClass, se
     
         const wb = XLSX.utils.book_new();
         
-        Object.entries(filteredData).forEach(([key, records]) => {
+        Object.entries(filteredData).forEach(([date, records]) => {
             // Sanitasi nama sheet
-            const sanitizedSheetName = key.replace(/[\/\\?*[\]:]/g, '_'); // Ganti karakter tidak valid dengan underscore
+            const sanitizedSheetName = date.replace(/[\/\\?*[\]:]/g, '_'); // Ganti karakter tidak valid dengan underscore
             const ws = XLSX.utils.json_to_sheet(records);
             XLSX.utils.sheet_add_aoa(ws, [['Tanggal', 'Nama Siswa', 'Kelas', 'Status', 'Keterangan']], { origin: 'A1' });
             XLSX.utils.book_append_sheet(wb, ws, sanitizedSheetName);
@@ -62,34 +62,37 @@ export default function Index({ absensiGroupedByDate, classes, selectedClass, se
         const columns = ['Tanggal', 'Nama Siswa', 'Kelas', 'Status', 'Keterangan'];
         let rows = [];
 
-        Object.values(filteredData).forEach(data => {
+        Object.entries(filteredData).forEach(([date, data]) => {
             data.forEach(item => {
                 rows.push([
-                    item.tanggal,
+                    date,
                     item.siswa.nama,
                     item.siswa.kelas,
                     item.status,
                     item.keterangan
                 ]);
             });
-        });
 
-        doc.autoTable({
-            startY: y,
-            head: [columns],
-            body: rows,
-            styles: {
-                fontSize: 12,
-                cellPadding: 5,
-                valign: 'middle',
-                halign: 'center'
-            },
-            headStyles: {
-                fillColor: [153, 50, 204],
-                textColor: [255, 255, 255],
-                fontStyle: 'bold'
-            },
-            margin: { top: 40 },
+            doc.autoTable({
+                startY: y,
+                head: [columns],
+                body: rows,
+                styles: {
+                    fontSize: 12,
+                    cellPadding: 5,
+                    valign: 'middle',
+                    halign: 'center'
+                },
+                headStyles: {
+                    fillColor: [153, 50, 204],
+                    textColor: [255, 255, 255],
+                    fontStyle: 'bold'
+                },
+                margin: { top: 40 },
+            });
+
+            // Reset rows for the next date
+            rows = [];
         });
 
         doc.save('daftar_absensi.pdf');
@@ -98,21 +101,15 @@ export default function Index({ absensiGroupedByDate, classes, selectedClass, se
     const filterData = (data) => {
         let filteredData = {};
 
-        // Organize data by month and date
+        // Organize data by date
         Object.entries(data).forEach(([date, absensi]) => {
             const dateObj = new Date(date);
-            const month = dateObj.toLocaleString('default', { month: 'long' });
             const formattedDate = dateObj.toLocaleDateString('id-ID'); // Format as dd-mm-yy
-
-            if (!filteredData[month]) {
-                filteredData[month] = [];
-            }
 
             if (!filteredData[formattedDate]) {
                 filteredData[formattedDate] = [];
             }
 
-            filteredData[month].push(...absensi);
             filteredData[formattedDate].push(...absensi);
         });
 
@@ -242,9 +239,6 @@ export default function Index({ absensiGroupedByDate, classes, selectedClass, se
                                 <option key={index} value={kelas}>{kelas}</option>
                             ))}
                         </select>
-                        
-                    </div>
-                    <div className="flex space-x-4">
                         <select
                             value={periode}
                             onChange={(e) => setPeriode(e.target.value)}
@@ -275,69 +269,71 @@ export default function Index({ absensiGroupedByDate, classes, selectedClass, se
                         )}
                         <button
                             onClick={handleFilterChange}
-                            className="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition"
+                            className="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
                         >
-                            Terapkan Filter
+                            Filter
                         </button>
                     </div>
                 </div>
 
-                <table className="w-full bg-white border border-gray-300 rounded-lg shadow-md">
-                    <thead className="bg-gray-100 text-gray-600">
-                        <tr>
-                            <th className="p-3 border-b">Tanggal</th>
-                            <th className="p-3 border-b">Nama Siswa</th>
-                            <th className="p-3 border-b">Kelas</th>
-                            <th className="p-3 border-b">Status</th>
-                            <th className="p-3 border-b">Keterangan</th>
-                            <th className="p-3 border-b">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {Object.entries(filterData(absensiGroupedByDate)).map(([date, absensi]) =>
-                            absensi.map((item) => (
-                                <tr key={item.id}>
-                                    <td className="p-3 border-b">{item.tanggal}</td>
-                                    <td className="p-3 border-b">
-                                        <button
-                                            onClick={() => handleViewStudentAbsences(item.siswa_id)}
-                                            className="text-blue-600 underline"
-                                        >
-                                            {item.siswa.nama}
-                                        </button>
-                                    </td>
-                                    <td className="p-3 border-b">{item.siswa.kelas}</td>
-                                    <td className="p-3 border-b">{item.status}</td>
-                                    <td className="p-3 border-b">{item.keterangan}</td>
-                                    <td className="p-3 border-b">
-                                        <button
-                                            onClick={() => handleDelete(item.id)}
-                                            className="text-red-600 underline"
-                                        >
-                                            Hapus
-                                        </button>
-                                    </td>
+                {Object.keys(filterData(absensiGroupedByDate)).map(date => (
+                    <div key={date} className="mb-6">
+                        <h2 className="text-xl font-semibold text-gray-800 mb-4">Tanggal: {date}</h2>
+                        <table className="min-w-full divide-y divide-gray-200 bg-white border border-gray-300 rounded-lg shadow-md">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Siswa</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {filterData(absensiGroupedByDate)[date].map((absensi) => (
+                                    <tr key={absensi.id}>
+<td className="border px-4 py-2 cursor-pointer text-blue-600" onClick={() => handleViewStudentAbsences(absensi.siswa_id)}>
+                                        {absensi.siswa.nama}
+                                    </td>                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{absensi.siswa.kelas}</td>
+                                        <td className="border px-6 py-4 whitespace-nowrap text-sm text-gray-500">{absensi.status}</td>
+                                        <td className="border px-6 py-4 whitespace-nowrap text-sm text-gray-500">{absensi.keterangan}</td>
+                                        <td className="border px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
+                                            <button
+                                                onClick={() => handleViewStudentAbsences(absensi.siswa_id)}
+                                                className="text-indigo-600 hover:text-indigo-900"
+                                            >
+                                                Lihat
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(absensi.id)}
+                                                className="ml-4 text-red-600 hover:text-red-900"
+                                            >
+                                                Hapus
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                ))}
 
+                {/* Modal for confirmation */}
                 {showModal && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+                    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg">
-                            <h2 className="text-xl font-semibold mb-4">Konfirmasi Hapus</h2>
+                            <h3 className="text-lg font-semibold mb-4">Konfirmasi Hapus</h3>
                             <p>Apakah Anda yakin ingin menghapus data ini?</p>
-                            <div className="flex justify-end space-x-4 mt-4">
+                            <div className="flex justify-end mt-4">
                                 <button
                                     onClick={confirmDelete}
-                                    className="bg-red-600 text-white px-4 py-2 rounded-lg"
+                                    className="bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700 transition"
                                 >
                                     Hapus
                                 </button>
                                 <button
                                     onClick={closeModal}
-                                    className="bg-gray-600 text-white px-4 py-2 rounded-lg"
+                                    className="ml-4 bg-gray-600 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition"
                                 >
                                     Batal
                                 </button>
@@ -346,34 +342,35 @@ export default function Index({ absensiGroupedByDate, classes, selectedClass, se
                     </div>
                 )}
 
+                {/* Modal for viewing student absences */}
                 {selectedStudentId && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 max-w-lg relative">
-                            <h2 className="text-xl font-semibold mb-4">Absensi Siswa</h2>
-                            <button
-                                onClick={handleCloseStudentModal}
-                                className="absolute top-2 right-2 text-gray-600 hover:text-gray-800 text-2xl"
-                            >
-                                &times;
-                            </button>
-                            <table className="w-full bg-white border border-gray-300 rounded-lg shadow-md">
-                                <thead className="bg-gray-100 text-gray-600">
+                    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl w-full">
+                            <h3 className="text-lg font-semibold mb-4">Absensi Siswa</h3>
+                            <table className="min-w-full divide-y divide-gray-200 bg-white border border-gray-300 rounded-lg shadow-md">
+                                <thead className="bg-gray-50">
                                     <tr>
-                                        <th className="p-3 border-b">Tanggal</th>
-                                        <th className="p-3 border-b">Status</th>
-                                        <th className="p-3 border-b">Keterangan</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    {studentAbsences.map((item) => (
-                                        <tr key={item.id}>
-                                            <td className="p-3 border-b">{item.tanggal}</td>
-                                            <td className="p-3 border-b">{item.status}</td>
-                                            <td className="p-3 border-b">{item.keterangan}</td>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {studentAbsences.map((absence) => (
+                                        <tr key={absence.id}>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{absence.tanggal}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{absence.status}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{absence.keterangan}</td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
+                            <button
+                                onClick={handleCloseStudentModal}
+                                className="mt-4 bg-gray-600 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition"
+                            >
+                                Tutup
+                            </button>
                         </div>
                     </div>
                 )}
