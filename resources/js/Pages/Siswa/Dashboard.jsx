@@ -114,7 +114,7 @@ const Dashboard = ({ user, chartLabels = [], chartData = [], absensiLabels = [],
                 <div className="bg-white shadow-lg rounded-lg p-4 mb-6 border-t-4 border-purple-500">
                     <h2 className="text-xl font-semibold mb-2 text-purple-700">Jumlah yang Harus Dibayar</h2>
                     <p className="text-gray-600 mb-4">
-                        Total pembayaran yang harus Anda lakukan saat ini.
+                        Total pembayaran yang harus Anda lakukan saat ini. 
                     </p>
                     <p className="text-2xl font-bold text-purple-800">{totalToPay.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</p>
                 </div>

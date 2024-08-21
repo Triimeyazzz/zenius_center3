@@ -71,15 +71,15 @@ const ExampleChart = ({ data = {}, siswa }) => {
     }, [selectedSubtopics]);
 
     return (
-        <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-lg">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-extrabold text-gray-800">
+        <div className="p-4 sm:p-6 bg-white border border-gray-200 rounded-lg shadow-lg">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800">
                     Grafik Kemajuan <span className="text-purple-600">{siswa?.nama || 'Siswa'}</span>
                 </h1>
-                <div>
+                <div className="flex flex-col sm:flex-row mt-4 sm:mt-0">
                     <a 
                         href={`/tryout/${siswa?.id}/create`} 
-                        className="bg-indigo-600 text-white px-4 py-2 rounded-md mr-2 hover:bg-indigo-700 transition duration-300 ease-in-out"
+                        className="bg-indigo-600 text-white px-4 py-2 rounded-md mr-2 mb-2 sm:mb-0 hover:bg-indigo-700 transition duration-300 ease-in-out"
                     >
                         Tambah Data
                     </a>
@@ -95,12 +95,12 @@ const ExampleChart = ({ data = {}, siswa }) => {
                 <Line data={chartData} options={options} />
             </div>
             <div>
-                <h3 className="text-2xl font-semibold text-gray-700 mb-4">Subtopik:</h3>
+                <h3 className="text-xl sm:text-2xl font-semibold text-gray-700 mb-4">Subtopik:</h3>
                 <div className="space-y-4">
                     {selectedSubtopics.length > 0 ? (
                         selectedSubtopics.map((subtopic, index) => (
                             <div key={index} className="bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm">
-                                <h4 className="text-xl font-semibold text-indigo-600">{subtopic.sub_mata_pelajaran}</h4>
+                                <h4 className="text-lg sm:text-xl font-semibold text-indigo-600">{subtopic.sub_mata_pelajaran}</h4>
                                 <p className="text-gray-700">Skor: {subtopic.skor}</p>
                             </div>
                         ))

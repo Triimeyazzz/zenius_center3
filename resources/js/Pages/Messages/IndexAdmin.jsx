@@ -60,7 +60,7 @@ const IndexAdmin = ({ siswa, auth }) => {
                 </li>
               ))
             ) : (
-              <li className="text-gray-500">No students found</li>
+              <li className="text-gray-500">Tidak ada Siswa yang sesuai</li>
             )}
           </ul>
         </div>

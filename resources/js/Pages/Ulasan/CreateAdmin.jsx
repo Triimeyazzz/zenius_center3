@@ -16,7 +16,10 @@ export default function CreateAdmin({ auth, ulasans }) { // Receive ulasans as p
     };
 
     return (
-        <AuthenticatedLayout user={auth}>
+        <AuthenticatedLayout 
+        user={auth.user}
+
+        >
             <Head title="Buat Ulasan" />
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -103,6 +106,7 @@ export default function CreateAdmin({ auth, ulasans }) { // Receive ulasans as p
                                                             <span key={i} className="text-gray-300 text-xl">★</span>
                                                         ))}
                                                     </div>
+                                                    <a href="" className="text-red-500 text-sm mt-2">Hapus</a>
                                                 </div>
                                             </div>
                                         </div>

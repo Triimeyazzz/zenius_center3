@@ -36,6 +36,7 @@ class Siswa extends Model implements Authenticatable
         'pekerjaan_ibu',
         'no_telp_hp_ibu',
         'no_wa_id_line_ibu',
+        'kelas',
         'email_ibu',
         'foto',
         'user_id',
@@ -94,7 +95,8 @@ class Siswa extends Model implements Authenticatable
     }
 
     public function getFormattedIdAttribute()
-    {
-        return str_pad($this->id, 3, '0', STR_PAD_LEFT);
-    }
+{
+    return $this->id; // or simply remove this method if it's no longer needed
+}
+
 }

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from '@inertiajs/inertia-react';
 import StudentLayout from '@/Layouts/StudentLayout';
+import { FaFileAlt, FaFileImage, FaFilePdf, FaFileAudio, FaFileVideo } from 'react-icons/fa';
 
-const IndexStudent = ({ messages, user }) => {
+const IndexStudent = ({ messages, receiver, user }) => {
   const { data, setData, post, processing, errors } = useForm({
     message: '',
     attachment: null,
@@ -11,9 +12,10 @@ const IndexStudent = ({ messages, user }) => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [newMessages, setNewMessages] = useState([]);
   const [notification, setNotification] = useState('');
+  const [modalImage, setModalImage] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    // Polling interval (e.g., every 30 seconds)
     const interval = setInterval(() => {
       fetchNewMessages();
     }, 30000);
@@ -59,6 +61,36 @@ const IndexStudent = ({ messages, user }) => {
     }
   };
 
+  const openModal = (image) => {
+    setModalImage(image);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalImage(null);
+    setIsModalOpen(false);
+  };
+
+  const getFileIcon = (fileName) => {
+    const extension = fileName.split('.').pop().toLowerCase();
+    switch (extension) {
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+        return <FaFileImage className="text-blue-500 w-6 h-6" />;
+      case 'pdf':
+        return <FaFilePdf className="text-red-500 w-6 h-6" />;
+      case 'mp3':
+      case 'wav':
+        return <FaFileAudio className="text-green-500 w-6 h-6" />;
+      case 'mp4':
+      case 'avi':
+        return <FaFileVideo className="text-yellow-500 w-6 h-6" />;
+      default:
+        return <FaFileAlt className="text-gray-500 w-6 h-6" />;
+    }
+  };
+
   return (
     <StudentLayout siswa={user}>
       <div className="flex flex-col h-screen bg-gray-100 rounded-lg">
@@ -71,21 +103,37 @@ const IndexStudent = ({ messages, user }) => {
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex ${message.sender_name === 'You' ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${receiver && message.sender_name === receiver.name ? 'justify-start' : 'justify-end'}`}
               >
                 <div
-                  className={`max-w-full sm:max-w-xs p-3 rounded-lg shadow-md ${
-                    message.sender_name === 'You' ? 'bg-blue-500 text-white' : 'bg-white text-gray-800'
+                  className={`max-w-xs p-3 rounded-lg shadow-xl ${
+                    receiver && message.sender_name === receiver.name ? 'bg-white text-black' : 'bg-purple-700 text-white'
                   }`}
                 >
                   <p className="text-sm font-semibold">{message.sender_name}</p>
                   <p className="text-base mt-1">{message.message}</p>
                   {message.attachment && (
-                    <img
-                      src={message.attachment}
-                      alt="Attachment"
-                      className="mt-2 max-w-full rounded-lg"
-                    />
+                    <div className="mt-2 flex items-center">
+                      {message.attachment.endsWith('.jpg') || message.attachment.endsWith('.png') ? (
+                        
+                          <img
+                            src={message.attachment}
+                            alt="Attachment"
+                            className="max-w-full rounded-lg cursor-pointer"
+                            onClick={() => openModal(message.attachment)} // Open modal on click
+                          />
+                        
+                      ) : (
+                        <a
+                          href={message.attachment}
+                          download
+                          className="flex items-center hover:bg-gray-200 p-2 rounded-lg transition duration-200"
+                        >
+                          {getFileIcon(message.attachment)} {/* Show file icon */}
+                          <span className="ml-2 text-sm">{message.attachment.split('/').pop()}</span>
+                        </a>
+                      )}
+                    </div>
                   )}
                   <p className="text-xs text-gray-500 mt-1">{message.created_at}</p>
                 </div>
@@ -127,6 +175,18 @@ const IndexStudent = ({ messages, user }) => {
           {errors.attachment && <div className="text-red-500 mt-2">{errors.attachment}</div>}
         </footer>
       </div>
+
+      {/* Modal for enlarged image */}
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="relative bg-white p-4 rounded-lg">
+            <img src={modalImage} alt="Enlarged" className="max-w-full rounded-lg" />
+            <button onClick={closeModal} className="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
     </StudentLayout>
   );
 };

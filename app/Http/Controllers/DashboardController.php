@@ -17,12 +17,10 @@ class DashboardController extends Controller
     {
         $totalAdmins = User::count();
         $totalSiswa = Siswa::count();
-        $totalCourses = ProgramBimbingan::count();
 
         return response()->json([
             'totalAdmins' => $totalAdmins,
             'totalSiswa' => $totalSiswa,
-            'totalCourses' => $totalCourses,
         ]);
     }
 
@@ -35,12 +33,10 @@ class DashboardController extends Controller
     {
         $admins = User::take(5)->get();
         $siswa = Siswa::take(5)->get();
-        $courses = ProgramBimbingan::take(5)->get();
 
         return response()->json([
             'admins' => $admins,
             'siswa' => $siswa,
-            'courses' => $courses,
         ]);
     }
 }

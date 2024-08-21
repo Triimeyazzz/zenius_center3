@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { Inertia } from "@inertiajs/inertia";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import DeleteConfirmationModal from "@/Components/DeleteConfirmationModal";
-import { CSVLink } from "react-csv"; // Add this import
+import { CSVLink } from "react-csv";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const Index = ({ siswa = [],  auth }) => {
+const Index = ({ siswa = [], auth }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSiswaId, setSelectedSiswaId] = useState(null);
     const [search, setSearch] = useState("");
+    const [kelasFilter, setKelasFilter] = useState(""); // State untuk filter kelas
 
     const openModal = (id) => {
         setSelectedSiswaId(id);
@@ -35,11 +36,15 @@ const Index = ({ siswa = [],  auth }) => {
         setSearch(event.target.value);
     };
 
-    const filteredSiswa = siswa.filter(
-        (item) =>
-            item.nama.toLowerCase().includes(search.toLowerCase()) ||
-            item.email.toLowerCase().includes(search.toLowerCase())
-    );
+    const handleKelasFilterChange = (event) => {
+        setKelasFilter(event.target.value);
+    };
+
+    const filteredSiswa = siswa.filter((item) => {
+        const matchesSearch = item.nama.toLowerCase().includes(search.toLowerCase()) || item.email.toLowerCase().includes(search.toLowerCase());
+        const matchesKelas = kelasFilter === "" || item.kelas === kelasFilter;
+        return matchesSearch && matchesKelas;
+    });
 
     const generateCSVData = () => {
         return siswa.map((item) => ({
@@ -50,7 +55,6 @@ const Index = ({ siswa = [],  auth }) => {
             TglLahir: item.tanggal_lahir,
             Alamat: item.alamat,
             NoTelp: item.no_telpon,
-            
         }));
     };
 
@@ -63,7 +67,7 @@ const Index = ({ siswa = [],  auth }) => {
                 </h2>
             }
         >
-            <div className="p-6 bg-white shadow-md sm:rounded-lg">
+            <div className="p-6 bg-white shadow-md sm:rounded-lg ">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">Daftar Siswa</h1>
                     <a
@@ -73,21 +77,63 @@ const Index = ({ siswa = [],  auth }) => {
                         Tambah Siswa
                     </a>
                 </div>
-                <div className="mb-4 flex items-center">
-                    <input
-                        type="text"
-                        value={search}
-                        onChange={handleSearchChange}
-                        placeholder="Cari siswa..."
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    />
-                </div>
+
+                <div className="mb-4 flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+    <div className="relative w-full sm:w-auto">
+        <input
+            type="text"
+            value={search}
+            onChange={handleSearchChange}
+            placeholder="Cari siswa..."
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-3 pl-10 transition duration-300 ease-in-out transform hover:scale-105"
+        />
+        <svg
+            className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-4.35-4.35M16.65 7a9 9 0 110-9 9 9 0 010 9z"></path>
+        </svg>
+    </div>
+    <div className="relative w-full sm:w-auto">
+        <select
+            value={kelasFilter}
+            onChange={handleKelasFilterChange}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-3 transition duration-300 ease-in-out transform hover:scale-105"
+        >
+            <option value="">Semua Kelas</option>
+            <option value="Kelas 4 SD">Kelas 4 SD</option>
+            <option value="Kelas 5 SD">Kelas 5 SD</option>
+            <option value="Kelas 6 SD">Kelas 6 SD</option>
+            <option value="Kelas 7 SMP">Kelas 7 SMP</option>
+            <option value="Kelas 8 SMP">Kelas 8 SMP</option>
+            <option value="Kelas 9 SMP">Kelas 9 SMP</option>
+            <option value="Kelas 10 SMA">Kelas 10 SMA</option>
+            <option value="Kelas 11 SMA">Kelas 11 SMA</option>
+            <option value="Kelas 12 SMA">Kelas 12 SMA</option>
+            <option value="Alumni SMA">Alumni SMA</option>
+        </select>
+        <svg
+            className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+    </div>
+</div>
+
+
                 <div className="mb-4 p-4 bg-white border border-gray-200 shadow-md rounded-lg">
                     <h3 className="text-lg font-semibold text-gray-700 mb-2">
                         Total Siswa
                     </h3>
                     <p className="text-2xl font-bold text-gray-900">
-                        {siswa.length}
+                        {filteredSiswa.length}
                     </p>
                 </div>
 

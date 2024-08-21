@@ -92,6 +92,7 @@ Route::post('/pembayaran/{pembayaran}/batal', [PembayaranController::class, 'bat
 
 Route::get('/ulasan/createAdmin', [UlasanController::class, 'createAdmin'])->name('ulasan.createAdmin');
 Route::post('/ulasan/storeAdmin', [UlasanController::class, 'storeAdmin'])->name('ulasan.storeAdmin');
+Route::delete('/ulasan/{id}', [UlasanController::class, 'destroy'])->name('ulasan.destroy');
 });
 
     

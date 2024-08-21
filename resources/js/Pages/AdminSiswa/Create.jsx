@@ -102,7 +102,18 @@ const Create = ({ siswas }) => {
                             { label: 'Instagram', name: 'instagram', type: 'text' },
                             { label: 'No Telepon', name: 'no_telpon', type: 'text' },
                             { label: 'No WA', name: 'no_wa', type: 'text' },
-                            { label: 'Kelas', name: 'kelas', type: 'select', options: ['Kelas 4 SD', 'Kelas 5 SD', 'Kelas 6 SD', 'Kelas 7 SMP', 'Kelas 8 SMP', 'Kelas 9 SMP', 'Kelas 10 SMA', 'Kelas 11 SMA', 'Kelas 12 SMA', 'Alumni SMA']}
+                            { label: 'Kelas', name: 'kelas', type: 'select', options: [
+                                'Kelas 4 SD',
+                                'Kelas 5 SD',
+                                'Kelas 6 SD',
+                                'Kelas 7 SMP',
+                                'Kelas 8 SMP',
+                                'Kelas 9 SMP',
+                                'Kelas 10 SMA',
+                                'Kelas 11 SMA',
+                                'Kelas 12 SMA',
+                                'Alumni SMA'
+                            ]}
                         ].map(({ label, name, type, options }) => (
                             <div className="mb-4" key={name}>
                                 <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>

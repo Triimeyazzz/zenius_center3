@@ -106,7 +106,7 @@ const UserForm = ({ data, setData, handleSubmit, roles, processing, errors }) =>
 const UserList = ({ users }) => (
     <ul>
         {users.length === 0 ? (
-            <li className="text-gray-600">No Admin found.</li>
+            <li className="text-gray-600">Nama tidak terdeteksi.</li>
         ) : (
             users.map((user) => (
                 <li

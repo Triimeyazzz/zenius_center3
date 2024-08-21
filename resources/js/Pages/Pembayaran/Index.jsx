@@ -116,9 +116,9 @@ export default function Index({ pembayaran, totalPemasukan, totalTagihan, sisaTa
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Pembayaran</h2>}
         >
             <div className="max-w-6xl mx-auto p-6 lg:p-8">
-                <div className="flex justify-between items-center mb-6 bg-gradient-to-r from-purple-600 to-teal-600 text-white p-4 rounded-md shadow-md">
+                <div className="flex flex-col md:flex-row justify-between items-center mb-6 bg-gradient-to-r from-purple-600 to-teal-600 text-white p-4 rounded-md shadow-xl">
                     <h1 className="text-3xl font-bold">Daftar Pembayaran</h1>
-                    <div>
+                    <div className="mt-4 md:mt-0">
                         <a
                             href={route('pembayaran.create')}
                             className="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded"
@@ -158,6 +158,7 @@ export default function Index({ pembayaran, totalPemasukan, totalTagihan, sisaTa
                         <thead className="bg-purple-600 border-b border-gray-300 text-white">
                             <tr>
                                 <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">Siswa</th>
+                                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">Kelas</th>
                                 <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">Jumlah</th>
                                 <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">Status</th>
                                 <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">Aksi</th>
@@ -167,13 +168,13 @@ export default function Index({ pembayaran, totalPemasukan, totalTagihan, sisaTa
                             {filteredPembayaran.map((p) => (
                                 <tr key={p.id} className="border-b border-gray-200 hover:bg-gray-50">
                                     <td className="px-5 py-5 text-sm text-gray-900">{p.siswa.nama}</td>
+                                    <td className="px-5 py-5 text-sm text-gray-900">{p.siswa.kelas}</td>
                                     <td className="px-5 py-5 text-sm text-gray-900">Rp {p.jumlah.toLocaleString()}</td>
                                     <td className="px-5 py-5 text-sm text-gray-900">{p.status}</td>
                                     <td className="px-5 py-5 text-sm">
                                         <a href={route('pembayaran.show', p.id)} className="text-blue-600 hover:text-blue-800">
                                             Detail
                                         </a>
-                                        
                                     </td>
                                 </tr>
                             ))}
@@ -182,54 +183,28 @@ export default function Index({ pembayaran, totalPemasukan, totalTagihan, sisaTa
                 </div>
 
                 {showFinancialSummary && (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="my-modal">
-        <div className="relative top-20 mx-auto p-6 border w-11/12 md:w-3/4 shadow-lg rounded-lg bg-white">
-            <div className="mt-3 text-center">
-                <h3 className="text-lg leading-6 font-medium text-gray-900">Ringkasan Keuangan</h3>
-                <div className="mt-2 px-4 py-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-gray-50 p-4 rounded-lg shadow-md">
-                            <h4 className="font-semibold text-gray-800">Ringkasan Total</h4>
-                            <p>Total Pemasukan: Rp {totalPemasukan.toLocaleString()}</p>
-                            <p>Total Tagihan: Rp {totalTagihan.toLocaleString()}</p>
-                            <p>Sisa Tagihan: Rp {sisaTagihan.toLocaleString()}</p>
-                        </div>
-                        <div className="bg-gray-50 p-4 rounded-lg shadow-md">
-                            <h4 className="font-semibold text-gray-800">Pemasukan per Bulan</h4>
-                            <div className="h-64" ref={chartRef}>
-                                <Bar data={chartData} options={chartOptions} />
+                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="relative w-11/12 md:w-1/2 lg:w-1/3 p-6 border shadow-lg rounded-lg bg-white">
+                            <div className="text-center">
+                                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Ringkasan Keuangan</h3>
+                                <div className="mb-4">
+                                <p>Total Pemasukan: Rp {totalPemasukan.toLocaleString()}</p>
+                                    <h4 className="font-semibold">Total Tagihan: Rp {totalTagihan.toLocaleString()}</h4>
+                                    <h4 className="font-semibold">Sisa Tagihan: Rp {sisaTagihan.toLocaleString()}</h4>
+                                </div>
+                                <div ref={chartRef}>
+                                    <Bar data={chartData} options={chartOptions} />
+                                </div>
                             </div>
+                            <button
+                                className="mt-4 bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded"
+                                onClick={() => setShowFinancialSummary(false)}
+                            >
+                                Tutup
+                            </button>
                         </div>
                     </div>
-                </div>
-                <div className="items-center px-4 py-3">
-                    <button
-                        id="pdf-btn"
-                        className="px-4 py-2 bg-purple-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                        onClick={handleDownloadPDF}
-                    >
-                        Download PDF
-                    </button>
-                    <button
-                        id="excel-btn"
-                        className="px-4 py-2 bg-teal-600 text-white text-base font-medium rounded-md w-full mt-2 shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-300"
-                        onClick={handleDownloadExcel}
-                    >
-                        Download Excel
-                    </button>
-                    <button
-                        id="ok-btn"
-                        className="px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md w-full mt-2 shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-300"
-                        onClick={() => setShowFinancialSummary(false)}
-                    >
-                        Tutup
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-)}
-
+                )}
             </div>
         </AuthenticatedLayout>
     );

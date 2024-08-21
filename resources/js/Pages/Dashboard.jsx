@@ -9,7 +9,6 @@ export default function Dashboard({ auth }) {
     const [data, setData] = useState({
         totalAdmins: null,
         totalSiswa: null,
-        totalCourses: null,
         admins: [],
         siswa: [],
         courses: [],
@@ -28,7 +27,6 @@ export default function Dashboard({ auth }) {
                     ...prev,
                     totalAdmins: result.totalAdmins,
                     totalSiswa: result.totalSiswa,
-                    totalCourses: result.totalCourses
                 }));
             } catch (error) {
                 console.error('Error fetching count data:', error);
@@ -46,7 +44,6 @@ export default function Dashboard({ auth }) {
                     ...prev,
                     admins: result.admins,
                     siswa: result.siswa,
-                    courses: result.courses
                 }));
             } catch (error) {
                 console.error('Error fetching detailed data:', error);
@@ -72,8 +69,8 @@ export default function Dashboard({ auth }) {
                 <Head title="Dashboard" />
 
                 <div className="py-12 bg-gray-50">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
+                        <div className=" flex justify-between">
                             <div className="bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 text-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl">
                                 <h3 className="text-lg font-semibold">Total Admin</h3>
                                 <p className="text-3xl font-bold mt-2">{data.totalAdmins !== null ? data.totalAdmins : 'Loading...'}</p>
@@ -84,11 +81,7 @@ export default function Dashboard({ auth }) {
                                 <p className="text-3xl font-bold mt-2">{data.totalSiswa !== null ? data.totalSiswa : 'Loading...'}</p>
                                 <a href="/adminsiswa" className="text-purple-300 mt-4 inline-block hover:underline">Lihat Lebih Banyak</a>
                             </div>
-                            <div className="bg-gradient-to-r from-purple-300 via-purple-400 to-purple-500 text-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl">
-                                <h3 className="text-lg font-semibold">Total Paket</h3>
-                                <p className="text-3xl font-bold mt-2">{data.totalCourses !== null ? data.totalCourses : 'Loading...'}</p>
-                                <a href="/program-bimbingan" className="text-yellow-300 mt-4 inline-block hover:underline">Lihat Lebih Banyak</a>
-                            </div>
+                            
                         </div>
 
                        
@@ -144,30 +137,7 @@ export default function Dashboard({ auth }) {
                                 </div>
                             </div>
 
-                            <div>
-                                <h3 className="text-xl font-semibold text-gray-900 mb-4">Program Bimbingan</h3>
-                                <div className="overflow-x-auto bg-white shadow-lg rounded-lg border border-gray-200">
-                                    <table className="min-w-full divide-y divide-gray-300">
-                                        <thead className="bg-gradient-to-r from-purple-600 to-purple-700 text-white">
-                                            <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium">ID</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium">Nama Program</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium">Keuntungan</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
-                                            {data.courses.slice(0, 5).map(course => (
-                                                <tr key={course.id}>
-                                                    <td className="px-6 py-4 text-sm text-gray-500">{course.id}</td>
-                                                    <td className="px-6 py-4 text-sm text-gray-500">{course.nama_program}</td>
-                                                    <td className="px-6 py-4 text-sm text-gray-500">{course.keuntungan}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                    <a href="/program-bimbingan" className="text-purple-700 hover:underline block text-center py-4">Lihat Lebih Banyak</a>
-                                </div>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>

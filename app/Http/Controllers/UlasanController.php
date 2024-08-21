@@ -59,4 +59,9 @@ public function storeAdmin(Request $request)
     return redirect()->route('Ulasan/CreateAdmin')->with('success', 'Ulasan berhasil ditambahkan');
 }
 
+public function destroy(Ulasan $ulasan)
+{
+    $ulasan->delete();
+    return redirect()->route('Ulasan.CreateAdmin')->with('success', 'Ulasan berhasil dihapus');
+}
 }
