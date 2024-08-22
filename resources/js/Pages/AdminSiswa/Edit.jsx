@@ -83,7 +83,7 @@ const Edit = ({  siswa }) => {
                     </legend>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {[
-                            { label: "Nama", name: "nama", type: "text" },
+                            { label: "Nama", name: "nama", type: "text",  },
                             { label: "Email", name: "email", type: "email" },
                             {
                                 label: "Password",

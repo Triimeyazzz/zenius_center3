@@ -261,7 +261,6 @@ export default function Index({
                         </button>
                     </div>
                 </div>
-
                 <div className="bg-yellow-100 shadow-md rounded-lg p-6 mb-6">
                     <div className="flex space-x-4 mb-4">
                         <input
@@ -269,7 +268,7 @@ export default function Index({
                             placeholder="Cari Nama Siswa..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
+                            className="border p-2 rounded-md w-full"
                         />
                         <select
                             value={kelas}
@@ -283,38 +282,12 @@ export default function Index({
                                 </option>
                             ))}
                         </select>
-                        <select
-                            value={periode}
-                            onChange={(e) => setPeriode(e.target.value)}
-                            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        >
-                            <option value="bulan">Bulan</option>
-                            <option value="tanggal">Tanggal</option>
-                        </select>
-                        {periode === "bulan" && (
-                            <select
-                                value={selectedMonth}
-                                onChange={(e) =>
-                                    setSelectedMonth(e.target.value)
-                                }
-                                className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            >
-                                <option value="">Pilih Bulan</option>
-                                {getMonthOptions()}
-                            </select>
-                        )}
-                        {periode === "tanggal" && (
-                            <select
-                                value={selectedDateRange}
-                                onChange={(e) =>
-                                    setSelectedDateRange(e.target.value)
-                                }
-                                className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            >
-                                <option value="">Pilih Tanggal</option>
-                                {getDateOptions()}
-                            </select>
-                        )}
+                        <input
+                            type="date"
+                            value={tanggal}
+                            onChange={(e) => setTanggal(e.target.value)}
+                            className="border p-2 rounded-md"
+                        />
                         <button
                             onClick={handleFilterChange}
                             className="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
@@ -323,8 +296,10 @@ export default function Index({
                         </button>
                     </div>
                 </div>
-
-                {Object.keys(filterData(absensiGroupedByDate)).map((date) => (
+                {Object.keys(filterData(absensiGroupedByDate)).length === 0 ? (
+    <p className="text-center text-gray-500">Tidak ada data untuk filter yang dipilih.</p>
+) : (
+Object.keys(filterData(absensiGroupedByDate)).map((date) => (
                     <div key={date} className="mb-6">
                         <h2 className="text-xl font-semibold text-gray-800 mb-4">
                             Tanggal: {date}
@@ -398,7 +373,8 @@ export default function Index({
                             </tbody>
                         </table>
                     </div>
-                ))}
+                ))
+            )}
 
                 {/* Modal for confirmation */}
                 {showModal && (

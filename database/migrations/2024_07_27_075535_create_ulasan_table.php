@@ -15,9 +15,13 @@ return new class extends Migration
     {
         Schema::create('ulasan', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('siswa_id')->constrained('siswa')->onDelete('cascade');
+            $table->foreignId('siswa_id')->nullable()->constrained('siswa')->onDelete('cascade');
+            $table->string('nama_pemberi_ulasan')->nullable();
+            $table->string('tipe_pemberi_ulasan')->comment('siswa, alumni, orang_tua, lainnya');
+            $table->string('foto_profile')->nullable();
             $table->integer('penilaian');
             $table->text('komentar');
+            $table->string('foto_profile_pemberi_ulasan')->nullable();
             $table->timestamps();
         });
     }

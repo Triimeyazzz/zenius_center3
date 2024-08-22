@@ -416,7 +416,7 @@ const HomeComponent = ({ displayText, ulasanData }) => {
                 </div>
                 <WhatsAppLink />
                 {/* Ulasan Section */}
-                <div className="bg-gray-100 text-gray-800 py-16">
+                {/* <div className="bg-gray-100 text-gray-800 py-16">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-8" data-aos="fade-up">
                             <h1 className="text-4xl font-bold mb-4 text-purple-800">
@@ -452,7 +452,6 @@ const HomeComponent = ({ displayText, ulasanData }) => {
                                     </p>
                                     <div className="text-center mb-2">
                                         {renderStars(ulasan.penilaian)}{" "}
-                                        {/* Display stars */}
                                     </div>
                                     <p className="text-gray-800 text-center">
                                         {ulasan.komentar}
@@ -461,7 +460,7 @@ const HomeComponent = ({ displayText, ulasanData }) => {
                             ))}
                         </Carousel>
                     </div>
-                </div>
+                </div> */}
                 <div
                     className="md:col-span-1 text-center relative top-2"
                     data-aos="fade-left"

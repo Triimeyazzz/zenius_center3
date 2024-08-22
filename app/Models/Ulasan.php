@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,9 +9,13 @@ class Ulasan extends Model
 {
     use HasFactory;
 
-    protected $table = 'ulasan';
+    public $table = 'ulasan';
+
     protected $fillable = [
         'siswa_id',
+        'nama_pemberi_ulasan',
+        'tipe_pemberi_ulasan',
+        'foto_profile',
         'penilaian',
         'komentar',
     ];
@@ -18,5 +23,5 @@ class Ulasan extends Model
     public function siswa()
     {
         return $this->belongsTo(Siswa::class);
-    }   
+    }
 }

@@ -5,13 +5,12 @@ import LineChart from '@/Components/LineChart';
 import ErrorBoundary from '@/Components/ErrorBoundary';
 import Loading from '@/Components/Loading';
 
-export default function Dashboard({ auth }) {
+export default function Dashboard({ auth, totalPemasukan, totalTagihan, sisaTagihan, pemasukanPerBulan }) {
     const [data, setData] = useState({
         totalAdmins: null,
         totalSiswa: null,
         admins: [],
         siswa: [],
-        courses: [],
     });
     const [isLoading, setIsLoading] = useState(true);
 
@@ -23,6 +22,7 @@ export default function Dashboard({ auth }) {
                     throw new Error('Network response was not ok');
                 }
                 const result = await response.json();
+                console.log('Count Data:', result); // Log the result for debugging
                 setData(prev => ({
                     ...prev,
                     totalAdmins: result.totalAdmins,
@@ -32,7 +32,7 @@ export default function Dashboard({ auth }) {
                 console.error('Error fetching count data:', error);
             }
         };
-
+    
         const fetchData = async () => {
             try {
                 const response = await fetch('/dashboard/data');
@@ -40,6 +40,7 @@ export default function Dashboard({ auth }) {
                     throw new Error('Network response was not ok');
                 }
                 const result = await response.json();
+                console.log('Detailed Data:', result); // Log the result for debugging
                 setData(prev => ({
                     ...prev,
                     admins: result.admins,
@@ -52,10 +53,44 @@ export default function Dashboard({ auth }) {
             }
         };
 
+        const fetchPemasukanPerBulan = async () => {
+            try {
+                const response = await fetch('/dashboard/pemasukan-per-bulan');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const result = await response.json();
+                console.log('Pemasukan Per Bulan:', result); // Log the result for debugging
+                setData(prev => ({
+                    ...prev,
+                    pemasukanPerBulan: result,
+                }));
+            } catch (error) {
+                console.error('Error fetching pemasukan per bulan:', error);
+            }
+        };
+
+        const fetchSisaTagihan = async () => {
+            try {
+                const response = await fetch('/dashboard/sisa-tagihan');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const result = await response.json();
+                console.log('Sisa Tagihan:', result); // Log the result for debugging
+                setData(prev => ({
+                    ...prev,
+                    sisaTagihan: result,
+                }));
+            } catch (error) {
+                console.error('Error fetching sisa tagihan:', error);
+            }
+        }        
+    
         fetchCountData();
         fetchData();
     }, []);
-
+    
     if (isLoading) {
         return <Loading />;
     }
@@ -70,8 +105,8 @@ export default function Dashboard({ auth }) {
 
                 <div className="py-12 bg-gray-50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
-                        <div className=" flex justify-between">
-                            <div className="bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 text-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl">
+                        <div className="flex justify-between">
+                            <div className=" bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 text-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl">
                                 <h3 className="text-lg font-semibold">Total Admin</h3>
                                 <p className="text-3xl font-bold mt-2">{data.totalAdmins !== null ? data.totalAdmins : 'Loading...'}</p>
                                 <a href="/users" className="text-yellow-300 mt-4 inline-block hover:underline">Lihat Lebih Banyak</a>
@@ -81,12 +116,32 @@ export default function Dashboard({ auth }) {
                                 <p className="text-3xl font-bold mt-2">{data.totalSiswa !== null ? data.totalSiswa : 'Loading...'}</p>
                                 <a href="/adminsiswa" className="text-purple-300 mt-4 inline-block hover:underline">Lihat Lebih Banyak</a>
                             </div>
-                            
                         </div>
 
-                       
-                        {/* Tables for Admins, Siswa, and Courses */}
+                        {/* Total Pemasukan, Total Tagihan, Sisa Tagihan */}
+                        <div className="flex justify-between mt-8">
+                            <div className="bg-blue-500 text-white shadow-lg rounded-lg p-6">
+                                <h3 className="text-lg font-semibold">Total Pemasukan</h3>
+                                <p className="text-3xl font-bold mt-2">{totalPemasukan}</p>
+                            </div>
+                            <div className="bg-green-500 text-white shadow-lg rounded-lg p-6">
+                                <h3 className="text-lg font-semibold">Total Tagihan</h3>
+                                <p className="text-3xl font-bold mt-2">{totalTagihan}</p>
+                            </div>
+                            <div className="bg-red-500 text-white shadow-lg rounded-lg p-6">
+                                <h3 className="text-lg font-semibold">Sisa Tagihan</h3>
+                                <p className="text-3xl font-bold mt-2">{sisaTagihan}</p>
+                            </div>
+                        </div>
+
+                        {/* Line Chart for Pemasukan Per Bulan */}
+                        <div className="mt-12">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Pemasukan Per Bulan</h3>
+                        </div>
+
+                        {/* Tables for Admins and Siswa */}
                         <div className="mt-12 space-y-8">
+                            {/* Admins Table */}
                             <div>
                                 <h3 className="text-xl font-semibold text-gray-900 mb-4">Admins</h3>
                                 <div className="overflow-x-auto bg-white shadow-lg rounded-lg border border-gray-200">

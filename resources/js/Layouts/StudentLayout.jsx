@@ -36,7 +36,7 @@ const StudentLayout = ({ children, siswa }) => {
           <div className="hidden lg:flex space-x-4">
             <Link href="/siswa/dashboard" className="text-white hover:text-gray-300">Dashboard</Link>
             <Link href="/siswa/messages" className="text-white hover:text-gray-300">Messages</Link>
-            <Link href="/ulasan/create" className="text-white hover:text-gray-300">Ulasan</Link>
+            <Link href="/siswa/ulasan" className="text-white hover:text-gray-300">Ulasan</Link>
           </div>
 
           <div className="relative">

@@ -185,9 +185,9 @@ export default function Authenticated({ user, header, children }) {
                             </li>
                             <li>
                                 <NavLink
-                                    href={route("ulasan.createAdmin")}
+                                    href={route("ulasan.index")}
                                     active={route().current(
-                                        "ulasan.createAdmin"
+                                        "ulasan.index"
                                     )}
                                     className="block px-6 py-3 rounded-lg text-gray-700 bg-gradient-to-r from-white to-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 ease-in-out"
                                 >

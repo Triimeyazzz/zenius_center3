@@ -1,97 +1,109 @@
-import React, { useState } from 'react';
-import { Head, useForm } from '@inertiajs/react';
-import StudentLayout from '@/Layouts/StudentLayout';
+import React from 'react';
+import { InertiaLink, useForm } from '@inertiajs/inertia-react';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
-export default function Create({ auth }) {
-    const { data, setData, post, processing, errors } = useForm({
-        penilaian: 0,
-        komentar: '',
-    });
+const Create = ({ auth }) => {
+  const { data, setData, post, processing, errors } = useForm({
+    nama_pemberi_ulasan: '',
+    tipe_pemberi_ulasan: '',
+    foto_profile: null,
+    penilaian: 0,
+    komentar: '',
+  });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        post(route('ulasan.store'));
-    };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    post(route('ulasan.store'));
+  };
 
-    // Function to get label, color, and emoticon based on rating
-    const getRatingDetails = (rating) => {
-        switch (rating) {
-            case 1:
-                return { label: 'Sangat Buruk (Mewakili emosi anda)', color: 'text-red-600', emoticon: '😠' };
-            case 2:
-                return { label: 'Buruk (Mewakili emosi anda)', color: 'text-orange-600', emoticon: '😕' };
-            case 3:
-                return { label: 'Cukup (Mewakili emosi anda)', color: 'text-yellow-500', emoticon: '😐' };
-            case 4:
-                return { label: 'Baik (Mewakili emosi anda)', color: 'text-green-500', emoticon: '😊' };
-            case 5:
-                return { label: 'Sangat Baik (Mewakili emosi anda)', color: 'text-teal-500', emoticon: '😁' };
-            default:
-                return { label: '', color: '', emoticon: '' };
-        }
-    };
+  return (
+    <AuthenticatedLayout user={auth.user}>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-5xl font-bold mb-8 text-center text-purple-600">Tambah Ulasan</h1>
+        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-lg transition-transform transform ">
+          <div className="mb-6">
+            <label htmlFor="nama_pemberi_ulasan" className="block mb-2 text-sm font-medium text-gray-700">Nama Pemberi Ulasan</label>
+            <input
+              type="text"
+              id="nama_pemberi_ulasan"
+              value={data.nama_pemberi_ulasan}
+              onChange={(e) => setData('nama_pemberi_ulasan', e.target.value)}
+              className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ${errors.nama_pemberi_ulasan ? 'border-red-500' : 'border-gray-300'}`}
+              placeholder="Masukkan nama..."
+            />
+            {errors.nama_pemberi_ulasan && <div className="text-red-500 text-sm mt-1">{errors.nama_pemberi_ulasan}</div>}
+          </div>
 
-    const { label, color, emoticon } = getRatingDetails(data.penilaian);
+          <div className="mb-6">
+            <label htmlFor="tipe_pemberi_ulasan" className="block mb-2 text-sm font-medium text-gray-700">Tipe Pemberi Ulasan</label>
+            <select
+              id="tipe_pemberi_ulasan"
+              value={data.tipe_pemberi_ulasan}
+              onChange={(e) => setData('tipe_pemberi_ulasan', e.target.value)}
+              className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ${errors.tipe_pemberi_ulasan ? 'border-red-500' : 'border-gray-300'}`}
+            >
+              <option value="">Pilih Tipe</option>
+              <option value="siswa">Siswa</option>
+              <option value="alumni">Alumni</option>
+              <option value="orang_tua">Orang Tua</option>
+              <option value="lainnya">Lainnya</option>
+            </select>
+            {errors.tipe_pemberi_ulasan && <div className="text-red-500 text-sm mt-1">{errors.tipe_pemberi_ulasan}</div>}
+          </div>
 
-    return (
-        <StudentLayout user={auth}>
-            <Head title="Buat Ulasan" />
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 bg-white border-b border-gray-200">
-                            <h1 className="text-2xl font-semibold mb-4">Buat Ulasan</h1>
-                            <form onSubmit={handleSubmit}>
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                                        Penilaian (1-5 bintang)
-                                    </label>
-                                    <div className="flex mb-2">
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                            <button
-                                                key={star}
-                                                type="button"
-                                                onClick={() => setData('penilaian', star)}
-                                                className={`text-3xl ${
-                                                    star <= data.penilaian ? 'text-yellow-400' : 'text-gray-300'
-                                                }`}
-                                            >
-                                                ★
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <div className={`text-sm font-bold ${color}`}>
-                                        <span className="mr-2">{emoticon}</span>
-                                        {label}
-                                    </div>
-                                    {errors.penilaian && <div className="text-red-500">{errors.penilaian}</div>}
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                                        Komentar
-                                    </label>
-                                    <textarea
-                                        value={data.komentar}
-                                        onChange={(e) => setData('komentar', e.target.value)}
-                                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                        rows="4"
-                                    ></textarea>
-                                    {errors.komentar && <div className="text-red-500">{errors.komentar}</div>}
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <button
-                                        type="submit"
-                                        disabled={processing}
-                                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                                    >
-                                        Kirim Ulasan
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+          <div className="mb-6">
+            <label htmlFor="foto_profile" className="block mb-2 text-sm font-medium text-gray-700">Foto Profile</label>
+            <input
+              type="file"
+              id="foto_profile"
+              onChange={(e) => setData('foto_profile', e.target.files[0])}
+              className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ${errors.foto_profile ? 'border-red-500' : 'border-gray-300'}`}
+            />
+            {errors.foto_profile && <div className="text-red-500 text-sm mt-1">{errors.foto_profile}</div>}
+          </div>
+
+          <div className="mb-6">
+            <label htmlFor="penilaian" className="block mb-2 text-sm font-medium text-gray-700">Penilaian</label>
+            <div className="flex space-x-2 cursor-pointer">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setData('penilaian', star)}
+                  className={`text-3xl transition duration-200 ${star <= data.penilaian ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-500'}`}
+                >
+                  ★
+                </button>
+              ))}
             </div>
-        </StudentLayout>
-    );
-}
+            {errors.penilaian && <div className="text-red-500 text-sm mt-1">{errors.penilaian}</div>}
+          </div>
+
+          <div className="mb-6">
+            <label htmlFor="komentar" className="block mb-2 text-sm font-medium text-gray-700">Komentar</label>
+            <textarea
+              id="komentar"
+              value={data.komentar}
+              onChange={(e) => setData('komentar', e.target.value)}
+              className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ${errors.komentar ? 'border-red-500' : 'border-gray-300'}`}
+              rows="4"
+              placeholder="Tulis komentar di sini..."
+            ></textarea>
+            {errors.komentar && <div className="text-red-500 text-sm mt-1">{errors.komentar}</div>}
+          </div>
+
+          <div className="flex justify-end">
+            <a href={route('ulasan.index')} className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition duration-200 mr-2">
+              Batal
+            </a>
+            <button type="submit" className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition duration-200" disabled={processing}>
+              Simpan
+            </button>
+          </div>
+        </form>
+      </div>
+    </AuthenticatedLayout>
+  );
+};
+
+export default Create;

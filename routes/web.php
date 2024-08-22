@@ -18,8 +18,10 @@ use App\Http\Controllers\PresentController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PembayaranController;
-use App\Http\Controllers\UlasanController;
+use App\Http\Controllers\AdminUlasanController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SiswaUlasanController;
+
 
 Route::get('/', function () {
     return redirect('/Home');
@@ -42,8 +44,8 @@ Route::middleware('auth')->group(function () {
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/dashboard/count', [DashboardController::class, 'count']);
-        Route::get('/dashboard/data', [DashboardController::class, 'data']);
+Route::get('/dashboard/count', [DashboardController::class, 'count']);
+Route::get('/dashboard/data', [DashboardController::class, 'data']);
 
         Route::get('users', [UserController::class, 'index'])->name('users.index');
         Route::get('users/create', [UserController::class, 'create'])->name('users.create');
@@ -90,9 +92,11 @@ Route::get('pembayaran/financial-summary', [PembayaranController::class, 'financ
 Route::delete('/pembayaran/cicilan/{id}', [PembayaranController::class, 'destroyCicilan'])->name('pembayaran.delete-cicilan');
 Route::post('/pembayaran/{pembayaran}/batal', [PembayaranController::class, 'batal'])->name('pembayaran.batal');
 
-Route::get('/ulasan/createAdmin', [UlasanController::class, 'createAdmin'])->name('ulasan.createAdmin');
-Route::post('/ulasan/storeAdmin', [UlasanController::class, 'storeAdmin'])->name('ulasan.storeAdmin');
-Route::delete('/ulasan/{id}', [UlasanController::class, 'destroy'])->name('ulasan.destroy');
+Route::get('ulasan', [AdminUlasanController::class, 'index'])->name('ulasan.index');    
+Route::get('ulasan/create', [AdminUlasanController::class, 'create'])->name('ulasan.create');
+Route::post('ulasan', [AdminUlasanController::class, 'store'])->name('ulasan.store');   
+Route::delete('/ulasan/{id}', [AdminUlasanController::class, 'destroy'])->name('ulasan.destroy');
+
 });
 
     
@@ -128,8 +132,13 @@ Route::middleware(['auth:siswa'])->group(function () {
     Route::post('/siswa/tryout/{id}', [SiswaController::class, 'tryoutStore'])->name('siswa.tryoutStore');
     Route::get('/siswa/messages', [MessageController::class, 'indexStudent'])->name('messages.index.student');
     Route::post('/siswa/messages', [MessageController::class, 'storeStudent'])->name('messages.store.student');
-    Route::get('/ulasan/create', [UlasanController::class, 'create'])->name('ulasan.create');
-    Route::post('/ulasan', [UlasanController::class, 'store'])->name('ulasan.store');
+
+    Route::get('/siswa/ulasan', [SiswaUlasanController::class, 'index'])->name('siswa.ulasan.index');
+    Route::get('/siswa/ulasan/create', [SiswaUlasanController::class, 'create'])->name('siswa.ulasan.create');
+    Route::post('/siswa/ulasan', [SiswaUlasanController::class, 'store'])->name('siswa.ulasan.store'); 
+    Route::delete('/siswa/ulasan/{id}', [SiswaUlasanController::class, 'destroy'])->name('siswa.ulasan.destroy');
+    Route::get('/siswa/ulasan/{id}/edit', [SiswaUlasanController::class, 'edit'])->name('siswa.ulasan.edit');
+    Route::post('/siswa/ulasan/{id}', [SiswaUlasanController::class, 'update'])->name('siswa.ulasan.update');
 });
 
 
