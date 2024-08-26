@@ -8,6 +8,7 @@ use App\Models\Pembayaran;
 use App\Models\Cicilan;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use App\Models\Message;
 class DashboardController extends Controller
 {
     /**
@@ -53,7 +54,7 @@ class DashboardController extends Controller
     public function data()
     {
         $admins = User::take(5)->get();
-        $siswa = Siswa::take(5)->get();
+        $siswa = Siswa::take(8)->get();
 
         return response()->json([
             'admins' => $admins,

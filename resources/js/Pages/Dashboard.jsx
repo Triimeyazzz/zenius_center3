@@ -11,7 +11,12 @@ import {
     CartesianGrid,
     ResponsiveContainer,
     Legend,
-} from "recharts";
+    LineChart,
+    Line,
+    PieChart,
+    Pie,
+    Cell,
+} from "recharts"; // Ensure these components are imported
 import {
     FaUser,
     FaChalkboardTeacher,
@@ -21,7 +26,6 @@ import {
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import moment from "moment-hijri";
-
 function MyBarChart({ data }) {
     const formattedData = data.map((item) => ({
         ...item,
@@ -60,6 +64,7 @@ export default function Dashboard({ auth }) {
     const [dashboardData, setDashboardData] = useState(null);
     const [detailedData, setDetailedData] = useState(null);
     const [selectedDate, setSelectedDate] = useState(new Date());
+    const [chartType, setChartType] = useState("bar");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -107,8 +112,12 @@ export default function Dashboard({ auth }) {
         console.log("Selected date:", newDate);
     };
 
-    const hijriDate = moment(selectedDate).format("iYYYY/iMM/iDD");
+    const hijriDate = moment(selectedDate).format("iDD/iMM/iYYYY");
 
+    const handleToggleDarkMode = () => {
+        setDarkMode((prevMode) => !prevMode);
+    };
+    
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -155,7 +164,7 @@ export default function Dashboard({ auth }) {
                                 <div className="flex items-center justify-center space-x-2">
                                     <div className="animate-spin h-5 w-5 border-4 border-t-4 border-gray-300 rounded-full border-t-purple-500"></div>
                                     <p className="text-gray-500">
-                                        Loading dashboard data...
+                                        Sedang memuat data....
                                     </p>
                                 </div>
                             )}
@@ -166,27 +175,14 @@ export default function Dashboard({ auth }) {
                                         <DataTable
                                             title="List beberapa Admins"
                                             data={detailedData.admins}
-                                            fields={["name", "email"]}
+                                            fields={["name", "email", ]}
                                         />
-                                        <DataTable
-                                            title="List beberapa Siswa"
+                                        <DataTableSiswa
+                                            title="Daftar beberapa Siswa"
                                             data={detailedData.siswa}
-                                            fields={["nama", "email"]}
+                                            fields={["nama", "email", "foto"]}
                                         />
-                                        <div className="mt-8 flex justify-between">
-                                            <Link
-                                                href="/adminsiswa"
-                                                className="text-blue-500 hover:underline ml-4"
-                                            >
-                                                Go to Admin Siswa
-                                            </Link>
-                                            <Link
-                                                href="/users"
-                                                className="text-blue-500 hover:underline"
-                                            >
-                                                Go to Users
-                                            </Link>
-                                        </div>
+                                        
                                     </>
                                 )}
                             </div>
@@ -197,18 +193,57 @@ export default function Dashboard({ auth }) {
                                         <h3 className="text-lg font-semibold mb-4">
                                             Pemasukan Per Bulan
                                         </h3>
-                                        <LineChartComponent
+                                        <div className="mb-4">
+                                            <button
+                                                onClick={() =>
+                                                    setChartType("bar")
+                                                }
+                                                className={`mr-2 px-4 py-2 rounded ${
+                                                    chartType === "bar"
+                                                        ? "bg-purple-600 text-white rounded-md shadow-sm"
+                                                        : "bg-gray-200 text-gray-700"
+                                                }`}
+                                            >
+                                                Bar Chart
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    setChartType("line")
+                                                }
+                                                className={`mr-2 px-4 py-2 rounded ${
+                                                    chartType === "line"
+                                                        ? "bg-purple-600 text-white rounded-md shadow-sm"
+                                                        : "bg-gray-200 text-gray-700"
+                                                }`}
+                                            >
+                                                Line Chart
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    setChartType("pie")
+                                                }
+                                                className={`px-4 py-2 rounded ${
+                                                    chartType === "pie"
+                                                        ? "bg-purple-600 text-white rounded-md shadow-sm"
+                                                        : "bg-gray-200 text-gray-700"
+                                                }`}
+                                            >
+                                                Pie Chart
+                                            </button>
+                                        </div>
+                                        <ChartComponent
                                             data={
                                                 dashboardData.pemasukanPerBulan
                                             }
                                             formatMonthName={formatMonthName}
+                                            chartType={chartType}
                                         />
                                     </div>
                                 )}
 
                             <div className="mt-10">
                                 <h3 className="text-lg font-semibold mb-4">
-                                    Gregorian Calendar
+                                    Kalender Gregorian 
                                 </h3>
                                 <div className="border rounded-lg shadow-lg p-4">
                                     <Calendar
@@ -239,11 +274,11 @@ export default function Dashboard({ auth }) {
                                     />
 
                                     <h3 className="text-lg font-semibold mb-4 mt-8">
-                                        Hijri Calendar
+                                        Kalender Hijriah
                                     </h3>
                                     <div className="border rounded-lg shadow-lg p-4">
                                         <h4 className="text-md font-semibold">
-                                            Selected Hijri Date: {hijriDate}
+                                            Tanggal hijriah hari ini: {hijriDate}
                                         </h4>
                                     </div>
                                 </div>
@@ -300,51 +335,159 @@ function DataTable({ title, data, fields }) {
                                     key={field}
                                     className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                                 >
-                                    {item[field]}
+                                    {field === "foto" ? (
+                                        <img
+                                        src={`storage/fotos/${item.foto}`}
+                                        alt="Student Photo"
+                                            className="h-10 w-10 rounded-full object-cover"
+                                        />
+                                    ) : (
+                                        item[field]
+                                    )}
                                 </td>
                             ))}
                         </tr>
                     ))}
                 </tbody>
             </table>
+            <a href="/users" className="block text-center text-purple-500 hover:text-purple-700">Lihat lebih banyak</a>
         </div>
     );
 }
 
-function LineChartComponent({ data, formatMonthName }) {
+function DataTableSiswa({ title, data, fields }) {
+    return (
+        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+            <h4 className="text-md font-semibold mb-2 px-4 py-2 border-b bg-purple-500 text-white transition-colors duration-200">
+                {title}
+            </h4>
+            <div className="grid grid-cols-4 gap-4 p-4">
+                {data.map((item, index) => (
+                    <div key={index} className="flex flex-col items-center">
+                        <img
+                            src={`storage/fotos/${item.foto}`}
+                            alt={`${item.nama}'s photo`}
+                            className="w-16 h-16 rounded-full object-cover mb-2"
+                        />
+                        <p className="text-sm font-semibold text-center">{item.nama}</p>
+                        <p className="text-xs text-gray-500">{item.email}</p>
+                    </div>
+                ))}
+            </div>
+            <a href="/adminsiswa" className="text-center text-purple-500 hover:text-purple-700 flex justify-center my-5 ">Lihat lebih banyak</a>
+        </div>
+    );
+}
+
+function ChartComponent({ data, formatMonthName, chartType }) {
     const formattedData = data.map((item) => ({
         ...item,
         month: formatMonthName(item.month),
-        total: item.total
-            .toLocaleString("id-ID", { style: "currency", currency: "IDR" })
-            .replace("Rp", ""),
+        total: parseFloat(
+            item.total
+                .toLocaleString("id-ID", { style: "currency", currency: "IDR" })
+                .replace("Rp", "")
+                .replace(/\./g, "")
+                .replace(",", ".")
+        ),
     }));
 
-    // Urutkan data berdasarkan bulan
     const sortedData = sortDataByMonth(formattedData);
+
+    const COLORS = [
+        "#0088FE",
+        "#00C49F",
+        "#FFBB28",
+        "#FF8042",
+        "#8884d8",
+        "#82ca9d",
+    ];
+
+    const renderChart = () => {
+        switch (chartType) {
+            case "line":
+                return (
+                    <LineChart
+                        data={sortedData}
+                        margin={{ top: 30, right: 30, left: 20, bottom: 30 }}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis tickFormatter={(value) => `Rp ${value}`} />
+                        <Tooltip
+                            formatter={(value) => [
+                                `Rp ${value.toLocaleString("id-ID")}`,
+                                "Total",
+                            ]}
+                        />
+                        <Legend />
+                        <Line
+                            type="monotone"
+                            dataKey="total"
+                            stroke="#7b1fa1"
+                        />
+                    </LineChart>
+                );
+            case "pie":
+                return (
+                    <PieChart
+                        margin={{ top: 30, right: 30, left: 20, bottom: 30 }}
+                    >
+                        <Pie
+                            data={sortedData}
+                            dataKey="total"
+                            nameKey="month"
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={150}
+                            fill="#8884d8"
+                            label={({ name, percent }) =>
+                                `${name} ${(percent * 100).toFixed(0)}%`
+                            }
+                        >
+                            {sortedData.map((entry, index) => (
+                                <Cell
+                                    key={`cell-${index}`}
+                                    fill={COLORS[index % COLORS.length]}
+                                />
+                            ))}
+                        </Pie>
+                        <Tooltip
+                            formatter={(value) => [
+                                `Rp ${value.toLocaleString("id-ID")}`,
+                                "Total",
+                            ]}
+                        />
+                        <Legend />
+                    </PieChart>
+                );
+            default:
+                return (
+                    <BarChart
+                        data={sortedData}
+                        margin={{ top: 30, right: 30, left: 20, bottom: 30 }}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis tickFormatter={(value) => `Rp ${value}`} />
+                        <Tooltip
+                            formatter={(value) => [
+                                `Rp ${value.toLocaleString("id-ID")}`,
+                                "Total",
+                            ]}
+                        />
+                        <Legend />
+                        <Bar dataKey="total" fill="#7b1fa1" />
+                    </BarChart>
+                );
+        }
+        console.log(sortedData);
+    };
 
     return (
         <div className="bg-white shadow-lg rounded-lg overflow-hidden p-4 -z-0">
             <ResponsiveContainer width="100%" height={400}>
-                <BarChart
-                    data={sortedData}
-                    margin={{ top: 30, right: 30, left: 20, bottom: 30 }}
-                >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip
-                        formatter={(value) => [
-                            `Rp ${parseFloat(value).toLocaleString("id-ID", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                            })}`,
-                            "Total",
-                        ]}
-                    />
-                    <Legend />
-                    <Bar dataKey="total" fill="#7b1fa1" />
-                </BarChart>
+                {renderChart()}
             </ResponsiveContainer>
         </div>
     );

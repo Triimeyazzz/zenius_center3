@@ -8,8 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Pembayaran; // Include this model
-
+use App\Models\Pembayaran; 
 
 class SiswaDashboardController extends Controller
 {
@@ -19,6 +18,8 @@ class SiswaDashboardController extends Controller
         $tryOuts = $user ? $user->tryOuts : [];
         $absensi = $user ? $user->absensis : [];
         $pembayarans = $user ? $user->pembayarans : [];
+
+        
 
         // Calculate total amount to be paid
         $totalToPay = $pembayarans->where('status', 'pending')->sum('jumlah');

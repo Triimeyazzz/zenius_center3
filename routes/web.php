@@ -141,7 +141,9 @@ Route::middleware(['auth:siswa'])->group(function () {
     Route::post('/siswa/ulasan', [SiswaUlasanController::class, 'store'])->name('siswa.ulasan.store'); 
     Route::delete('/siswa/ulasan/{id}', [SiswaUlasanController::class, 'destroy'])->name('siswa.ulasan.destroy');
     Route::get('/siswa/ulasan/{id}/edit', [SiswaUlasanController::class, 'edit'])->name('siswa.ulasan.edit');
-    Route::post('/siswa/ulasan/{id}', [SiswaUlasanController::class, 'update'])->name('siswa.ulasan.update');
+    Route::delete('/siswa/ulasan/{ulasan}', [SiswaUlasanController::class, 'destroy'])
+    ->name('siswa.ulasan.destroy');
+
 });
 
 

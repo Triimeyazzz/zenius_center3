@@ -64,11 +64,18 @@ class SiswaUlasanController extends Controller
     }
 
     public function destroy(Ulasan $ulasan)
-    {
-        if ($ulasan->siswa_id !== auth()->user()->id) {
-            abort(403);
-        }
-        $ulasan->delete();
-        return redirect()->route('siswa.ulasan.index')->with('success', 'Ulasan berhasil dihapus');
+{
+    \Log::info('User ID: ' . auth()->user()->id);
+    \Log::info('Ulasan Siswa ID: ' . $ulasan->siswa_id);
+
+    if ($ulasan->siswa_id !== auth()->user()->id) {
+        \Log::warning('Forbidden access attempt by user: ' . auth()->user()->id);
+        abort(403);
     }
+
+    $ulasan->delete();
+    return redirect()->route('siswa.ulasan.index')->with('success', 'Ulasan berhasil dihapus');
+}
+
+    
 }
