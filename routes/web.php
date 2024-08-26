@@ -43,10 +43,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/dashboard/count', [DashboardController::class, 'count']);
-Route::get('/dashboard/data', [DashboardController::class, 'data']);
-
+        Route::get('/dashboard', function () {
+            return Inertia::render('Dashboard');
+        })->name('dashboard');
+    
+        Route::get('/api/dashboard/count', [DashboardController::class, 'count']);
+        Route::get('/api/dashboard/data', [DashboardController::class, 'data']);
+    
         Route::get('users', [UserController::class, 'index'])->name('users.index');
         Route::get('users/create', [UserController::class, 'create'])->name('users.create');
         Route::post('users', [UserController::class, 'store'])->name('users.store');
@@ -95,7 +98,7 @@ Route::post('/pembayaran/{pembayaran}/batal', [PembayaranController::class, 'bat
 Route::get('ulasan', [AdminUlasanController::class, 'index'])->name('ulasan.index');    
 Route::get('ulasan/create', [AdminUlasanController::class, 'create'])->name('ulasan.create');
 Route::post('ulasan', [AdminUlasanController::class, 'store'])->name('ulasan.store');   
-Route::delete('/ulasan/{id}', [AdminUlasanController::class, 'destroy'])->name('ulasan.destroy');
+Route::delete('/ulasan/{ulasan}', [AdminUlasanController::class, 'destroy'])->name('ulasan.destroy');
 
 });
 

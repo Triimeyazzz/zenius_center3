@@ -7,8 +7,16 @@ const Index = ({ ulasan, auth }) => {
   const [selectedUlasanId, setSelectedUlasanId] = useState(null);
 
   const handleDelete = (id) => {
-    Inertia.delete(`/ulasan/${id}`);
-    setIsModalOpen(false); // Close the modal after deletion
+    Inertia.delete(`/ulasan/${id}`, {
+      onSuccess: () => {
+        // Optionally, you could add a success message here if needed
+        closeModal(); // Close the modal after deletion
+      },
+      onError: () => {
+        // Handle any errors if needed
+        closeModal(); // Close the modal on error as well
+      }
+    });
   };
 
   const openModal = (id) => {
@@ -42,17 +50,32 @@ const Index = ({ ulasan, auth }) => {
             return (
               <div key={item.id} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300">
                 <div className="flex items-center mb-4">
-                  {item.foto_profile && (
-                    <img src={`/storage/${item.foto_profile}`} alt="Profile" className="w-12 h-12 rounded-full mr-4 border-2 border-yellow-400" />
-                  )}
+                  {item.foto_profile ? (
+                    <img
+                      src={`/storage/${item.foto_profile}`}
+                      alt={`${item.nama_pemberi_ulasan || item.siswa?.name} Profile`}
+                      className="w-12 h-12 rounded-full mr-4 border-2 border-yellow-400"
+                    />
+                  ) : item.siswa?.foto ? (
+                    <img
+                      src={`/storage/fotos/${item.siswa.foto}`}
+                      alt={`${item.siswa.nama} Profile`}
+                      className="w-12 h-12 rounded-full mr-4 border-2 border-yellow-400"
+                    />
+                  ) : null}
                   <div>
-                    <h2 className="font-bold text-lg text-purple-800">{item.nama_pemberi_ulasan || item.siswa?.name}</h2>
+                    <h2 className="font-bold text-lg text-purple-800">
+                      {item.nama_pemberi_ulasan || item.siswa?.name}
+                    </h2>
                     <p className="text-sm text-gray-600">{item.tipe_pemberi_ulasan}</p>
                   </div>
                 </div>
                 <div className="mb-4">
                   {[...Array(5)].map((_, index) => (
-                    <span key={index} className={`text-2xl ${index < item.penilaian ? 'text-yellow-500' : 'text-gray-300'}`}>
+                    <span
+                      key={index}
+                      className={`text-2xl ${index < item.penilaian ? 'text-yellow-500' : 'text-gray-300'}`}
+                    >
                       ★
                     </span>
                   ))}
@@ -60,20 +83,22 @@ const Index = ({ ulasan, auth }) => {
                 <p className="mb-4 text-gray-700">
                   {isExpanded ? item.komentar : item.komentar.length > 100 ? `${item.komentar.substring(0, 100)}...` : item.komentar}
                   {item.komentar.length > 100 && (
-                    <button onClick={toggleExpand} className="text-purple-600 hover:text-purple-700 transition duration-300 ml-1">
+                    <button
+                      onClick={toggleExpand}
+                      className="text-purple-600 hover:text-purple-700 transition duration-300 ml-1"
+                      aria-label={isExpanded ? 'Collapse comment' : 'Expand comment'}
+                    >
                       {isExpanded ? 'Lihat Lebih Sedikit' : 'Lihat Selengkapnya'}
                     </button>
                   )}
                 </p>
-                <div className="flex justify-between">
-                  {/* Edit Button */}
-                  <a href={`/ulasan/${item.id}/edit`} className="text-purple-600 hover:text-purple-700 transition duration-300">
-                    Edit
-                  </a>
+                <div className="flex justify-end">
+                 
                   {/* Hapus Button */}
-                  <button 
-                    onClick={() => openModal(item.id)} 
+                  <button
+                    onClick={() => openModal(item.id)}
                     className="rounded-md px-4 py-2 bg-red-600 text-white hover:bg-red-700 transition duration-300"
+                    aria-label="Delete review"
                   >
                     Hapus
                   </button>
