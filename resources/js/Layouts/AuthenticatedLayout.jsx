@@ -120,7 +120,7 @@ export default function Authenticated({ user, header, children }) {
                                         <span className="inline-flex rounded-md w-full">
                                             <button
                                                 type="button"
-                                                className="flex items-center w-full px-4 py-2 border border-transparent text-sm font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300"
+                                                className="flex items-center w-full px-4 py-2 border border-transparent text-sm font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 transition ease-in-out duration-300"
                                             >
                                                 {user && user.name
                                                     ? user.name

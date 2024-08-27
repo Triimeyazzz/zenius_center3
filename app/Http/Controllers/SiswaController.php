@@ -101,59 +101,61 @@ class SiswaController extends Controller
 }
 
     // Show the form for editing the specified student
-    public function edit(Siswa $siswa)
-    {
-        return Inertia::render('AdminSiswa/Edit', [
-            'siswa' => $siswa,
-        ]);
+    public function edit($id)
+{
+    $siswa = Siswa::findOrFail($id);
+    return Inertia::render('AdminSiswa/Edit', [
+        'siswa' => $siswa
+    ]);
+}
+
+// Update the specified student in storage
+public function update(Request $request, Siswa $siswa)
+{
+    $validated = $request->validate([
+        'nama' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:siswa,email,' . $siswa->id,
+        'kelas' => 'required|string',
+        'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+        'tempat_lahir' => 'required|string|max:255',
+        'tanggal_lahir' => 'required|date',
+        'alamat' => 'required|string',
+        'no_telpon' => 'nullable|string|max:20',
+        'kota' => 'required|string|max:255',
+        'no_wa' => 'nullable|string|max:20',
+        'instagram' => 'nullable|string|max:255',
+        'nama_sekolah' => 'required|string|max:255',
+        'alamat_sekolah' => 'required|string',
+        'kurikulum' => 'required|string|max:255',
+        'nama_ayah' => 'required|string|max:255',
+        'pekerjaan_ayah' => 'nullable|string|max:255',
+        'no_telp_hp_ayah' => 'nullable|string|max:20',
+        'no_wa_id_line_ayah' => 'nullable|string|max:20',
+        'email_ayah' => 'nullable|string|email|max:255',
+        'nama_ibu' => 'required|string|max:255',
+        'pekerjaan_ibu' => 'nullable|string|max:255',
+        'no_telp_hp_ibu' => 'nullable|string|max:20',
+        'no_wa_id_line_ibu' => 'nullable|string|max:20',
+        'email_ibu' => 'nullable|string|email|max:255',
+        'mulai_bimbingan' => 'required|date',
+        'jam_bimbingan' => 'required|date_format:H:i',
+        'hari_bimbingan' => 'required|array'
+    ]);
+
+    if ($request->hasFile('foto')) {
+        $fileName = $request->file('foto')->store('siswa_foto', 'public');
+        $validated['foto'] = $fileName;
     }
 
-    // Update the specified student in storage
-    public function update(Request $request, Siswa $siswa)
-    {
-        $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:siswa,email,' . $siswa->id,
-            'kelas' => 'required|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'tempat_lahir' => 'required|string|max:255',
-            'tanggal_lahir' => 'required|date',
-            'alamat' => 'required|string',
-            'no_telpon' => 'nullable|string|max:20',
-            'kota' => 'required|string|max:255',
-            'no_wa' => 'nullable|string|max:20',
-            'instagram' => 'nullable|string|max:255',
-            'nama_sekolah' => 'required|string|max:255',
-            'alamat_sekolah' => 'required|string',
-            'kurikulum' => 'required|string|max:255',
-            'nama_ayah' => 'required|string|max:255',
-            'pekerjaan_ayah' => 'nullable|string|max:255',
-            'no_telp_hp_ayah' => 'nullable|string|max:20',
-            'no_wa_id_line_ayah' => 'nullable|string|max:20',
-            'email_ayah' => 'nullable|string|email|max:255',
-            'nama_ibu' => 'required|string|max:255',
-            'pekerjaan_ibu' => 'nullable|string|max:255',
-            'no_telp_hp_ibu' => 'nullable|string|max:20',
-            'no_wa_id_line_ibu' => 'nullable|string|max:20',
-            'email_ibu' => 'nullable|string|email|max:255',
-            'mulai_bimbingan' => 'required|date',
-            'jam_bimbingan' => 'required|time',
-            'hari_bimbingan' => 'required|array'
-        ]);
+    // Save hari_bimbingan as JSON
+    $validated['hari_bimbingan'] = json_encode($validated['hari_bimbingan']);
 
-        if ($request->hasFile('foto')) {
-            $fileName = $request->file('foto')->store('siswa_foto', 'public');
-            $validated['foto'] = $fileName;
-        }
+    $siswa->update($validated);
 
-        // Save hari_bimbingan as JSON
-        $validated['hari_bimbingan'] = json_encode($validated['hari_bimbingan']);
+    return redirect()->route('adminsiswa.index')->with('success', 'Siswa berhasil diperbarui.');
+}
 
-        $siswa->update($validated);
-
-        return redirect()->route('adminsiswa.index')->with('success', 'Siswa berhasil diperbarui.');
-    }
 
     // Display the specified student
     public function show(Siswa $siswa)

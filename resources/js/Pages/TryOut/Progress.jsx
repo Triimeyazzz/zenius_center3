@@ -1,118 +1,74 @@
-import React, { useState, useEffect } from 'react';
-import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import { Link } from '@inertiajs/inertia-react';
+import React, { useState } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+const Progress = ({ siswa, chartData }) => {
+  const [selectedSubject, setSelectedSubject] = useState(null);
+  const [subtopics, setSubtopics] = useState([]);
 
-const ExampleChart = ({ data = {}, siswa }) => {
-    const [selectedSubtopics, setSelectedSubtopics] = useState([]);
+  const averageData = chartData.datasets.map(dataset => ({
+    mataPelajaran: dataset.label,
+    averageScore: dataset.averageScore,
+    date: dataset.data[0].x, // Get the date from the first entry
+    subtopics: dataset.data[0].subtopics, // Get subtopics from the first entry
+  }));
 
-    const labels = data.labels || [];
-    const datasets = data.datasets || [];
+  const handleBarClick = (data) => {
+    setSelectedSubject(data.mataPelajaran);
+    const selectedData = averageData.find(item => item.mataPelajaran === data.mataPelajaran);
+    if (selectedData) {
+      setSubtopics(selectedData.subtopics || []);
+    }
+  };
 
-    // Prepare chart data
-    const chartData = {
-        labels: labels,
-        datasets: datasets.map(dataset => ({
-            ...dataset,
-            data: dataset.data.map(point => ({
-                x: point.x,
-                y: point.y,
-                subtopics: point.subtopics || [],
-            })),
-        })),
-    };
+  return (
+    <div className="p-6 bg-gray-50 rounded-lg shadow-lg">
+      <div className="flex justify-between mb-4">
+        <a href="/tryout" className="text-purple-500 hover:text-purple-700 transition duration-200">Kembali</a>
+        <a href={route('tryout.create', siswa.id)} className="text-purple-500 hover:text-purple-700 transition duration-200">Tambah nilai</a>
+      </div>
 
-    // Chart options
-    const options = {
-        responsive: true,
-        plugins: {
-            legend: {
-                display: true,
-                position: 'top',
-            },
-            tooltip: {
-                callbacks: {
-                    title: (tooltipItems) => `Tanggal: ${tooltipItems[0].label}`,
-                    label: (tooltipItem) => `Skor: ${tooltipItem.raw} (${tooltipItem.dataset.label})`,
-                },
-            },
-        },
-        scales: {
-            x: {
-                title: {
-                    display: true,
-                    text: 'Tanggal',
-                },
-            },
-            y: {
-                title: {
-                    display: true,
-                    text: 'Skor',
-                },
-                beginAtZero: true,
-            },
-        },
-        onClick: (event, elements) => {
-            if (elements.length > 0) {
-                const elementIndex = elements[0].index;
-                const datasetIndex = elements[0].datasetIndex;
-                const subtopics = chartData.datasets[datasetIndex]?.data[elementIndex]?.subtopics || [];
-                console.log('Poin Data yang Dipilih:', chartData.datasets[datasetIndex]?.data[elementIndex]);
-                console.log('Subtopik:', subtopics);
-                setSelectedSubtopics(subtopics);
-            }
-        },
-    };
+      <h1 className="text-3xl font-bold text-center text-purple-600 mb-6">Progress - {siswa.nama}</h1>
 
-    useEffect(() => {
-        console.log('Subtopik yang Dipilih:', selectedSubtopics);
-    }, [selectedSubtopics]);
-
-    return (
-        <div className="p-4 sm:p-6 bg-white border border-gray-200 rounded-lg shadow-lg">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800">
-                    Grafik Kemajuan <span className="text-purple-600">{siswa?.nama || 'Siswa'}</span>
-                </h1>
-                <div className="flex flex-col sm:flex-row mt-4 sm:mt-0">
-                    <a 
-                        href={`/tryout/${siswa?.id}/create`} 
-                        className="bg-indigo-600 text-white px-4 py-2 rounded-md mr-2 mb-2 sm:mb-0 hover:bg-indigo-700 transition duration-300 ease-in-out"
-                    >
-                        Tambah Data
-                    </a>
-                    <a 
-                        href={route('tryout.index')}
-                        className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition duration-300 ease-in-out"
-                    >
-                        Kembali ke Index
-                    </a>
-                </div>
-            </div>
-            <div className="mb-6">
-                <Line data={chartData} options={options} />
-            </div>
-            <div>
-                <h3 className="text-xl sm:text-2xl font-semibold text-gray-700 mb-4">Subtopik:</h3>
-                <div className="space-y-4">
-                    {selectedSubtopics.length > 0 ? (
-                        selectedSubtopics.map((subtopic, index) => (
-                            <div key={index} className="bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm">
-                                <h4 className="text-lg sm:text-xl font-semibold text-indigo-600">{subtopic.sub_mata_pelajaran}</h4>
-                                <p className="text-gray-700">Skor: {subtopic.skor}</p>
-                            </div>
-                        ))
-                    ) : (
-                        <div className="bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm">
-                            <p className="text-gray-500">Tidak ada subtopik tersedia</p>
-                        </div>
-                    )}
-                </div>
-            </div>
+      <div className="flex justify-center mb-8">
+        <div className="bg-white rounded-lg shadow-md p-6 transition-transform transform hover:scale-105">
+          <BarChart width={800} height={400} data={averageData}>
+            <XAxis dataKey="mataPelajaran" stroke="#4a5568" />
+            <YAxis stroke="#4a5568" />
+            <CartesianGrid stroke="#e2e8f0" strokeDasharray="5 5" />
+            <Tooltip formatter={(value, name, props) => [`${value} (Date: ${props.payload.date})`, name]} />
+            <Legend />
+            <Bar dataKey="averageScore" fill="#7b1fa1 " onClick={handleBarClick} />
+          </BarChart>
         </div>
-    );
+      </div>
+
+      <div className="mt-6 bg-white p-6 rounded-lg shadow-md">
+        {chartData.datasets.map((dataset, index) => (
+          <div key={index} className="mb-4 border-b border-gray-300 pb-2">
+            <h2 className="font-semibold text-lg text-purple-600">{dataset.label}</h2>
+            <p className="text-gray-600">Average Score: <span className="font-bold text-purple-700">{dataset.averageScore}</span></p>
+          </div>
+        ))}
+      </div>
+
+      {selectedSubject && (
+        <div className="mt-6 bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-2 text-purple-600">Subtopics dari {selectedSubject}</h2>
+          <ul className="list-disc list-inside">
+            {subtopics.length > 0 ? (
+              subtopics.map((subtopic, index) => (
+                <li key={index} className="text-gray-700">
+                  {subtopic.sub_mata_pelajaran}: <span className="font-bold">{subtopic.skor}</span>
+                </li>
+              ))
+            ) : (
+              <li className="text-gray-700">Tidak ada subtopics.</li>
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
 };
 
-export default ExampleChart;
+export default Progress;
