@@ -22,10 +22,10 @@ class PembayaranController extends Controller
             DB::raw('MONTH(dibayar_pada) as month'),
             DB::raw('SUM(jumlah) as total')
         )
-        ->groupBy('year', 'month')
-        ->orderBy('year', 'desc')
-        ->orderBy('month', 'desc')
-        ->get();
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'desc')
+            ->orderBy('month', 'desc')
+            ->get();
 
         return Inertia::render('Pembayaran/Index', [
             'pembayaran' => $pembayaran,
@@ -87,44 +87,61 @@ class PembayaranController extends Controller
         ]);
     }
     public function financialSummary()
-{
-    $totalPemasukan = Cicilan::sum('jumlah');
-    $pemasukanPerBulan = Cicilan::select(
-        DB::raw('YEAR(dibayar_pada) as year'),
-        DB::raw('MONTH(dibayar_pada) as month'),
-        DB::raw('SUM(jumlah) as total')
-    )
-    ->groupBy('year', 'month')
-    ->orderBy('year', 'desc')
-    ->orderBy('month', 'desc')
-    ->get();
+    {
+        $totalPemasukan = Cicilan::sum('jumlah');
+        $pemasukanPerBulan = Cicilan::select(
+            DB::raw('YEAR(dibayar_pada) as year'),
+            DB::raw('MONTH(dibayar_pada) as month'),
+            DB::raw('SUM(jumlah) as total')
+        )
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'desc')
+            ->orderBy('month', 'desc')
+            ->get();
 
-    $totalTagihan = Pembayaran::sum('jumlah');
-    $sisaTagihan = $totalTagihan - $totalPemasukan;
+        $totalTagihan = Pembayaran::sum('jumlah');
+        $sisaTagihan = $totalTagihan - $totalPemasukan;
 
-    return Inertia::render('Pembayaran/FinancialSummary', [
-        'totalPemasukan' => $totalPemasukan,
-        'pemasukanPerBulan' => $pemasukanPerBulan,
-        'totalTagihan' => $totalTagihan,
-        'sisaTagihan' => $sisaTagihan
-    ]);
-}
-public function destroyCicilan($id)
-{
-    $cicilan = Cicilan::findOrFail($id);
-    $cicilan->delete();
-
-    return response()->json(['success' => true]);
-}
-public function cancel($id)
-{
-    $Pembayaran =Pembayaran::findOrFail($id);
-    if ($Pembayaran->status !== 'selesai') {
-        $Pembayaran->status = 'dibatalkan'; // Set status to canceled
-        $Pembayaran->save();
-        // Handle any additional logic here, e.g., notify users
+        return Inertia::render('Pembayaran/FinancialSummary', [
+            'totalPemasukan' => $totalPemasukan,
+            'pemasukanPerBulan' => $pemasukanPerBulan,
+            'totalTagihan' => $totalTagihan,
+            'sisaTagihan' => $sisaTagihan
+        ]);
     }
-    return redirect()->route('pembayaran.index')->with('status', 'Pembayaran berhasil dibatalkan');
-}
+    public function destroyCicilan($id)
+    {
+        $cicilan = Cicilan::findOrFail($id);
+        $cicilan->delete();
 
+        return response()->json(['success' => true]);
+    }
+    public function cancel($id)
+    {
+        $Pembayaran = Pembayaran::findOrFail($id);
+        if ($Pembayaran->status !== 'selesai') {
+            $Pembayaran->status = 'dibatalkan'; // Set status to canceled
+            $Pembayaran->save();
+            // Handle any additional logic here, e.g., notify users
+        }
+        return redirect()->route('pembayaran.index')->with('status', 'Pembayaran berhasil dibatalkan');
+    }
+    public function cancelNew($id)
+    {
+        $Pembayaran = Pembayaran::findOrFail($id);
+        if ($Pembayaran->status !== 'selesai') {
+            $Pembayaran->status = 'batal'; // Set status to canceled
+            $Pembayaran->save();
+
+            $cicilan = Cicilan::findOrFail($id);
+            if ($cicilan -> count() > 0) {
+                $cicilan -> delete();
+            }
+
+            // Handle any additional logic here, e.g., notify users
+            // return response()->json(['success' => true]);
+            return Inertia::location(route('pembayaran.index'));
+        }
+        return response()->json(['success' => false]);
+    }
 }

@@ -74,7 +74,7 @@ Route::get('/dashboard/data', [DashboardController::class, 'data']);
         Route::get('/get-pdf-url/{siswa}', [SiswaController::class, 'getPdfUrl']);
         Route::get('/adminsiswa/count', [SiswaController::class, 'count']);
 
-        
+
         Route::get('absensi', [AbsensiController::class, 'index'])->name('absensi.index');
         Route::get('absensi/create', [AbsensiController::class, 'create'])->name('absensi.create');
         Route::post('absensi', [AbsensiController::class, 'store'])->name('absensi.store');
@@ -82,24 +82,25 @@ Route::get('/dashboard/data', [DashboardController::class, 'data']);
 
         Route::get('/messages', [MessageController::class, 'indexAdmin'])->name('messages.index');
         Route::get('/messages/{receiver_id}', [MessageController::class, 'showConversation'])->name('messages.conversation');
-        Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');    
+        Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
 
 Route::resource('pembayaran', PembayaranController::class);
 Route::post('pembayaran/{pembayaran}/bayar-cicilan', [PembayaranController::class, 'bayarCicilan'])->name('pembayaran.bayar-cicilan');
 Route::get('pembayaran/create', [PembayaranController::class, 'create'])->name('pembayaran.create');
-Route::post('pembayaran', [PembayaranController::class, 'store'])->name('pembayaran.store');   
+Route::post('pembayaran', [PembayaranController::class, 'store'])->name('pembayaran.store');
 Route::get('pembayaran/financial-summary', [PembayaranController::class, 'financialSummary'])->name('pembayaran.financial-summary');
 Route::delete('/pembayaran/cicilan/{id}', [PembayaranController::class, 'destroyCicilan'])->name('pembayaran.delete-cicilan');
 Route::post('/pembayaran/{pembayaran}/batal', [PembayaranController::class, 'batal'])->name('pembayaran.batal');
+Route::delete('/pembayaran/{id}/cancel', [PembayaranController::class, 'cancelNew'])->name('pembayaran.cancel');
 
-Route::get('ulasan', [AdminUlasanController::class, 'index'])->name('ulasan.index');    
+Route::get('ulasan', [AdminUlasanController::class, 'index'])->name('ulasan.index');
 Route::get('ulasan/create', [AdminUlasanController::class, 'create'])->name('ulasan.create');
-Route::post('ulasan', [AdminUlasanController::class, 'store'])->name('ulasan.store');   
+Route::post('ulasan', [AdminUlasanController::class, 'store'])->name('ulasan.store');
 Route::delete('/ulasan/{id}', [AdminUlasanController::class, 'destroy'])->name('ulasan.destroy');
 
 });
 
-    
+
     // Route for admin only
     Route::middleware([CheckRole::class . ':admin'])->group(function () {
         Route::get('/dashboard', function () {
@@ -135,7 +136,7 @@ Route::middleware(['auth:siswa'])->group(function () {
 
     Route::get('/siswa/ulasan', [SiswaUlasanController::class, 'index'])->name('siswa.ulasan.index');
     Route::get('/siswa/ulasan/create', [SiswaUlasanController::class, 'create'])->name('siswa.ulasan.create');
-    Route::post('/siswa/ulasan', [SiswaUlasanController::class, 'store'])->name('siswa.ulasan.store'); 
+    Route::post('/siswa/ulasan', [SiswaUlasanController::class, 'store'])->name('siswa.ulasan.store');
     Route::delete('/siswa/ulasan/{id}', [SiswaUlasanController::class, 'destroy'])->name('siswa.ulasan.destroy');
     Route::get('/siswa/ulasan/{id}/edit', [SiswaUlasanController::class, 'edit'])->name('siswa.ulasan.edit');
     Route::post('/siswa/ulasan/{id}', [SiswaUlasanController::class, 'update'])->name('siswa.ulasan.update');
