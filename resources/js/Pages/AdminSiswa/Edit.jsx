@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "@inertiajs/inertia-react";
 import { usePage } from '@inertiajs/react';
 
-const Edit = () => {
+export default function Edit() {
     const { siswa } = usePage().props;
 
     const { data, setData, put, errors } = useForm({
@@ -28,6 +28,7 @@ const Edit = () => {
         no_wa_id_line_ibu: siswa.no_wa_id_line_ibu || "",
         email_ibu: siswa.email_ibu || "",
         foto: null,
+        kelas: siswa.kelas || "",
         mulai_bimbingan: siswa.mulai_bimbingan || "",
         jam_bimbingan: siswa.jam_bimbingan || "",
         hari_bimbingan: JSON.parse(siswa.hari_bimbingan || '[]'),
@@ -58,6 +59,7 @@ const Edit = () => {
     };
 
     return (
+        <>
         <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
             <div className="text-center mb-6">
                 <img
@@ -232,6 +234,26 @@ const Edit = () => {
                             onChange={handleChange}
                             error={errors.no_wa_id_line_ayah}
                         />
+                         <SelectField
+                            label="Kelas"
+                            id="kelas"
+                            name="kelas"
+                            value={data.kelas}
+                            onChange={handleChange}
+                            options={[
+                                { value: "Kelas 4 SD", label: "Kelas 4 SD" },
+                                { value: "Kelas 5 SD", label: "Kelas 5 SD" },
+                                { value: "Kelas 6 SD", label: "Kelas 6 SD" },
+                                { value: "Kelas 7 SMP", label: "Kelas 7 SMP" },
+                                { value: "Kelas 8 SMP", label: "Kelas 8 SMP" },
+                                { value: "Kelas 9 SMP", label: "Kelas 9 SMP" },
+                                { value: "Kelas 10 SMA", label: "Kelas 10 SMA" },
+                                { value: "Kelas 11 SMA", label: "Kelas 11 " },
+                                { value: "Kelas 12 SMA", label: "Kelas 12 SMA" },
+                                { value: "Alumni SMA", label: "Alumni SMA" },
+                            ]}
+                            error={errors.kelas}
+                        />
                         <InputField
                             label="Email Ayah"
                             id="email_ayah"
@@ -376,6 +398,8 @@ const Edit = () => {
                 </div>
             </form>
         </div>
+        </>
+        // itu untuk apa mas?
     );
 };
 
@@ -420,4 +444,3 @@ const SelectField = ({ label, id, name, value, onChange, options, multiple = fal
     </div>
 );
 
-export default Edit;

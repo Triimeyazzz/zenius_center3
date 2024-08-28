@@ -2,7 +2,7 @@ import React from 'react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-const Show = ({ siswa }) => {
+export default function Show() {
 
     const exportToPDF = () => {
         const doc = new jsPDF();
@@ -254,5 +254,3 @@ const Show = ({ siswa }) => {
         </div>
     );
 };
-
-export default Show;

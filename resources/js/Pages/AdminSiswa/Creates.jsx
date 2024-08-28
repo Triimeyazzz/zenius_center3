@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useForm } from "@inertiajs/react";
+import { useForm } from '@inertiajs/inertia-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-// ini yang baru pake export default function
+// ini yang lama pake const create
+
 export default function Create() {
     const { data, setData, post, errors } = useForm({
         nama: '',
@@ -38,7 +39,6 @@ export default function Create() {
         hari_bimbingan: [], // Handle multiple selections
     });
 
-
     const [fotoPreview, setFotoPreview] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -66,34 +66,32 @@ export default function Create() {
     };
 
     const handleSubmit = (e) => {
-
-        e.preventDefault();
-        setIsSubmitting(true);
-        try {
-            post(route('adminsiswa.store'), {
-                forceFormData: true,
-                onSuccess: () => {
-                    console.log('eror');
-                    setIsSubmitting(false);
-                    toast.success('Data berhasil disimpan!');
-                },
-                onError: () => {
-                    setIsSubmitting(false);
-                    Object.values(errors).forEach(error => {
-                        toast.error(error);
-                    });
-                }
-            });
-        } catch (error) {
-            console.error('Submit Error:', error); // Log unexpected errors
-            toast.error('Terjadi kesalahan saat menyimpan data.');
-            setIsSubmitting(false);
-        }
-    };
-
-    return (
-        <>
-<div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+    e.preventDefault();
+    // setIsSubmitting(true);
+    try {
+        post(route('adminsiswa.store'), {
+            forceFormData: true,
+            onSuccess: () => {
+                console.log('eror');
+                setIsSubmitting(false);
+                toast.success('Data berhasil disimpan!');
+            },
+            onError: () => {
+                // setIsSubmitting(false);
+                console.error('dwd'); // Log errors for debugging
+                // Object.values(errors).forEach(error => {
+                //     toast.error(error);
+                // });
+            }
+        });
+    } catch (error) {
+        console.error('Submit Error:', error); // Log unexpected errors
+        toast.error('Terjadi kesalahan saat menyimpan data.');
+        setIsSubmitting(false);
+    }
+};
+        return (
+        <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
             <div className="text-center mb-6">
                 <img src="/images/Reverse.png" alt="Logo" className="mx-auto mb-4 w-32 h-auto" />
                 <h1 className="text-2xl font-bold mb-4 text-indigo-600">Tambah Siswa</h1>
@@ -299,6 +297,6 @@ export default function Create() {
             </form>
             <ToastContainer />
         </div>
-        </>
     );
-}
+};
+

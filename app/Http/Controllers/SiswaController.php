@@ -71,33 +71,33 @@ class SiswaController extends Controller
             'foto' => 'nullable|image|max:2048',
             'kelas' => 'nullable|string',
             'mulai_bimbingan' => 'required|date',
-        'jam_bimbingan' => 'required',
-        'hari_bimbingan' => 'required|array',
-    ]);
+            'jam_bimbingan' => 'required',
+            'hari_bimbingan' => 'required|array'
+        ]);
 
     // Create a new Siswa instance
-    $siswa = new Siswa();
-    $siswa->fill($request->except('foto', 'password', 'hari_bimbingan'));
+        $siswa = new Siswa();
+        $siswa->fill($request->except('foto', 'password', 'hari_bimbingan'));
 
-    // Hash the password
-    $siswa->password = Hash::make($request->input('password'));
+        // Hash the password
+        $siswa->password = Hash::make($request->input('password'));
 
-    // Handle file upload
-    if ($request->hasFile('foto')) {
-        $file = $request->file('foto');
-        $filename = time() . '.' . $file->getClientOriginalExtension();
-        $file->storeAs('public/fotos', $filename);
-        $siswa->foto = $filename;
-    }
+        // Handle file upload
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('public/fotos', $filename);
+            $siswa->foto = $filename;
+        }
 
-    // Save the Siswa model
-    $siswa->save();
+        // Save the Siswa model
+        $siswa->save();
 
-    // Save the hari_bimbingan as JSON
-    $siswa->hari_bimbingan = json_encode($request->input('hari_bimbingan'));
-    $siswa->save();
+        // Save the hari_bimbingan as JSON
+        $siswa->hari_bimbingan = json_encode($request->input('hari_bimbingan'));
+        $siswa->save();
 
-    return redirect()->route('adminsiswa.index')->with('success', 'Data berhasil disimpan!');
+        return redirect()->route('adminsiswa.index')->with('success', 'Data berhasil disimpan!');
 }
 
     // Show the form for editing the specified student
@@ -142,6 +142,8 @@ public function update(Request $request, Siswa $siswa)
         'jam_bimbingan' => 'required|date_format:H:i',
         'hari_bimbingan' => 'required|array'
     ]);
+
+    dd($validated);
 
     if ($request->hasFile('foto')) {
         $fileName = $request->file('foto')->store('siswa_foto', 'public');

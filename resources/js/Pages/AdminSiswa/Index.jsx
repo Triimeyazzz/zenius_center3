@@ -5,7 +5,7 @@ import DeleteConfirmationModal from "@/Components/DeleteConfirmationModal";
 import { CSVLink } from "react-csv";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const Index = ({ siswa = [], auth }) => {
+export default function Index({siswa = [], auth}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSiswaId, setSelectedSiswaId] = useState(null);
     const [search, setSearch] = useState("");
@@ -222,7 +222,7 @@ const Index = ({ siswa = [], auth }) => {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {item.no_telpon}
                                         </td>
-                                        
+
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center space-x-4">
                                             <a
                                                 href={route(
@@ -296,4 +296,3 @@ const Index = ({ siswa = [], auth }) => {
     );
 };
 
-export default Index;
