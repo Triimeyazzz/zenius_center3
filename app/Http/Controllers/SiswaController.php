@@ -143,8 +143,6 @@ public function update(Request $request, Siswa $siswa)
         'hari_bimbingan' => 'required|array'
     ]);
 
-    dd($validated);
-
     if ($request->hasFile('foto')) {
         $fileName = $request->file('foto')->store('siswa_foto', 'public');
         $validated['foto'] = $fileName;

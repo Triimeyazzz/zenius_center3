@@ -1,10 +1,52 @@
-import React, { useState } from "react";
-import { useForm } from "@inertiajs/inertia-react";
-import { usePage } from '@inertiajs/react';
+import React, { useState } from 'react';
+import { useForm, usePage } from "@inertiajs/react";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-export default function Edit() {
+const InputField = ({ label, id, name, type, value, onChange, error }) => (
+    <div>
+        <label htmlFor={id} className="block text-sm font-medium text-gray-700">
+            {label}
+        </label>
+        <input
+            type={type}
+            id={id}
+            name={name}
+            value={value}
+            onChange={onChange}
+            className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+        />
+        {error && <div className="text-red-600 mt-1">{error}</div>}
+    </div>
+);
+
+const SelectField = ({ label, id, name, value, onChange, options, multiple = false, error }) => (
+    <div>
+        <label htmlFor={id} className="block text-sm font-medium text-gray-700">
+            {label}
+        </label>
+        <select
+            id={id}
+            name={name}
+            value={value}
+            onChange={onChange}
+            multiple={multiple}
+            className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+        >
+            {options.map((option) => (
+                <option key={option.value} value={option.value}>
+                    {option.label}
+                </option>
+            ))}
+        </select>
+        {error && <div className="text-red-600 mt-1">{error}</div>}
+    </div>
+);
+
+
+// ini yang baru pake export default function
+export default function Edit () {
     const { siswa } = usePage().props;
-
     const { data, setData, put, errors } = useForm({
         nama: siswa.nama || "",
         email: siswa.email || "",
@@ -34,11 +76,13 @@ export default function Edit() {
         hari_bimbingan: JSON.parse(siswa.hari_bimbingan || '[]'),
         });
 
-    console.log(data)
-    const [fotoPreview, setFotoPreview] = useState(siswa.foto ? `/storage/fotos/${siswa.foto}` : null);
+
+    const [fotoPreview, setFotoPreview] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+
     const handleChange = (e) => {
+        e.preventDefault();
         const { name, value, type, files } = e.target;
         if (type === "file") {
             setData(name, files[0]);
@@ -52,15 +96,22 @@ export default function Edit() {
     };
 
     const handleSubmit = (e) => {
+
         e.preventDefault();
+        setIsSubmitting(true);
         put(route("adminsiswa.update", siswa.id), {
             preserveState: true,
+            onSuccess: () => {
+                console.log('eror');
+                setIsSubmitting(false);
+                toast.success('Data berhasil update!');
+            },
         });
     };
 
     return (
         <>
-        <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+            <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
             <div className="text-center mb-6">
                 <img
                     src="/images/Reverse.png"
@@ -399,48 +450,5 @@ export default function Edit() {
             </form>
         </div>
         </>
-        // itu untuk apa mas?
     );
-};
-
-// Helper Components for Form Fields
-const InputField = ({ label, id, name, type, value, onChange, error }) => (
-    <div>
-        <label htmlFor={id} className="block text-sm font-medium text-gray-700">
-            {label}
-        </label>
-        <input
-            type={type}
-            id={id}
-            name={name}
-            value={value}
-            onChange={onChange}
-            className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-        />
-        {error && <div className="text-red-600 mt-1">{error}</div>}
-    </div>
-);
-
-const SelectField = ({ label, id, name, value, onChange, options, multiple = false, error }) => (
-    <div>
-        <label htmlFor={id} className="block text-sm font-medium text-gray-700">
-            {label}
-        </label>
-        <select
-            id={id}
-            name={name}
-            value={value}
-            onChange={onChange}
-            multiple={multiple}
-            className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-        >
-            {options.map((option) => (
-                <option key={option.value} value={option.value}>
-                    {option.label}
-                </option>
-            ))}
-        </select>
-        {error && <div className="text-red-600 mt-1">{error}</div>}
-    </div>
-);
-
+}
