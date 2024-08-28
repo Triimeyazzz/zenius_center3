@@ -32,7 +32,7 @@ const Edit = ({ user, roles, auth }) => {
             });
         }
     };
-
+console.log(data)
     return (
         <Authenticated user={auth.user} header={<h2>Edit Page</h2>}>
             <div className="py-12">

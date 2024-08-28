@@ -4,15 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 
 class User extends Authenticatable
 {
+    use HasRoles;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
+
 
     protected static function boot()
 {
@@ -23,6 +26,7 @@ class User extends Authenticatable
             $lastUser = self::orderBy('id', 'desc')->first();
             $userId = $lastUser ? (int) substr($lastUser->id, 2) + 1 : 1;
             $user->id = str_pad($userId, 3, '0', STR_PAD_LEFT);
+
         }
     });
 }
@@ -38,7 +42,7 @@ class User extends Authenticatable
         'role',
         'profile_picture', // Add this line
     ];
-    
+
 
     protected $hidden = [
         'password',
@@ -48,12 +52,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
- 
+
     public function sentMessages()
     {
         return $this->morphMany(Message::class, 'sender');
     }
-    
+
     public function receivedMessages()
     {
         return $this->morphMany(Message::class, 'receiver');

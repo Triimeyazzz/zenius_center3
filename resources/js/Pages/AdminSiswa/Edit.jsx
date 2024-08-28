@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useForm } from "@inertiajs/inertia-react";
+import { usePage } from '@inertiajs/react';
 
-const Edit = ({  siswa }) => {
+const Edit = () => {
+    const { siswa } = usePage().props;
+
     const { data, setData, put, errors } = useForm({
         nama: siswa.nama || "",
         email: siswa.email || "",
@@ -25,16 +28,14 @@ const Edit = ({  siswa }) => {
         no_wa_id_line_ibu: siswa.no_wa_id_line_ibu || "",
         email_ibu: siswa.email_ibu || "",
         foto: null,
-    });
+        mulai_bimbingan: siswa.mulai_bimbingan || "",
+        jam_bimbingan: siswa.jam_bimbingan || "",
+        hari_bimbingan: JSON.parse(siswa.hari_bimbingan || '[]'),
+        });
 
-    const [fotoPreview, setFotoPreview] = useState(siswa.foto || null);
+    console.log(data)
+    const [fotoPreview, setFotoPreview] = useState(siswa.foto ? `/storage/fotos/${siswa.foto}` : null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    useEffect(() => {
-        if (siswa.foto) {
-            setFotoPreview(siswa.foto);
-        }
-    }, [siswa.foto]);
 
     const handleChange = (e) => {
         const { name, value, type, files } = e.target;
@@ -42,12 +43,8 @@ const Edit = ({  siswa }) => {
             setData(name, files[0]);
             const file = files[0];
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setFotoPreview(reader.result);
-            };
-            if (file) {
-                reader.readAsDataURL(file);
-            }
+            reader.onloadend = () => setFotoPreview(reader.result);
+            if (file) reader.readAsDataURL(file);
         } else {
             setData(name, value);
         }
@@ -55,11 +52,8 @@ const Edit = ({  siswa }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setIsSubmitting(true);
         put(route("adminsiswa.update", siswa.id), {
-            forceFormData: true,
-            onSuccess: () => setIsSubmitting(false),
-            onError: () => setIsSubmitting(false),
+            preserveState: true,
         });
     };
 
@@ -71,264 +65,359 @@ const Edit = ({  siswa }) => {
                     alt="Logo"
                     className="mx-auto mb-4 w-32 h-auto"
                 />
-                <h1 className="text-2xl font-bold mb-4 text-indigo-600">
+                <h1 className="text-2xl font-bold mb-4 text-purple-600">
                     Edit Siswa
                 </h1>
             </div>
             <form onSubmit={handleSubmit} encType="multipart/form-data">
                 {/* Personal Information */}
-                <fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-indigo-50">
-                    <legend className="text-xl font-semibold mb-4 text-indigo-700">
+                <fieldset className="mb-6 border border-purple-300 rounded-lg p-6 bg-purple-50">
+                    <legend className="text-xl font-semibold mb-4 text-purple-700">
                         Informasi Pribadi
                     </legend>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {[
-                            { label: "Nama", name: "nama", type: "text",  },
-                            { label: "Email", name: "email", type: "email" },
-                            {
-                                label: "Password",
-                                name: "password",
-                                type: "password",
-                            },
-                            {
-                                label: "Tempat Lahir",
-                                name: "tempat_lahir",
-                                type: "text",
-                            },
-                            {
-                                label: "Tanggal Lahir",
-                                name: "tanggal_lahir",
-                                type: "date",
-                            },
-                            {
-                                label: "Jenis Kelamin",
-                                name: "jenis_kelamin",
-                                type: "select",
-                                options: ["Laki-laki", "Perempuan"],
-                            },
-                            { label: "Alamat", name: "alamat", type: "text" },
-                            { label: "Kota", name: "kota", type: "text" },
-                        ].map(({ label, name, type, options }) => (
-                            <div className="mb-4" key={name}>
-                                <label
-                                    htmlFor={name}
-                                    className="block text-sm font-medium text-gray-700 mb-1"
-                                >
-                                    {label}
-                                </label>
-                                {type === "select" ? (
-                                    <select
-                                        id={name}
-                                        name={name}
-                                        value={data[name]}
-                                        onChange={handleChange}
-                                        className="w-full p-3 border border-indigo-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                    >
-                                        {options.map((option) => (
-                                            <option key={option} value={option}>
-                                                {option}
-                                            </option>
-                                        ))}
-                                    </select>
-                                ) : (
-                                    <input
-                                        id={name}
-                                        name={name}
-                                        type={type}
-                                        value={data[name] || ""}
-                                        onChange={handleChange}
-                                        className="w-full p-3 border border-indigo-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                    />
-                                )}
-                                {errors[name] && (
-                                    <div className="text-red-600 text-sm mt-1">
-                                        {errors[name]}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                        <InputField
+                            label="Nama"
+                            id="nama"
+                            name="nama"
+                            type="text"
+                            value={data.nama}
+                            onChange={handleChange}
+                            error={errors.nama}
+                        />
+                        <InputField
+                            label="Email"
+                            id="email"
+                            name="email"
+                            type="email"
+                            value={data.email}
+                            onChange={handleChange}
+                            error={errors.email}
+                        />
+                        <InputField
+                            label="Password"
+                            id="password"
+                            name="password"
+                            type="password"
+                            value={data.password}
+                            onChange={handleChange}
+                            error={errors.password}
+                        />
+                        <InputField
+                            label="Tempat Lahir"
+                            id="tempat_lahir"
+                            name="tempat_lahir"
+                            type="text"
+                            value={data.tempat_lahir}
+                            onChange={handleChange}
+                            error={errors.tempat_lahir}
+                        />
+                        <InputField
+                            label="Tanggal Lahir"
+                            id="tanggal_lahir"
+                            name="tanggal_lahir"
+                            type="date"
+                            value={data.tanggal_lahir}
+                            onChange={handleChange}
+                            error={errors.tanggal_lahir}
+                        />
+                        <SelectField
+                            label="Jenis Kelamin"
+                            id="jenis_kelamin"
+                            name="jenis_kelamin"
+                            value={data.jenis_kelamin}
+                            onChange={handleChange}
+                            options={[
+                                { value: "Laki-laki", label: "Laki-laki" },
+                                { value: "Perempuan", label: "Perempuan" },
+                            ]}
+                            error={errors.jenis_kelamin}
+                        />
+                        <InputField
+                            label="Alamat"
+                            id="alamat"
+                            name="alamat"
+                            type="text"
+                            value={data.alamat}
+                            onChange={handleChange}
+                            error={errors.alamat}
+                        />
+                        <InputField
+                            label="Kota"
+                            id="kota"
+                            name="kota"
+                            type="text"
+                            value={data.kota}
+                            onChange={handleChange}
+                            error={errors.kota}
+                        />
                     </div>
                 </fieldset>
 
                 {/* School Information */}
-                <fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-indigo-50">
-                    <legend className="text-xl font-semibold mb-4 text-indigo-700">
+                <fieldset className="mb-6 border border-purple-300 rounded-lg p-6 bg-purple-50">
+                    <legend className="text-xl font-semibold mb-4 text-purple-700">
                         Informasi Sekolah
                     </legend>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {[
-                            {
-                                label: "Nama Sekolah",
-                                name: "nama_sekolah",
-                                type: "text",
-                            },
-                            {
-                                label: "Alamat Sekolah",
-                                name: "alamat_sekolah",
-                                type: "text",
-                            },
-                            {
-                                label: "Kurikulum",
-                                name: "kurikulum",
-                                type: "text",
-                            },
-                        ].map(({ label, name, type }) => (
-                            <div className="mb-4" key={name}>
-                                <label
-                                    htmlFor={name}
-                                    className="block text-sm font-medium text-gray-700 mb-1"
-                                >
-                                    {label}
-                                </label>
-                                <input
-                                    id={name}
-                                    name={name}
-                                    type={type}
-                                    value={data[name] || ""}
-                                    onChange={handleChange}
-                                    className="w-full p-3 border border-indigo-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                />
-                                {errors[name] && (
-                                    <div className="text-red-600 text-sm mt-1">
-                                        {errors[name]}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                        <InputField
+                            label="Nama Sekolah"
+                            id="nama_sekolah"
+                            name="nama_sekolah"
+                            type="text"
+                            value={data.nama_sekolah}
+                            onChange={handleChange}
+                            error={errors.nama_sekolah}
+                        />
+                        <InputField
+                            label="Alamat Sekolah"
+                            id="alamat_sekolah"
+                            name="alamat_sekolah"
+                            type="text"
+                            value={data.alamat_sekolah}
+                            onChange={handleChange}
+                            error={errors.alamat_sekolah}
+                        />
+                        <InputField
+                            label="Kurikulum"
+                            id="kurikulum"
+                            name="kurikulum"
+                            type="text"
+                            value={data.kurikulum}
+                            onChange={handleChange}
+                            error={errors.kurikulum}
+                        />
                     </div>
                 </fieldset>
 
                 {/* Parent Information */}
-                <fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-indigo-50">
-                    <legend className="text-xl font-semibold mb-4 text-indigo-700">
+                <fieldset className="mb-6 border border-purple-300 rounded-lg p-6 bg-purple-50">
+                    <legend className="text-xl font-semibold mb-4 text-purple-700">
                         Informasi Orang Tua
                     </legend>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {[
-                            {
-                                label: "Nama Ayah",
-                                name: "nama_ayah",
-                                type: "text",
-                            },
-                            {
-                                label: "Pekerjaan Ayah",
-                                name: "pekerjaan_ayah",
-                                type: "text",
-                            },
-                            {
-                                label: "Nomor HP Ayah",
-                                name: "no_telp_hp_ayah",
-                                type: "text",
-                            },
-                            {
-                                label: "ID Line/WA Ayah",
-                                name: "no_wa_id_line_ayah",
-                                type: "text",
-                            },
-                            {
-                                label: "Email Ayah",
-                                name: "email_ayah",
-                                type: "email",
-                            },
-                            {
-                                label: "Nama Ibu",
-                                name: "nama_ibu",
-                                type: "text",
-                            },
-                            {
-                                label: "Pekerjaan Ibu",
-                                name: "pekerjaan_ibu",
-                                type: "text",
-                            },
-                            {
-                                label: "Nomor HP Ibu",
-                                name: "no_telp_hp_ibu",
-                                type: "text",
-                            },
-                            {
-                                label: "ID Line/WA Ibu",
-                                name: "no_wa_id_line_ibu",
-                                type: "text",
-                            },
-                            {
-                                label: "Email Ibu",
-                                name: "email_ibu",
-                                type: "email",
-                            },
-                        ].map(({ label, name, type }) => (
-                            <div className="mb-4" key={name}>
-                                <label
-                                    htmlFor={name}
-                                    className="block text-sm font-medium text-gray-700 mb-1"
-                                >
-                                    {label}
-                                </label>
-                                <input
-                                    id={name}
-                                    name={name}
-                                    type={type}
-                                    value={data[name] || ""}
-                                    onChange={handleChange}
-                                    className="w-full p-3 border border-indigo-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                />
-                                {errors[name] && (
-                                    <div className="text-red-600 text-sm mt-1">
-                                        {errors[name]}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                        <InputField
+                            label="Nama Ayah"
+                            id="nama_ayah"
+                            name="nama_ayah"
+                            type="text"
+                            value={data.nama_ayah}
+                            onChange={handleChange}
+                            error={errors.nama_ayah}
+                        />
+                        <InputField
+                            label="Pekerjaan Ayah"
+                            id="pekerjaan_ayah"
+                            name="pekerjaan_ayah"
+                            type="text"
+                            value={data.pekerjaan_ayah}
+                            onChange={handleChange}
+                            error={errors.pekerjaan_ayah}
+                        />
+                        <InputField
+                            label="No. Telp/Hp Ayah"
+                            id="no_telp_hp_ayah"
+                            name="no_telp_hp_ayah"
+                            type="text"
+                            value={data.no_telp_hp_ayah}
+                            onChange={handleChange}
+                            error={errors.no_telp_hp_ayah}
+                        />
+                        <InputField
+                            label="No. WA/ID Line Ayah"
+                            id="no_wa_id_line_ayah"
+                            name="no_wa_id_line_ayah"
+                            type="text"
+                            value={data.no_wa_id_line_ayah}
+                            onChange={handleChange}
+                            error={errors.no_wa_id_line_ayah}
+                        />
+                        <InputField
+                            label="Email Ayah"
+                            id="email_ayah"
+                            name="email_ayah"
+                            type="email"
+                            value={data.email_ayah}
+                            onChange={handleChange}
+                            error={errors.email_ayah}
+                        />
+                        <InputField
+                            label="Nama Ibu"
+                            id="nama_ibu"
+                            name="nama_ibu"
+                            type="text"
+                            value={data.nama_ibu}
+                            onChange={handleChange}
+                            error={errors.nama_ibu}
+                        />
+                        <InputField
+                            label="Pekerjaan Ibu"
+                            id="pekerjaan_ibu"
+                            name="pekerjaan_ibu"
+                            type="text"
+                            value={data.pekerjaan_ibu}
+                            onChange={handleChange}
+                            error={errors.pekerjaan_ibu}
+                        />
+                        <InputField
+                            label="No. Telp/Hp Ibu"
+                            id="no_telp_hp_ibu"
+                            name="no_telp_hp_ibu"
+                            type="text"
+                            value={data.no_telp_hp_ibu}
+                            onChange={handleChange}
+                            error={errors.no_telp_hp_ibu}
+                        />
+                        <InputField
+                            label="No. WA/ID Line Ibu"
+                            id="no_wa_id_line_ibu"
+                            name="no_wa_id_line_ibu"
+                            type="text"
+                            value={data.no_wa_id_line_ibu}
+                            onChange={handleChange}
+                            error={errors.no_wa_id_line_ibu}
+                        />
+                        <InputField
+                            label="Email Ibu"
+                            id="email_ibu"
+                            name="email_ibu"
+                            type="email"
+                            value={data.email_ibu}
+                            onChange={handleChange}
+                            error={errors.email_ibu}
+                        />
                     </div>
                 </fieldset>
 
-                
-                {/* Foto */}
-                <fieldset className="mb-6 border border-indigo-300 rounded-lg p-6 bg-indigo-50">
-                    <legend className="text-xl font-semibold mb-4 text-indigo-700">
-                        Foto
+                {/* Bimbingan Information */}
+                <fieldset className="mb-6 border border-purple-300 rounded-lg p-6 bg-purple-50">
+                    <legend className="text-xl font-semibold mb-4 text-purple-700">
+                        Informasi Bimbingan
                     </legend>
-                    <div className="mb-4">
-                        <label
-                            htmlFor="foto"
-                            className="block text-sm font-medium text-gray-700 mb-1"
-                        >
-                            Unggah Foto
-                        </label>
-                        <input
-                            id="foto"
-                            name="foto"
-                            type="file"
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <InputField
+                            label="Mulai Bimbingan"
+                            id="mulai_bimbingan"
+                            name="mulai_bimbingan"
+                            type="date"
+                            value={data.mulai_bimbingan}
                             onChange={handleChange}
-                            className="w-full p-3 border border-indigo-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            error={errors.mulai_bimbingan}
                         />
-                        {fotoPreview && (
-                            <img
-                                src={fotoPreview}
-                                alt="Preview"
-                                className="mt-4 w-32 h-32 object-cover border border-indigo-300 rounded-md"
-                            />
-                        )}
-                        {errors.foto && (
-                            <div className="text-red-600 text-sm mt-1">
-                                {errors.foto}
-                            </div>
-                        )}
+                        <InputField
+                            label="Jam Bimbingan"
+                            id="jam_bimbingan"
+                            name="jam_bimbingan"
+                            type="time"
+                            value={data.jam_bimbingan}
+                            onChange={handleChange}
+                            error={errors.jam_bimbingan}
+                        />
+                        <SelectField
+                            label="Hari Bimbingan"
+                            id="hari_bimbingan"
+                            name="hari_bimbingan"
+                            multiple
+                            value={data.hari_bimbingan}
+                            onChange={handleChange}
+                            options={[
+                                { value: "Senin", label: "Senin" },
+                                { value: "Selasa", label: "Selasa" },
+                                { value: "Rabu", label: "Rabu" },
+                                { value: "Kamis", label: "Kamis" },
+                                { value: "Jumat", label: "Jumat" },
+                                { value: "Sabtu", label: "Sabtu" },
+                            ]}
+                            error={errors.hari_bimbingan}
+                        />
                     </div>
                 </fieldset>
+
+                {/* Photo Upload */}
+                <div className="mb-6">
+                    <label htmlFor="foto" className="block text-sm font-medium text-gray-700">
+                        Foto Siswa
+                    </label>
+                    <input
+                        type="file"
+                        id="foto"
+                        name="foto"
+                        onChange={handleChange}
+                        className="mt-1 block w-full text-sm text-gray-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-purple-50 file:text-purple-700
+                            hover:file:bg-purple-100"
+                    />
+                    {fotoPreview && (
+                        <img
+                            src={fotoPreview}
+                            alt="Foto Preview"
+                            className="mt-4 w-32 h-32 object-cover rounded-lg"
+                        />
+                    )}
+                    {errors.foto && (
+                        <div className="text-red-600 text-sm mt-1">{errors.foto}</div>
+                    )}
+                </div>
 
                 {/* Submit Button */}
-                <div className="text-center">
+                <div className="text-right">
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className={`${
+                            isSubmitting ? "bg-gray-300" : "bg-purple-600"
+                        } text-white font-semibold py-2 px-4 rounded-lg hover:bg-purple-500`}
                     >
-                        {isSubmitting ? "Menyimpan..." : "Simpan"}
+                        {isSubmitting ? "Menyimpan..." : "Simpan Perubahan"}
                     </button>
                 </div>
             </form>
         </div>
     );
 };
+
+// Helper Components for Form Fields
+const InputField = ({ label, id, name, type, value, onChange, error }) => (
+    <div>
+        <label htmlFor={id} className="block text-sm font-medium text-gray-700">
+            {label}
+        </label>
+        <input
+            type={type}
+            id={id}
+            name={name}
+            value={value}
+            onChange={onChange}
+            className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+        />
+        {error && <div className="text-red-600 mt-1">{error}</div>}
+    </div>
+);
+
+const SelectField = ({ label, id, name, value, onChange, options, multiple = false, error }) => (
+    <div>
+        <label htmlFor={id} className="block text-sm font-medium text-gray-700">
+            {label}
+        </label>
+        <select
+            id={id}
+            name={name}
+            value={value}
+            onChange={onChange}
+            multiple={multiple}
+            className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+        >
+            {options.map((option) => (
+                <option key={option.value} value={option.value}>
+                    {option.label}
+                </option>
+            ))}
+        </select>
+        {error && <div className="text-red-600 mt-1">{error}</div>}
+    </div>
+);
 
 export default Edit;

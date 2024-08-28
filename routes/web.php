@@ -43,9 +43,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/dashboard/count', [DashboardController::class, 'count']);
-Route::get('/dashboard/data', [DashboardController::class, 'data']);
+        Route::get('/dashboard', function () {
+            return Inertia::render('Dashboard');
+        })->name('dashboard');
+
+        Route::get('/api/dashboard/count', [DashboardController::class, 'count']);
+        Route::get('/api/dashboard/data', [DashboardController::class, 'data']);
 
         Route::get('users', [UserController::class, 'index'])->name('users.index');
         Route::get('users/create', [UserController::class, 'create'])->name('users.create');
@@ -95,8 +98,12 @@ Route::delete('/pembayaran/{id}/cancel', [PembayaranController::class, 'cancelNe
 
 Route::get('ulasan', [AdminUlasanController::class, 'index'])->name('ulasan.index');
 Route::get('ulasan/create', [AdminUlasanController::class, 'create'])->name('ulasan.create');
+
 Route::post('ulasan', [AdminUlasanController::class, 'store'])->name('ulasan.store');
 Route::delete('/ulasan/{id}', [AdminUlasanController::class, 'destroy'])->name('ulasan.destroy');
+Route::post('ulasan', [AdminUlasanController::class, 'store'])->name('ulasan.store');
+Route::delete('/ulasan/{ulasan}', [AdminUlasanController::class, 'destroy'])->name('ulasan.destroy');
+
 
 });
 
@@ -139,7 +146,9 @@ Route::middleware(['auth:siswa'])->group(function () {
     Route::post('/siswa/ulasan', [SiswaUlasanController::class, 'store'])->name('siswa.ulasan.store');
     Route::delete('/siswa/ulasan/{id}', [SiswaUlasanController::class, 'destroy'])->name('siswa.ulasan.destroy');
     Route::get('/siswa/ulasan/{id}/edit', [SiswaUlasanController::class, 'edit'])->name('siswa.ulasan.edit');
-    Route::post('/siswa/ulasan/{id}', [SiswaUlasanController::class, 'update'])->name('siswa.ulasan.update');
+    Route::delete('/siswa/ulasan/{ulasan}', [SiswaUlasanController::class, 'destroy'])
+    ->name('siswa.ulasan.destroy');
+
 });
 
 

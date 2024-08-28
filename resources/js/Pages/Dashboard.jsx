@@ -1,208 +1,494 @@
-import { useState, useEffect } from 'react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
-import LineChart from '@/Components/LineChart';
-import ErrorBoundary from '@/Components/ErrorBoundary';
-import Loading from '@/Components/Loading';
+import React, { useState, useEffect } from "react";
+import { Head, Link } from "@inertiajs/react";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import axios from "axios";
+import {
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    Tooltip,
+    CartesianGrid,
+    ResponsiveContainer,
+    Legend,
+    LineChart,
+    Line,
+    PieChart,
+    Pie,
+    Cell,
+} from "recharts"; // Ensure these components are imported
+import {
+    FaUser,
+    FaChalkboardTeacher,
+    FaMoneyBillWave,
+    FaFileInvoiceDollar,
+} from "react-icons/fa";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import moment from "moment-hijri";
+function MyBarChart({ data }) {
+    const formattedData = data.map((item) => ({
+        ...item,
+        total: item.total
+            .toLocaleString("id-ID", {
+                style: "currency",
+                currency: "IDR",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            })
+            .replace("Rp", "")
+            .trim(),
+    }));
+}
+function sortDataByMonth(data) {
+    const monthOrder = [
+        "Januari",
+        "Februari",
+        "Maret",
+        "April",
+        "Mei",
+        "Juni",
+        "Juli",
+        "Agustus",
+        "September",
+        "Oktober",
+        "November",
+        "Desember",
+    ];
+    return data.sort(
+        (a, b) => monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month)
+    );
+}
 
-export default function Dashboard({ auth, totalPemasukan, totalTagihan, sisaTagihan, pemasukanPerBulan }) {
-    const [data, setData] = useState({
-        totalAdmins: null,
-        totalSiswa: null,
-        admins: [],
-        siswa: [],
-    });
-    const [isLoading, setIsLoading] = useState(true);
+export default function Dashboard({ auth }) {
+    const [dashboardData, setDashboardData] = useState(null);
+    const [detailedData, setDetailedData] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [chartType, setChartType] = useState("bar");
 
     useEffect(() => {
-        const fetchCountData = async () => {
-            try {
-                const response = await fetch('/dashboard/count');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const result = await response.json();
-                console.log('Count Data:', result); // Log the result for debugging
-                setData(prev => ({
-                    ...prev,
-                    totalAdmins: result.totalAdmins,
-                    totalSiswa: result.totalSiswa,
-                }));
-            } catch (error) {
-                console.error('Error fetching count data:', error);
-            }
-        };
-    
         const fetchData = async () => {
             try {
-                const response = await fetch('/dashboard/data');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const result = await response.json();
-                console.log('Detailed Data:', result); // Log the result for debugging
-                setData(prev => ({
-                    ...prev,
-                    admins: result.admins,
-                    siswa: result.siswa,
-                }));
+                const [countResponse, dataResponse] = await Promise.all([
+                    axios.get("/api/dashboard/count"),
+                    axios.get("/api/dashboard/data"),
+                ]);
+                setDashboardData(countResponse.data);
+                setDetailedData(dataResponse.data);
             } catch (error) {
-                console.error('Error fetching detailed data:', error);
-            } finally {
-                setIsLoading(false);
+                console.error("Error fetching dashboard data:", error);
             }
         };
 
-        const fetchPemasukanPerBulan = async () => {
-            try {
-                const response = await fetch('/dashboard/pemasukan-per-bulan');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const result = await response.json();
-                console.log('Pemasukan Per Bulan:', result); // Log the result for debugging
-                setData(prev => ({
-                    ...prev,
-                    pemasukanPerBulan: result,
-                }));
-            } catch (error) {
-                console.error('Error fetching pemasukan per bulan:', error);
-            }
-        };
-
-        const fetchSisaTagihan = async () => {
-            try {
-                const response = await fetch('/dashboard/sisa-tagihan');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const result = await response.json();
-                console.log('Sisa Tagihan:', result); // Log the result for debugging
-                setData(prev => ({
-                    ...prev,
-                    sisaTagihan: result,
-                }));
-            } catch (error) {
-                console.error('Error fetching sisa tagihan:', error);
-            }
-        }        
-    
-        fetchCountData();
         fetchData();
     }, []);
-    
-    if (isLoading) {
-        return <Loading />;
-    }
+
+    const formatNumber = (num) => {
+        return num
+            .toLocaleString("id-ID", { style: "currency", currency: "IDR" })
+            .replace("Rp", "");
+    };
+
+    const formatMonthName = (month) => {
+        const monthNames = [
+            "Januari",
+            "Februari",
+            "Maret",
+            "April",
+            "Mei",
+            "Juni",
+            "Juli",
+            "Agustus",
+            "September",
+            "Oktober",
+            "November",
+            "Desember",
+        ];
+        return monthNames[month - 1];
+    };
+
+    const handleDateChange = (newDate) => {
+        setSelectedDate(newDate);
+        console.log("Selected date:", newDate);
+    };
+
+    const hijriDate = moment(selectedDate).format("iDD/iMM/iYYYY");
+
+    const handleToggleDarkMode = () => {
+        setDarkMode((prevMode) => !prevMode);
+    };
 
     return (
-        <ErrorBoundary>
-            <AuthenticatedLayout
-                user={auth.user}
-                header={<h2 className="font-semibold text-2xl text-gray-900">Admin Dashboard</h2>}
-            >
-                <Head title="Dashboard" />
+        <AuthenticatedLayout
+            user={auth.user}
+            header={
+                <h2 className="font-semibold text-xl text-gray-800 leading-tight">
+                    Dashboard
+                </h2>
+            }
+        >
+            <Head title="Dashboard" />
 
-                <div className="py-12 bg-gray-50">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
-                        <div className="flex justify-between">
-                            <div className=" bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 text-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl">
-                                <h3 className="text-lg font-semibold">Total Admin</h3>
-                                <p className="text-3xl font-bold mt-2">{data.totalAdmins !== null ? data.totalAdmins : 'Loading...'}</p>
-                                <a href="/users" className="text-yellow-300 mt-4 inline-block hover:underline">Lihat Lebih Banyak</a>
-                            </div>
-                            <div className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl">
-                                <h3 className="text-lg font-semibold">Total Siswa</h3>
-                                <p className="text-3xl font-bold mt-2">{data.totalSiswa !== null ? data.totalSiswa : 'Loading...'}</p>
-                                <a href="/adminsiswa" className="text-purple-300 mt-4 inline-block hover:underline">Lihat Lebih Banyak</a>
-                            </div>
-                        </div>
+            <div className="py-12">
+                <div className="max-w-8xl mx-auto sm:px-6 lg:px-8">
+                    <div className="bg-white overflow-hidden shadow-lg sm:rounded-lg">
+                        <div className="p-6 text-gray-900">
+                            {dashboardData ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                    <DashboardCard
+                                        title="Total Admins"
+                                        value={dashboardData.totalAdmins}
+                                        icon={<FaUser />}
+                                    />
+                                    <DashboardCard
+                                        title="Total Siswa"
+                                        value={dashboardData.totalSiswa}
+                                        icon={<FaChalkboardTeacher />}
+                                    />
+                                    <DashboardCard
+                                        title="Total Pemasukan"
+                                        value={formatNumber(
+                                            dashboardData.totalPemasukan
+                                        )}
+                                        icon={<FaMoneyBillWave />}
+                                    />
+                                    <DashboardCard
+                                        title="Sisa Tagihan"
+                                        value={formatNumber(
+                                            dashboardData.sisaTagihan
+                                        )}
+                                        icon={<FaFileInvoiceDollar />}
+                                    />
+                                </div>
+                            ) : (
+                                <div className="flex items-center justify-center space-x-2">
+                                    <div className="animate-spin h-5 w-5 border-4 border-t-4 border-gray-300 rounded-full border-t-purple-500"></div>
+                                    <p className="text-gray-500">
+                                        Sedang memuat data....
+                                    </p>
+                                </div>
+                            )}
 
-                        {/* Total Pemasukan, Total Tagihan, Sisa Tagihan */}
-                        <div className="flex justify-between mt-8">
-                            <div className="bg-blue-500 text-white shadow-lg rounded-lg p-6">
-                                <h3 className="text-lg font-semibold">Total Pemasukan</h3>
-                                <p className="text-3xl font-bold mt-2">{totalPemasukan}</p>
-                            </div>
-                            <div className="bg-green-500 text-white shadow-lg rounded-lg p-6">
-                                <h3 className="text-lg font-semibold">Total Tagihan</h3>
-                                <p className="text-3xl font-bold mt-2">{totalTagihan}</p>
-                            </div>
-                            <div className="bg-red-500 text-white shadow-lg rounded-lg p-6">
-                                <h3 className="text-lg font-semibold">Sisa Tagihan</h3>
-                                <p className="text-3xl font-bold mt-2">{sisaTagihan}</p>
-                            </div>
-                        </div>
+                            <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-10">
+                                {detailedData && (
+                                    <>
+                                        <DataTable
+                                            title="List beberapa Admins"
+                                            data={detailedData.admins}
+                                            fields={["name", "email", ]}
+                                        />
+                                        <DataTableSiswa
+                                            title="Daftar beberapa Siswa"
+                                            data={detailedData.siswa}
+                                            fields={["nama", "email", "foto"]}
+                                        />
 
-                        {/* Line Chart for Pemasukan Per Bulan */}
-                        <div className="mt-12">
-                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Pemasukan Per Bulan</h3>
-                        </div>
+                                    </>
+                                )}
+                            </div>
 
-                        {/* Tables for Admins and Siswa */}
-                        <div className="mt-12 space-y-8">
-                            {/* Admins Table */}
-                            <div>
-                                <h3 className="text-xl font-semibold text-gray-900 mb-4">Admins</h3>
-                                <div className="overflow-x-auto bg-white shadow-lg rounded-lg border border-gray-200">
-                                    <table className="min-w-full divide-y divide-gray-300">
-                                        <thead className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
-                                            <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium">ID</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium">Name</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium">Email</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
-                                            {data.admins.slice(0, 5).map(admin => (
-                                                <tr key={admin.id}>
-                                                    <td className="px-6 py-4 text-sm text-gray-500">{admin.id}</td>
-                                                    <td className="px-6 py-4 text-sm text-gray-500">{admin.name}</td>
-                                                    <td className="px-6 py-4 text-sm text-gray-500">{admin.email}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                    <a href="/users" className="text-purple-600 hover:underline block text-center py-4">Lihat Lebih Banyak</a>
+                            {dashboardData &&
+                                dashboardData.pemasukanPerBulan && (
+                                    <div className="mt-10">
+                                        <h3 className="text-lg font-semibold mb-4">
+                                            Pemasukan Per Bulan
+                                        </h3>
+                                        <div className="mb-4">
+                                            <button
+                                                onClick={() =>
+                                                    setChartType("bar")
+                                                }
+                                                className={`mr-2 px-4 py-2 rounded ${
+                                                    chartType === "bar"
+                                                        ? "bg-purple-600 text-white rounded-md shadow-sm"
+                                                        : "bg-gray-200 text-gray-700"
+                                                }`}
+                                            >
+                                                Bar Chart
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    setChartType("line")
+                                                }
+                                                className={`mr-2 px-4 py-2 rounded ${
+                                                    chartType === "line"
+                                                        ? "bg-purple-600 text-white rounded-md shadow-sm"
+                                                        : "bg-gray-200 text-gray-700"
+                                                }`}
+                                            >
+                                                Line Chart
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    setChartType("pie")
+                                                }
+                                                className={`px-4 py-2 rounded ${
+                                                    chartType === "pie"
+                                                        ? "bg-purple-600 text-white rounded-md shadow-sm"
+                                                        : "bg-gray-200 text-gray-700"
+                                                }`}
+                                            >
+                                                Pie Chart
+                                            </button>
+                                        </div>
+                                        <ChartComponent
+                                            data={
+                                                dashboardData.pemasukanPerBulan
+                                            }
+                                            formatMonthName={formatMonthName}
+                                            chartType={chartType}
+                                        />
+                                    </div>
+                                )}
+
+                            <div className="mt-10">
+                                <h3 className="text-lg font-semibold mb-4">
+                                    Kalender Gregorian
+                                </h3>
+                                <div className="border rounded-lg shadow-lg p-4">
+                                    <Calendar
+                                        onChange={handleDateChange}
+                                        value={selectedDate}
+                                        className="react-calendar rounded-lg"
+                                        tileClassName={({ date, view }) => {
+                                            const today = new Date();
+                                            if (view === "month") {
+                                                if (
+                                                    date.getDate() ===
+                                                        today.getDate() &&
+                                                    date.getMonth() ===
+                                                        today.getMonth() &&
+                                                    date.getFullYear() ===
+                                                        today.getFullYear()
+                                                ) {
+                                                    return "bg-blue-200 rounded-full";
+                                                }
+                                            }
+                                            return "";
+                                        }}
+                                        tileContent={({ date }) => (
+                                            <div className="text-sm text-gray-700">
+                                                {date.getDate()}
+                                            </div>
+                                        )}
+                                    />
+
+                                    <h3 className="text-lg font-semibold mb-4 mt-8">
+                                        Kalender Hijriah
+                                    </h3>
+                                    <div className="border rounded-lg shadow-lg p-4">
+                                        <h4 className="text-md font-semibold">
+                                            Tanggal hijriah hari ini: {hijriDate}
+                                        </h4>
+                                    </div>
                                 </div>
                             </div>
-
-                            <div>
-                                <h3 className="text-xl font-semibold text-gray-900 mb-4">Siswa</h3>
-                                <div className="overflow-x-auto bg-white shadow-lg rounded-lg border border-gray-200">
-                                    <table className="min-w-full divide-y divide-gray-300">
-                                        <thead className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white">
-                                            <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium">ID</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium">Name</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium">Email</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
-                                            {data.siswa.slice(0, 5).map(siswa => (
-                                                <tr key={siswa.id}>
-                                                    <td className="px-6 py-4 text-sm text-gray-500">{siswa.id}</td>
-                                                    <td className="px-6 py-4 text-sm text-gray-500">{siswa.nama}</td>
-                                                    <td className="px-6 py-4 text-sm text-gray-500">{siswa.email}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                    <a href="/adminsiswa" className="text-yellow-600 hover:underline block text-center py-4">Lihat Lebih Banyak</a>
-                                </div>
-                            </div>
-
-                            
                         </div>
                     </div>
                 </div>
+            </div>
+        </AuthenticatedLayout>
+    );
+}
 
-                <footer className="bg-white border-t border-gray-200 shadow py-6 px-4 sm:px-6 lg:px-8 mt-12">
-                    <p className="text-center text-gray-500 text-sm">
-                        &copy; 2024 Admin Dashboard - Made with ❤️ by Zema
-                    </p>
-                </footer>
-            </AuthenticatedLayout>
-        </ErrorBoundary>
+function DashboardCard({ title, value, icon }) {
+    return (
+        <div className="bg-gradient-to-r from-purple-500 to-yellow-500 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center">
+            <div className="text-4xl mr-4 text-white">{icon}</div>
+            <div className="text-white">
+                <h3 className="text-lg font-semibold mb-1">{title}</h3>
+                <p className="text-1xl font-bold">{value}</p>
+            </div>
+        </div>
+    );
+}
+
+function DataTable({ title, data, fields }) {
+    return (
+        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+            <h4 className="text-md font-semibold mb-2 px-4 py-2 border-b bg-purple-500 text-white transition-colors duration-200">
+                {title}
+            </h4>
+            <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-purple-100">
+                    <tr>
+                        {fields.map((field) => (
+                            <th
+                                key={field}
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                                {field}
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                    {data.map((item, index) => (
+                        <tr
+                            key={index}
+                            className={`hover:bg-gray-100 transition-colors duration-200 ${
+                                index % 2 === 0 ? "bg-gray-50" : ""
+                            }`}
+                        >
+                            {fields.map((field) => (
+                                <td
+                                    key={field}
+                                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                                >
+                                    {field === "foto" ? (
+                                        <img
+                                        src={`storage/fotos/${item.foto}`}
+                                        alt="Student Photo"
+                                            className="h-10 w-10 rounded-full object-cover"
+                                        />
+                                    ) : (
+                                        item[field]
+                                    )}
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            <a href="/users" className="block text-center text-purple-500 hover:text-purple-700">Lihat lebih banyak</a>
+        </div>
+    );
+}
+
+function DataTableSiswa({ title, data, fields }) {
+    return (
+        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+            <h4 className="text-md font-semibold mb-2 px-4 py-2 border-b bg-purple-500 text-white transition-colors duration-200">
+                {title}
+            </h4>
+            <div className="grid grid-cols-4 gap-4 p-4">
+                {data.map((item, index) => (
+                    <div key={index} className="flex flex-col items-center">
+                        <img
+                            src={`storage/fotos/${item.foto}`}
+                            alt={`${item.nama}'s photo`}
+                            className="w-16 h-16 rounded-full object-cover mb-2"
+                        />
+                        <p className="text-sm font-semibold text-center">{item.nama}</p>
+                        <p className="text-xs text-gray-500">{item.email}</p>
+                    </div>
+                ))}
+            </div>
+            <a href="/adminsiswa" className="text-center text-purple-500 hover:text-purple-700 flex justify-center my-5 ">Lihat lebih banyak</a>
+        </div>
+    );
+}
+
+function ChartComponent({ data, formatMonthName, chartType }) {
+    const formattedData = data.map((item) => ({
+        ...item,
+        month: formatMonthName(item.month),
+        total: parseFloat(
+            item.total
+                .toLocaleString("id-ID", { style: "currency", currency: "IDR" })
+                .replace("Rp", "")
+                .replace(/\./g, "")
+                .replace(",", ".")
+        ),
+    }));
+
+    const sortedData = sortDataByMonth(formattedData);
+
+    const COLORS = [
+        "#0088FE",
+        "#00C49F",
+        "#FFBB28",
+        "#FF8042",
+        "#8884d8",
+        "#82ca9d",
+    ];
+
+    const renderChart = () => {
+        switch (chartType) {
+            case "line":
+                return (
+                    <LineChart
+                        data={sortedData}
+                        margin={{ top: 30, right: 30, left: 20, bottom: 30 }}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis tickFormatter={(value) => `Rp ${value}`} />
+                        <Tooltip
+                            formatter={(value) => [
+                                `Rp ${value.toLocaleString("id-ID")}`,
+                                "Total",
+                            ]}
+                        />
+                        <Legend />
+                        <Line
+                            type="monotone"
+                            dataKey="total"
+                            stroke="#7b1fa1"
+                        />
+                    </LineChart>
+                );
+            case "pie":
+                return (
+                    <PieChart
+                        margin={{ top: 30, right: 30, left: 20, bottom: 30 }}
+                    >
+                        <Pie
+                            data={sortedData}
+                            dataKey="total"
+                            nameKey="month"
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={150}
+                            fill="#8884d8"
+                            label={({ name, percent }) =>
+                                `${name} ${(percent * 100).toFixed(0)}%`
+                            }
+                        >
+                            {sortedData.map((entry, index) => (
+                                <Cell
+                                    key={`cell-${index}`}
+                                    fill={COLORS[index % COLORS.length]}
+                                />
+                            ))}
+                        </Pie>
+                        <Tooltip
+                            formatter={(value) => [
+                                `Rp ${value.toLocaleString("id-ID")}`,
+                                "Total",
+                            ]}
+                        />
+                        <Legend />
+                    </PieChart>
+                );
+            default:
+                return (
+                    <BarChart
+                        data={sortedData}
+                        margin={{ top: 30, right: 30, left: 20, bottom: 30 }}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis tickFormatter={(value) => `Rp ${value}`} />
+                        <Tooltip
+                            formatter={(value) => [
+                                `Rp ${value.toLocaleString("id-ID")}`,
+                                "Total",
+                            ]}
+                        />
+                        <Legend />
+                        <Bar dataKey="total" fill="#7b1fa1" />
+                    </BarChart>
+                );
+        }
+        console.log(sortedData);
+    };
+
+    return (
+        <div className="bg-white shadow-lg rounded-lg overflow-hidden p-4 -z-0">
+            <ResponsiveContainer width="100%" height={400}>
+                {renderChart()}
+            </ResponsiveContainer>
+        </div>
     );
 }

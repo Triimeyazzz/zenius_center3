@@ -41,31 +41,7 @@ class AdminUlasanController extends Controller
         return redirect()->route('ulasan.index')->with('success', 'Ulasan berhasil ditambahkan');
     }
 
-    public function edit(Ulasan $ulasan)
-    {
-        return Inertia::render('Ulasan/Edit', ['ulasan' => $ulasan]);
-    }
-
-    public function update(Request $request, Ulasan $ulasan)
-    {
-        $request->validate([
-            'nama_pemberi_ulasan' => 'required|string',
-            'tipe_pemberi_ulasan' => 'required|in:alumni,orang_tua,lainnya',
-            'foto_profile' => 'nullable|image|max:2048',
-            'penilaian' => 'required|integer|min:1|max:5',
-            'komentar' => 'required|string',
-        ]);
-
-        $ulasan->fill($request->all());
-
-        if ($request->hasFile('foto_profile')) {
-            $ulasan->foto_profile = $request->file('foto_profile')->store('profile_pictures', 'public');
-        }
-
-        $ulasan->save();
-
-        return redirect()->route('ulasan.index')->with('success', 'Ulasan berhasil diperbarui');
-    }
+    
 
     public function destroy(Ulasan $ulasan)
     {

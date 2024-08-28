@@ -10,7 +10,7 @@ const IndexStudent = ({ messages, receiver, user }) => {
   });
 
   const [previewUrl, setPreviewUrl] = useState(null);
-  const [newMessages, setNewMessages] = useState([]);
+  const [allMessages, setAllMessages] = useState(messages || []);
   const [notification, setNotification] = useState('');
   const [modalImage, setModalImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,12 +25,12 @@ const IndexStudent = ({ messages, receiver, user }) => {
 
   const fetchNewMessages = async () => {
     try {
-      const response = await fetch(route('messages.index.student')); // Adjust the route as needed
+      const response = await fetch(route('messages.index.student'));
       const data = await response.json();
-      const newMessages = data.messages.filter(message => !messages.some(m => m.id === message.id));
+      const newMessages = data.messages.filter(message => !allMessages.some(m => m.id === message.id));
 
       if (newMessages.length > 0) {
-        setNewMessages(newMessages);
+        setAllMessages(prevMessages => [...prevMessages, ...newMessages]);
         setNotification('You have new messages!');
       }
     } catch (error) {
@@ -93,80 +93,83 @@ const IndexStudent = ({ messages, receiver, user }) => {
 
   return (
     <StudentLayout siswa={user}>
-      <div className="flex flex-col h-screen bg-gray-100 rounded-lg">
+      <div className="flex flex-col h-screen bg-gray-100">
         <header className="bg-white shadow-md px-4 py-2 flex items-center justify-between">
           <h1 className="text-xl font-semibold">Messages</h1>
           {notification && <div className="text-red-500">{notification}</div>}
         </header>
         <main className="flex-1 overflow-auto p-4">
           <div className="space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${receiver && message.sender_name === receiver.name ? 'justify-start' : 'justify-end'}`}
+          {allMessages.map((message) => {
+  const isSender = message.sender_name === user?.name; // Cek apakah pengguna adalah pengirim
+
+  return (
+    <div
+      key={message.id}
+      className={`flex ${isSender ? 'justify-end' : 'justify-start'}`} // Pengirim di kanan, penerima di kiri
+    >
+      <div
+        className={`max-w-xs p-3 rounded-lg shadow-xl transition-all duration-300 ${
+          isSender ? 'bg-purple-500 text-white' : 'bg-white text-black' // Gaya berbeda untuk pengirim dan penerima
+        }`}
+      >
+        <p className="text-sm font-semibold">{message.sender_name}</p>
+        <p className="text-base mt-1">{message.message}</p>
+        {message.attachment && (
+          <div className="mt-2 flex items-center">
+            {message.attachment.endsWith('.jpg') || message.attachment.endsWith('.png') ? (
+              <img
+                src={message.attachment}
+                alt="Attachment"
+                className="max-w-full rounded-lg cursor-pointer"
+                onClick={() => openModal(message.attachment)} // Open modal on click
+              />
+            ) : (
+              <a
+                href={message.attachment}
+                download
+                className="flex items-center hover:bg-gray-200 p-2 rounded-lg transition duration-200"
               >
-                <div
-                  className={`max-w-xs p-3 rounded-lg shadow-xl ${
-                    receiver && message.sender_name === receiver.name ? 'bg-white text-black' : 'bg-purple-700 text-white'
-                  }`}
-                >
-                  <p className="text-sm font-semibold">{message.sender_name}</p>
-                  <p className="text-base mt-1">{message.message}</p>
-                  {message.attachment && (
-                    <div className="mt-2 flex items-center">
-                      {message.attachment.endsWith('.jpg') || message.attachment.endsWith('.png') ? (
-                        
-                          <img
-                            src={message.attachment}
-                            alt="Attachment"
-                            className="max-w-full rounded-lg cursor-pointer"
-                            onClick={() => openModal(message.attachment)} // Open modal on click
-                          />
-                        
-                      ) : (
-                        <a
-                          href={message.attachment}
-                          download
-                          className="flex items-center hover:bg-gray-200 p-2 rounded-lg transition duration-200"
-                        >
-                          {getFileIcon(message.attachment)} {/* Show file icon */}
-                          <span className="ml-2 text-sm">{message.attachment.split('/').pop()}</span>
-                        </a>
-                      )}
-                    </div>
-                  )}
-                  <p className="text-xs text-gray-500 mt-1">{message.created_at}</p>
-                </div>
-              </div>
-            ))}
+                {getFileIcon(message.attachment)} {/* Show file icon */}
+                <span className="ml-2 text-sm">{message.attachment.split('/').pop()}</span>
+              </a>
+            )}
+          </div>
+        )}
+        <p className="text-xs text-gray-500 mt-1">{message.created_at}</p>
+      </div>
+    </div>
+  );
+})}
+
           </div>
         </main>
         <footer className="bg-white shadow-md px-4 py-2">
-          <form onSubmit={handleSubmit} className="flex flex-col md:flex-row items-center">
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center">
             <textarea
               value={data.message}
               onChange={(e) => setData('message', e.target.value)}
               placeholder="Type your message here..."
-              className="flex-1 p-2 border rounded-lg shadow-sm resize-none md:mr-2 mb-2 md:mb-0"
+              className="flex-1 p-2 border rounded-lg shadow-sm resize-none sm:mr-2 mb-2 sm:mb-0"
               rows="2"
               required
             />
             <input
               type="file"
               onChange={handleFileChange}
-              className="mb-2 md:mb-0"
+              className="ml-2 mb-2 sm:mb-0"
             />
             {previewUrl && (
               <img
                 src={previewUrl}
                 alt="Preview"
-                className="w-12 h-12 rounded-lg mb-2 md:mb-0 md:ml-2"
+                className="w-12 h-12 rounded-lg ml-2"
               />
             )}
             <button
               type="submit"
               disabled={processing}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+              className="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
             >
               Send to All Admins
             </button>

@@ -1,23 +1,32 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm } from '@inertiajs/inertia-react';
 
-const CreateTryOut = ({ siswa }) => {
-    const [subtopics, setSubtopics] = useState([{ sub_mata_pelajaran: '', skor: '' }]);
-    const { data, setData, post, errors } = useForm({
+const Create = ({ siswa }) => {
+    const { data, setData, post, processing, errors } = useForm({
         mata_pelajaran: '',
         tanggal_pelaksanaan: '',
-        subtopics: subtopics,
+        subtopics: [{ sub_mata_pelajaran: '', skor: '' }],
     });
 
-    const handleAddSubtopic = () => {
-        setSubtopics([...subtopics, { sub_mata_pelajaran: '', skor: '' }]);
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setData(name, value);
     };
 
-    const handleChangeSubtopic = (index, field, value) => {
-        const newSubtopics = subtopics.map((subtopic, i) =>
-            i === index ? { ...subtopic, [field]: value } : subtopic
-        );
-        setSubtopics(newSubtopics);
+    const handleSubtopicChange = (index, e) => {
+        const { name, value } = e.target;
+        const newSubtopics = [...data.subtopics];
+        newSubtopics[index][name] = value;
+        setData('subtopics', newSubtopics);
+    };
+
+    const addSubtopic = () => {
+        setData('subtopics', [...data.subtopics, { sub_mata_pelajaran: '', skor: '' }]);
+    };
+
+    const removeSubtopic = (index) => {
+        const newSubtopics = [...data.subtopics];
+        newSubtopics.splice(index, 1);
         setData('subtopics', newSubtopics);
     };
 
@@ -27,61 +36,72 @@ const CreateTryOut = ({ siswa }) => {
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-4">{`Add Scores for ${siswa.nama}`}</h2>
+        <div className="max-w-lg mx-auto p-8 bg-white rounded-lg shadow-lg border border-gray-200">
+            <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Create TryOut for {siswa.nama}</h1>
+            <a href={route('tryout.progress', siswa.id)} className="text-purple-500 hover:text-purple-700">kembali</a>
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                    <label className="block text-gray-700 font-medium mb-2">Mata Pelajaran</label>
+                    <label className="block text-sm font-medium text-gray-700">Mata Pelajaran</label>
                     <input
                         type="text"
+                        name="mata_pelajaran"
                         value={data.mata_pelajaran}
-                        onChange={e => setData('mata_pelajaran', e.target.value)}
-                        className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        onChange={handleChange}
+                        className={`mt-2 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-150`}
+                        placeholder="Enter Mata Pelajaran"
                     />
-                    {errors.mata_pelajaran && <div className="text-red-500 mt-1">{errors.mata_pelajaran}</div>}
+                    {errors.mata_pelajaran && <div className="text-red-500 text-xs mt-1">{errors.mata_pelajaran}</div>}
                 </div>
                 <div>
-                    <label className="block text-gray-700 font-medium mb-2">Tanggal Pelaksanaan</label>
+                    <label className="block text-sm font-medium text-gray-700">Tanggal Pelaksanaan</label>
                     <input
                         type="date"
+                        name="tanggal_pelaksanaan"
                         value={data.tanggal_pelaksanaan}
-                        onChange={e => setData('tanggal_pelaksanaan', e.target.value)}
-                        className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        onChange={handleChange}
+                        className={`mt-2 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-150`}
                     />
-                    {errors.tanggal_pelaksanaan && <div className="text-red-500 mt-1">{errors.tanggal_pelaksanaan}</div>}
+                    {errors.tanggal_pelaksanaan && <div className="text-red-500 text-xs mt-1">{errors.tanggal_pelaksanaan}</div>}
                 </div>
-                {subtopics.map((subtopic, index) => (
-                    <div key={index} className="border border-gray-300 rounded-md p-4 space-y-4">
-                        <div>
-                            <label className="block text-gray-700 font-medium mb-2">Sub Mata Pelajaran</label>
-                            <input
-                                type="text"
-                                value={subtopic.sub_mata_pelajaran}
-                                onChange={e => handleChangeSubtopic(index, 'sub_mata_pelajaran', e.target.value)}
-                                className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-gray-700 font-medium mb-2">Skor</label>
-                            <input
-                                type="number"
-                                value={subtopic.skor}
-                                onChange={e => handleChangeSubtopic(index, 'skor', e.target.value)}
-                                className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
+                <h2 className="text-lg font-medium text-gray-800 border-b-2 border-gray-300 pb-2">Subtopics</h2>
+                {data.subtopics.map((subtopic, index) => (
+                    <div key={index} className="flex items-center space-x-2 border border-gray-200 rounded-md p-3 shadow-sm">
+                        <input
+                            type="text"
+                            name="sub_mata_pelajaran"
+                            value={subtopic.sub_mata_pelajaran}
+                            onChange={(e) => handleSubtopicChange(index, e)}
+                            placeholder="Sub Mata Pelajaran"
+                            className={`flex-1 border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-150`}
+                        />
+                        <input
+                            type="number"
+                            name="skor"
+                            value={subtopic.skor}
+                            onChange={(e) => handleSubtopicChange(index, e)}
+                            placeholder="Skor"
+                            className={`w-24 border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-150`}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => removeSubtopic(index)}
+                            className="text-red-600 hover:text-red-800 transition duration-150"
+                        >
+                            Remove
+                        </button>
                     </div>
                 ))}
                 <button
                     type="button"
-                    onClick={handleAddSubtopic}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onClick={addSubtopic}
+                    className="w-full bg-purple-600 text-white rounded-md py-3 hover:bg-purple-700 transition duration-200"
                 >
-                    Add Subtopic
+                    + Add Subtopic
                 </button>
                 <button
                     type="submit"
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    disabled={processing}
+                    className={`w-full bg-green-600 text-white rounded-md py-3 hover:bg-green-700 transition duration-200 ${processing ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                     Submit
                 </button>
@@ -90,4 +110,4 @@ const CreateTryOut = ({ siswa }) => {
     );
 };
 
-export default CreateTryOut;
+export default Create;

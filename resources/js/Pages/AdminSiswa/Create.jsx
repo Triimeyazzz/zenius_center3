@@ -62,10 +62,11 @@ const Create = ({ siswas }) => {
         }
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        post(route('adminsiswa.store'), {
+    const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+        await post(route('adminsiswa.store'), {
             forceFormData: true,
             onSuccess: () => {
                 setIsSubmitting(false);
@@ -73,12 +74,18 @@ const Create = ({ siswas }) => {
             },
             onError: (errors) => {
                 setIsSubmitting(false);
+                console.error('Errors:', errors); // Log errors for debugging
                 Object.values(errors).forEach(error => {
                     toast.error(error);
                 });
             }
         });
-    };
+    } catch (error) {
+        console.error('Submit Error:', error); // Log unexpected errors
+        toast.error('Terjadi kesalahan saat menyimpan data.');
+        setIsSubmitting(false);
+    }
+};
         return (
         <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
             <div className="text-center mb-6">
