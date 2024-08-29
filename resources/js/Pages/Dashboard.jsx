@@ -117,7 +117,7 @@ export default function Dashboard({ auth }) {
     const handleToggleDarkMode = () => {
         setDarkMode((prevMode) => !prevMode);
     };
-    
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -182,7 +182,7 @@ export default function Dashboard({ auth }) {
                                             data={detailedData.siswa}
                                             fields={["nama", "email", "foto"]}
                                         />
-                                        
+
                                     </>
                                 )}
                             </div>
@@ -243,7 +243,7 @@ export default function Dashboard({ auth }) {
 
                             <div className="mt-10">
                                 <h3 className="text-lg font-semibold mb-4">
-                                    Kalender Gregorian 
+                                    Kalender Gregorian
                                 </h3>
                                 <div className="border rounded-lg shadow-lg p-4">
                                     <Calendar

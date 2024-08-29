@@ -9,10 +9,28 @@ export default function Show({ pembayaran, totalBayar, sisaBayar }) {
         jumlah: '',
     });
 
+    const cancelForm = useForm(); // ue form nambah ini
+
     // Handle the form submission
     const handleSubmit = (e) => {
         e.preventDefault();
         post(route('pembayaran.bayar-cicilan', pembayaran.id));
+    };
+    const handleCancel = (e) => {
+        e.preventDefault();
+        console.log("button cancel di klik...")
+        if (window.confirm('Are you sure you want to cancel this payment?')) {
+            cancelForm.delete(route('pembayaran.cancel', pembayaran.id), {
+                preserveScroll: true,
+                preserveState: false,
+                onSuccess: () => {
+                    console.log('Payment cancelled successfully');
+                },
+                onError: () => {
+                    console.error('Failed to cancel payment');
+                },
+            });
+        }
     };
 
     // Function to generate PDF
@@ -20,41 +38,41 @@ export default function Show({ pembayaran, totalBayar, sisaBayar }) {
         const pdf = new jsPDF('p', 'mm', 'a4'); // A4 size in portrait mode
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
-    
+
         // Header section
         const logoUrl = '/images/Logo color.png'; // Replace with your logo URL
         const imgProps = { width: 30, height: 30 }; // Adjusted dimensions for logo
         pdf.addImage(logoUrl, 'PNG', 10, 10, imgProps.width, imgProps.height); // Add logo to PDF
-    
+
         pdf.setFontSize(18);
         pdf.text('Data Pembayaran', pageWidth / 2, 20, { align: 'center' }); // Centered title
         pdf.setFontSize(12);
         pdf.text(`Tanggal: ${new Date().toLocaleDateString()}`, pageWidth / 2, 30, { align: 'center' });
-    
+
         // Line under header
         pdf.setLineWidth(0.5);
         pdf.line(10, 40, pageWidth - 10, 40); // Horizontal line across the page
-    
+
         // Content section
         pdf.setFontSize(14);
         pdf.text('Siswa:', 10, 50);
         pdf.setFontSize(12);
         pdf.text(pembayaran.siswa.nama, 30, 50);
-    
+
         pdf.setFontSize(14);
         pdf.text('Total Tagihan:', 10, 60);
         pdf.setFontSize(12);
         pdf.text(`Rp ${new Intl.NumberFormat('id-ID').format(pembayaran.jumlah)}`, 50, 60);
-    
+
         pdf.setFontSize(14);
         pdf.text('Total Bayar:', 10, 70);
         pdf.setFontSize(12);
         pdf.text(`Rp ${new Intl.NumberFormat('id-ID').format(totalBayar)}`, 50, 70);
-    
+
         pdf.setFontSize(14);
         pdf.text('Sisa Bayar:', 10, 80);
         pdf.setFontSize(12);
-    
+
         // Check if the remaining balance is 0
         if (sisaBayar === 0) {
             pdf.setTextColor(0, 128, 0); // Green color for "Lunas"
@@ -63,27 +81,27 @@ export default function Show({ pembayaran, totalBayar, sisaBayar }) {
             pdf.setTextColor(255, 0, 0); // Red color for remaining balance
             pdf.text(`Rp ${new Intl.NumberFormat('id-ID').format(sisaBayar)}`, 50, 80);
         }
-    
+
         // Reset text color to default (black)
         pdf.setTextColor(0, 0, 0);
-    
+
         // Section title
         pdf.setFontSize(16);
         pdf.text('Riwayat Cicilan', 10, 90);
-    
+
         // Cicilan list
         let yPos = 100;
         pembayaran.cicilan.forEach((c, index) => {
             pdf.setFontSize(12);
             pdf.text(`${index + 1}. Rp ${new Intl.NumberFormat('id-ID').format(c.jumlah)} - ${new Date(c.dibayar_pada).toLocaleDateString()}`, 10, yPos);
             yPos += 10;
-    
+
             if (yPos > pageHeight - 20) { // Check if the content is about to overflow the page
                 pdf.addPage();
                 yPos = 20; // Reset y position after adding a new page
             }
         });
-    
+
         // Footer section with page numbers
         const pageCount = pdf.internal.getNumberOfPages();
         for (let i = 1; i <= pageCount; i++) {
@@ -91,11 +109,11 @@ export default function Show({ pembayaran, totalBayar, sisaBayar }) {
             pdf.setFontSize(10);
             pdf.text(`Page ${i} of ${pageCount}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
         }
-    
+
         // Save the generated PDF
         pdf.save(`pembayaran_${pembayaran.siswa.nama}.pdf`);
     };
-    
+
     // Handle cicilan deletion
     const deleteCicilan = (id) => {
         if (window.confirm('Are you sure you want to delete this cicilan?')) {
@@ -116,7 +134,7 @@ export default function Show({ pembayaran, totalBayar, sisaBayar }) {
         <div className="max-w-4xl mx-auto p-6 bg-gray-50 shadow-lg rounded-lg">
             <a href="/pembayaran" className="inline-block mb-4 px-4 py-2 bg-purple-600 text-white rounded-lg shadow hover:bg-purple-700 transition duration-300">Kembali</a>
             <h1 className="text-4xl font-bold mb-6 text-gray-900">Detail Pembayaran</h1>
-            
+
             <div id="pdf-content" className="p-6 bg-white rounded-lg shadow-sm">
                 <div className="mb-8">
                     <p className="text-xl font-semibold text-gray-800">Siswa:</p>
@@ -175,6 +193,13 @@ export default function Show({ pembayaran, totalBayar, sisaBayar }) {
                 </button>
             </form>
 
+
+            <button
+                onClick={handleCancel}
+                className="mt-8 inline-flex items-center px-8 py-3 bg-red-600 border border-transparent rounded-md font-semibold text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-800 focus:outline-none focus:border-green-900 focus:ring focus:ring-green-200 focus:ring-opacity-50 transition ease-in-out duration-150"
+            >
+                Cancel
+            </button>
             <button
                 onClick={generatePDF}
                 className="mt-8 inline-flex items-center px-8 py-3 bg-green-600 border border-transparent rounded-md font-semibold text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-800 focus:outline-none focus:border-green-900 focus:ring focus:ring-green-200 focus:ring-opacity-50 transition ease-in-out duration-150"
