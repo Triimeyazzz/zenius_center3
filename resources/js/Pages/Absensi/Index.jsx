@@ -15,22 +15,19 @@ export default function Index({
 }) {
     const [kelas, setKelas] = useState(selectedClass || "");
     const [tanggal, setTanggal] = useState(selectedDate || "");
-    const [periode, setPeriode] = useState("bulan"); // Default filter
+    const [periode, setPeriode] = useState("bulan");
     const [selectedMonth, setSelectedMonth] = useState("");
-    const [selectedDateRange, setSelectedDateRange] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [deletingId, setDeletingId] = useState(null);
     const [selectedStudentId, setSelectedStudentId] = useState(null);
     const [studentAbsences, setStudentAbsences] = useState([]);
-    const [searchQuery, setSearchQuery] = useState(""); // New state for search query
+    const [searchQuery, setSearchQuery] = useState("");
 
     const filterData = (data) => {
         let filteredData = {};
 
-        // Organize data by date
         Object.entries(data).forEach(([date, absensi]) => {
-            const [year, month, day] = date.split("-");
-            const formattedDate = `${day}-${month}-${year.slice(-2)}`;
+            const formattedDate = date.split("-").reverse().join("-");
 
             if (!filteredData[formattedDate]) {
                 filteredData[formattedDate] = [];
@@ -53,23 +50,18 @@ export default function Index({
                 [formattedDate]: filteredData[formattedDate] || [],
             };
         } else if (periode === "bulan" && selectedMonth) {
-            const filteredKeys = Object.keys(filteredData).filter((key) => {
-                const [day, month] = key.split("-");
-                return month === selectedMonth;
-            });
-            filteredData = filteredKeys.reduce((acc, key) => {
-                acc[key] = filteredData[key];
-                return acc;
-            }, {});
+            filteredData = Object.keys(filteredData)
+                .filter((key) => key.split("-")[1] === selectedMonth)
+                .reduce((acc, key) => {
+                    acc[key] = filteredData[key];
+                    return acc;
+                }, {});
         }
 
-        // Filter by search query
         if (searchQuery) {
             Object.keys(filteredData).forEach((key) => {
                 filteredData[key] = filteredData[key].filter((item) =>
-                    item.siswa.nama
-                        .toLowerCase()
-                        .includes(searchQuery.toLowerCase())
+                    item.siswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
                 );
             });
         }
@@ -85,38 +77,34 @@ export default function Index({
             tanggal,
             periode,
             selectedMonth,
-            selectedDateRange,
         });
     };
 
     const handleExportToExcel = () => {
         if (Object.keys(filteredData).length === 0) {
-          alert("Data tidak tersedia untuk filter yang dipilih.");
-          return;
+            alert("Data tidak tersedia untuk filter yang dipilih.");
+            return;
         }
-      
-        const header = ["Tanggal", "Nama Siswa", "Kelas", "Status", "Keterangan"];
+
         const wb = XLSX.utils.book_new();
-      
+
         Object.entries(filteredData).forEach(([date, records]) => {
-          const dataToExport = records.map((record) => {
-            return {
-              Tanggal: date,
-              "Nama Siswa": record.siswa.nama,
-              Kelas: record.siswa.kelas,
-              Status: record.status,
-              Keterangan: record.keterangan,
-            };
-          });
-      
-          const ws = XLSX.utils.json_to_sheet(dataToExport, {
-            header: header,
-          });
-          XLSX.utils.book_append_sheet(wb, ws, date);
+            const dataToExport = records.map((record) => ({
+                Tanggal: date,
+                "Nama Siswa": record.siswa.nama,
+                Kelas: record.siswa.kelas,
+                Status: record.status,
+                Keterangan: record.keterangan,
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(dataToExport, {
+                header: ["Tanggal", "Nama Siswa", "Kelas", "Status", "Keterangan"],
+            });
+            XLSX.utils.book_append_sheet(wb, ws, date);
         });
-      
+
         XLSX.writeFile(wb, "daftar_absensi.xlsx");
-      };
+    };
 
     const handleExportToPDF = () => {
         if (Object.keys(filteredData).length === 0) {
@@ -126,86 +114,37 @@ export default function Index({
 
         const doc = new jsPDF();
         doc.setFontSize(20);
-        doc.setFont("helvetica", "bold");
         doc.text("Daftar Absensi", 14, 22);
 
-        const { x, y } = { x: 14, y: 30 };
-        const columns = [
-            "Tanggal",
-            "Nama Siswa",
-            "Kelas",
-            "Status",
-            "Keterangan",
-        ];
-        let rows = [];
-
+        const columns = ["Tanggal", "Nama Siswa", "Kelas", "Status", "Keterangan"];
         Object.entries(filteredData).forEach(([date, data]) => {
-            data.forEach((item) => {
-                rows.push([
-                    date,
-                    item.siswa.nama,
-                    item.siswa.kelas,
-                    item.status,
-                    item.keterangan,
-                ]);
-            });
+            const rows = data.map((item) => [
+                date,
+                item.siswa.nama,
+                item.siswa.kelas,
+                item.status,
+                item.keterangan,
+            ]);
 
             doc.autoTable({
-                startY: y,
+                startY: doc.previousAutoTable ? doc.previousAutoTable.finalY + 10 : 30,
                 head: [columns],
                 body: rows,
-                styles: {
-                    fontSize: 12,
-                    cellPadding: 5,
-                    valign: "middle",
-                    halign: "center",
-                },
-                headStyles: {
-                    fillColor: [153, 50, 204],
-                    textColor: [255, 255, 255],
-                    fontStyle: "bold",
-                },
+                headStyles: { fillColor: [153, 50, 204], textColor: [255, 255, 255] },
                 margin: { top: 40 },
             });
-
-            // Reset rows for the next date
-            rows = [];
         });
 
         doc.save("daftar_absensi.pdf");
     };
 
     const getMonthOptions = () => {
-        const months = [
-            "01",
-            "02",
-            "03",
-            "04",
-            "05",
-            "06",
-            "07",
-            "08",
-            "09",
-            "10",
-            "11",
-            "12",
-        ];
-        return months.map((month) => (
-            <option key={month} value={month}>
-                {new Date(`2024-${month}-01`).toLocaleString("default", {
-                    month: "long",
-                })}
-            </option>
-        ));
-    };
-
-    const getDateOptions = () => {
-        const dates = Object.keys(absensiGroupedByDate).map((date) =>
-            new Date(date).toLocaleDateString("id-ID")
-        ); // Format as dd-mm-yy
-        return dates.map((date) => (
-            <option key={date} value={date}>
-                {date}
+        const months = Array.from({ length: 12 }, (_, i) =>
+            new Date(0, i).toLocaleString("default", { month: "long" })
+        );
+        return months.map((month, i) => (
+            <option key={i} value={`0${i + 1}`.slice(-2)}>
+                {month}
             </option>
         ));
     };
@@ -220,7 +159,6 @@ export default function Index({
             onSuccess: () => {
                 setShowModal(false);
                 setDeletingId(null);
-                // Optionally add logic to refresh the data or handle success
             },
             onError: () => {
                 alert("Gagal menghapus siswa. Cek console untuk detail.");
@@ -228,13 +166,7 @@ export default function Index({
         });
     };
 
-    const closeModal = () => {
-        setShowModal(false);
-        setDeletingId(null);
-    };
-
     const handleViewStudentAbsences = (studentId) => {
-        // Filter absences for the selected student
         const studentData = Object.values(absensiGroupedByDate)
             .flat()
             .filter((absensi) => absensi.siswa_id === studentId);
@@ -242,24 +174,24 @@ export default function Index({
         setSelectedStudentId(studentId);
     };
 
+    const closeModal = () => {
+        setShowModal(false);
+        setDeletingId(null);
+    };
+
     const handleCloseStudentModal = () => {
         setSelectedStudentId(null);
         setStudentAbsences([]);
     };
+
     return (
         <AuthenticatedLayout
             user={auth}
-            header={
-                <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                    Absensi
-                </h2>
-            }
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Absensi</h2>}
         >
             <div className="container mx-auto p-6">
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-3xl font-bold text-purple-800">
-                        Daftar Absensi
-                    </h1>
+                    <h1 className="text-3xl font-bold text-purple-800">Daftar Absensi</h1>
                     <div className="flex space-x-4">
                         <Link
                             href={route("absensi.create")}
@@ -316,7 +248,6 @@ export default function Index({
                             onChange={(e) => setTanggal(e.target.value)}
                             className="border p-2 rounded-md w-full"
                         />
-
                         <button
                             onClick={handleFilterChange}
                             className="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition w-full md:w-auto"
@@ -325,7 +256,6 @@ export default function Index({
                         </button>
                     </div>
                 </div>
-
                 {Object.keys(filteredData).length === 0 ? (
                     <p className="text-center text-gray-500">
                         Tidak ada data untuk filter yang dipilih.

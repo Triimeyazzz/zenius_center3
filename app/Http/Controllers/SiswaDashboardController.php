@@ -1,53 +1,29 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Siswa;
 use App\Models\TryOut;
-use App\Models\Absensi; 
+use App\Models\Absensi;
+use App\Models\Pembayaran;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Pembayaran; 
+use App\Models\Cicilan;
 
 class SiswaDashboardController extends Controller
 {
     public function index()
     {
-        $user = Siswa::with(['tryOuts', 'absensis', 'pembayarans'])->find(Auth::id());
-        $tryOuts = $user ? $user->tryOuts : [];
+        $user = Siswa::with(['absensis', 'tryOuts.subtopics'])->find(Auth::id());
+        $siswa = Siswa::find(Auth::id());
         $absensi = $user ? $user->absensis : [];
-        $pembayarans = $user ? $user->pembayarans : [];
-
-        
-
-        // Calculate total amount to be paid
-        $totalToPay = $pembayarans->where('status', 'pending')->sum('jumlah');
-        // Calculate total payments
-        $totalPayments = $pembayarans->sum('jumlah');
-
-        // Prepare payment rows
-        $paymentRows = $pembayarans->map(function($payment) {
-            return [
-                'tanggal' => $payment->tanggal,
-                'jumlah' => $payment->jumlah,
-            ];
-        });
-
-        // Prepare data for charts and tables
-        $labels = $tryOuts->pluck('tanggal_pelaksanaan')
-                          ->map(fn($date) => date('M Y', strtotime($date)))
-                          ->unique()
-                          ->values();
-        $data = $labels->map(function ($label) use ($tryOuts) {
-            return $tryOuts->where('tanggal_pelaksanaan', 'like', "%{$label}%")->sum('skor');
-        });
-
         $absensiLabels = $absensi->pluck('tanggal')->unique()->values();
         $absensiData = $absensiLabels->map(function ($label) use ($absensi) {
             return $absensi->where('tanggal', $label)->count();
         });
-
+        
         $absensiDetails = $absensi->map(function($record) {
             return [
                 'tanggal' => $record->tanggal,
@@ -56,18 +32,81 @@ class SiswaDashboardController extends Controller
             ];
         });
 
+        // Try Out data
+        $tryOuts = $user ? $user->tryOuts : collect([]);
+        
+        $tryOutLabels = $tryOuts->pluck('tanggal_pelaksanaan')->unique()->map(function ($date) {
+            return $date->format('Y-m-d');
+        })->values()->toArray();
+
+        $tryOutDatasets = $tryOuts->groupBy('mata_pelajaran')->map(function ($group, $mataPelajaran) use ($tryOutLabels) {
+            $data = [];
+            $totalScore = 0;
+            $count = 0;
+
+            foreach ($group as $tryOut) {
+                $index = array_search($tryOut->tanggal_pelaksanaan->format('Y-m-d'), $tryOutLabels);
+                if ($index !== false) {
+                    $tryOutAverageScore = $tryOut->subtopics->avg('skor');
+                    $data[$index] = [
+                        'x' => $tryOut->tanggal_pelaksanaan->format('Y-m-d'),
+                        'y' => round($tryOutAverageScore, 2),
+                        'subtopics' => $tryOut->subtopics->map(function($subtopic) {
+                            return [
+                                'sub_mata_pelajaran' => $subtopic->sub_mata_pelajaran,
+                                'skor' => $subtopic->skor,
+                            ];
+                        })->toArray(),
+                    ];
+                    $totalScore += $tryOutAverageScore;
+                    $count++;
+                }
+            }
+
+            $averageScore = $count > 0 ? round($totalScore / $count, 2) : 0;
+
+            return [
+                'label' => $mataPelajaran,
+                'data' => array_values($data),
+                'averageScore' => $averageScore,
+                'borderColor' => '#' . substr(md5($mataPelajaran), 0, 6),
+                'backgroundColor' => 'rgba(' . implode(',', sscanf(substr(md5($mataPelajaran), 0, 6), "%02x%02x%02x")) . ',0.2)',
+            ];
+        })->values()->toArray();
+
+        // Payment data
+        $totalToPay = 1000000; // Replace with actual calculation
+        $totalPayments = Pembayaran::where('siswa_id', $user->id)->sum('jumlah');
+        $paymentRows = Pembayaran::where('siswa_id', $user->id)
+            ->orderBy('created_at', 'desc') // Change 'tanggal' to 'created_at' or 'updated_at'
+            ->get(['created_at as tanggal', 'jumlah']); // Rename 'created_at' to 'tanggal'
+
+        // Get payment and cicilan data
+        $pembayaran = Pembayaran::where('siswa_id', $user->id)->get(); // Initialize $pembayaran
+
+        // Get cicilan data for the logged-in student
+        $cicilan = Cicilan::where('siswa_id', $user->id)
+            ->orderBy('dibayar_pada', 'desc')
+            ->get();
+
+        // Calculate total payments and cicilan payments by the student
+        $totalBayar = $cicilan->sum('jumlah'); // Sum cicilan amounts
+
         return Inertia::render('Siswa/Dashboard', [
             'user' => $user,
-            'chartLabels' => $labels,
-            'chartData' => $data,
             'absensiLabels' => $absensiLabels,
             'absensiData' => $absensiData,
             'absensiDetails' => $absensiDetails,
+            'tryOutLabels' => $tryOutLabels,
+            'tryOutDatasets' => $tryOutDatasets,
             'totalToPay' => $totalToPay,
-            'totalPayments' => $totalPayments, // Add this line
-            'paymentRows' => $paymentRows, // Add this line
+            'totalPayments' => $totalPayments,
+            'paymentRows' => $paymentRows,
+            'cicilan' => $cicilan,
+            'totalBayar' => $totalBayar,
         ]);
     }
+
     public function edit()
     {
         $siswa = Siswa::find(Auth::id()); // Retrieve the authenticated user
