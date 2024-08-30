@@ -130,8 +130,8 @@ Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])
 Route::middleware(['auth:siswa'])->group(function () {
     // Dashboard siswa
     Route::get('/siswa/dashboard', [SiswaDashboardController::class, 'index'])->name('siswa.dashboard');
-
-
+    Route::get('/siswa/dashboard/subtopics/{subject}', [SiswaDashboardController::class, 'getSubtopics'])->name('siswa.getSubtopics');
+    
     Route::get('/siswa/edit', [SiswaController::class, 'edit'])->name('siswa.edit');
     Route::post('/siswa/update', [SiswaController::class, 'update'])->name('siswa.update');
 

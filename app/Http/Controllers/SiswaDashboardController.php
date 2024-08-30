@@ -1,162 +1,124 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Siswa;
-use App\Models\TryOut;
-use App\Models\Absensi;
 use App\Models\Pembayaran;
+use App\Models\Absensi;
+use App\Models\TryOut;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use App\Models\Cicilan;
+use Carbon\Carbon;
+use App\Models\Subtopic;
 
 class SiswaDashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $user = Siswa::with(['absensis', 'tryOuts.subtopics'])->find(Auth::id());
-        $siswa = Siswa::find(Auth::id());
-        $absensi = $user ? $user->absensis : [];
-        $absensiLabels = $absensi->pluck('tanggal')->unique()->values();
-        $absensiData = $absensiLabels->map(function ($label) use ($absensi) {
-            return $absensi->where('tanggal', $label)->count();
-        });
-        
-        $absensiDetails = $absensi->map(function($record) {
-            return [
-                'tanggal' => $record->tanggal,
-                'status' => $record->status,
-                'keterangan' => $record->keterangan
-            ];
-        });
-
-        // Try Out data
-        $tryOuts = $user ? $user->tryOuts : collect([]);
-        
-        $tryOutLabels = $tryOuts->pluck('tanggal_pelaksanaan')->unique()->map(function ($date) {
-            return $date->format('Y-m-d');
-        })->values()->toArray();
-
-        $tryOutDatasets = $tryOuts->groupBy('mata_pelajaran')->map(function ($group, $mataPelajaran) use ($tryOutLabels) {
-            $data = [];
-            $totalScore = 0;
-            $count = 0;
-
-            foreach ($group as $tryOut) {
-                $index = array_search($tryOut->tanggal_pelaksanaan->format('Y-m-d'), $tryOutLabels);
-                if ($index !== false) {
-                    $tryOutAverageScore = $tryOut->subtopics->avg('skor');
-                    $data[$index] = [
-                        'x' => $tryOut->tanggal_pelaksanaan->format('Y-m-d'),
-                        'y' => round($tryOutAverageScore, 2),
-                        'subtopics' => $tryOut->subtopics->map(function($subtopic) {
-                            return [
-                                'sub_mata_pelajaran' => $subtopic->sub_mata_pelajaran,
-                                'skor' => $subtopic->skor,
-                            ];
-                        })->toArray(),
-                    ];
-                    $totalScore += $tryOutAverageScore;
-                    $count++;
-                }
-            }
-
-            $averageScore = $count > 0 ? round($totalScore / $count, 2) : 0;
-
-            return [
-                'label' => $mataPelajaran,
-                'data' => array_values($data),
-                'averageScore' => $averageScore,
-                'borderColor' => '#' . substr(md5($mataPelajaran), 0, 6),
-                'backgroundColor' => 'rgba(' . implode(',', sscanf(substr(md5($mataPelajaran), 0, 6), "%02x%02x%02x")) . ',0.2)',
-            ];
-        })->values()->toArray();
-
-        // Payment data
-        $totalToPay = 1000000; // Replace with actual calculation
-        $totalPayments = Pembayaran::where('siswa_id', $user->id)->sum('jumlah');
-        $paymentRows = Pembayaran::where('siswa_id', $user->id)
-            ->orderBy('created_at', 'desc') // Change 'tanggal' to 'created_at' or 'updated_at'
-            ->get(['created_at as tanggal', 'jumlah']); // Rename 'created_at' to 'tanggal'
-
-        // Get payment and cicilan data
-        $pembayaran = Pembayaran::where('siswa_id', $user->id)->get(); // Initialize $pembayaran
-
-        // Get cicilan data for the logged-in student
-        $cicilan = Cicilan::where('siswa_id', $user->id)
-            ->orderBy('dibayar_pada', 'desc')
-            ->get();
-
-        // Calculate total payments and cicilan payments by the student
-        $totalBayar = $cicilan->sum('jumlah'); // Sum cicilan amounts
-
-        return Inertia::render('Siswa/Dashboard', [
-            'user' => $user,
-            'absensiLabels' => $absensiLabels,
-            'absensiData' => $absensiData,
-            'absensiDetails' => $absensiDetails,
-            'tryOutLabels' => $tryOutLabels,
-            'tryOutDatasets' => $tryOutDatasets,
-            'totalToPay' => $totalToPay,
-            'totalPayments' => $totalPayments,
-            'paymentRows' => $paymentRows,
-            'cicilan' => $cicilan,
+        $user = Auth::user();
+        $siswa = Siswa::findOrFail($user->id);
+    
+        // Fetch student information
+        $siswaInfo = [
+        'nama' => $siswa->nama,
+        'email' => $siswa->email,
+        'jenis_kelamin' => $siswa->jenis_kelamin,
+        'tempat_lahir' => $siswa->tempat_lahir,
+        'tanggal_lahir' => $siswa->tanggal_lahir,
+        'alamat' => $siswa->alamat,
+        'no_telpon' => $siswa->no_telpon,
+        'kota' => $siswa->kota,
+        'no_wa' => $siswa->no_wa,
+        'instagram' => $siswa->instagram,
+        'nama_sekolah' => $siswa->nama_sekolah,
+        'alamat_sekolah' => $siswa->alamat_sekolah,
+        'kurikulum' => $siswa->kurikulum,
+        'nama_ayah' => $siswa->nama_ayah,
+        'pekerjaan_ayah' => $siswa->pekerjaan_ayah,
+        'no_telp_hp_ayah' => $siswa->no_telp_hp_ayah,
+        'no_wa_id_line_ayah' => $siswa->no_wa_id_line_ayah,
+        'email_ayah' => $siswa->email_ayah,
+        'nama_ibu' => $siswa->nama_ibu,
+        'pekerjaan_ibu' => $siswa->pekerjaan_ibu,
+        'no_telp_hp_ibu' => $siswa->no_telp_hp_ibu,
+        'no_wa_id_line_ibu' => $siswa->no_wa_id_line_ibu,
+        'kelas' => $siswa->kelas,
+        'email_ibu' => $siswa->email_ibu,
+        'foto' => $siswa->foto,
+        'mulai_bimbingan' => $siswa->mulai_bimbingan,
+        'jam_bimbingan' => $siswa->jam_bimbingan,
+        'hari_bimbingan' => $siswa->hari_bimbingan,
+        ];
+    
+        // Fetch payment information
+        $pembayaran = Pembayaran::where('siswa_id', $siswa->id)->with('cicilan')->get();
+        $totalTagihan = $pembayaran->sum('jumlah');
+        $totalBayar = $pembayaran->flatMap->cicilan->sum('jumlah');
+        $sisaTagihan = $totalTagihan - $totalBayar;
+    
+        $pembayaranInfo = [
+            'totalTagihan' => $totalTagihan,
             'totalBayar' => $totalBayar,
+            'sisaTagihan' => $sisaTagihan,
+        ];
+    
+        // Fetch attendance information
+        $absensi = Absensi::where('siswa_id', $siswa->id)
+            ->orderBy('tanggal', 'desc')
+            ->take(5)
+            ->get();
+    
+        $absensiInfo = $absensi->map(function ($item) {
+            return [
+                'tanggal' => $item->tanggal,
+                'status' => $item->status,
+                'keterangan' => $item->keterangan,
+            ];
+        });
+    
+        // Fetch monthly attendance summary
+        $monthlyAttendance = Absensi::where('siswa_id', $siswa->id)
+            ->selectRaw('MONTH(tanggal) as bulan, COUNT(*) as total_hadir, SUM(status = "Hadir") as total_hadir')
+            ->groupBy('bulan')
+            ->orderBy('bulan', 'asc')
+            ->get();
+    
+        $attendancePerMonth = $monthlyAttendance->map(function ($item) {
+            return [
+                'bulan' => $item->bulan,
+                'total_hadir' => $item->total_hadir,
+            ];
+        });
+    
+        // Fetch TryOut information
+        $tryOuts = TryOut::where('id_siswa', $siswa->id)
+            ->with('subtopics')
+            ->orderBy('tanggal_pelaksanaan', 'desc')
+            ->take(5)
+            ->get();
+    
+        $tryOutInfo = $tryOuts->map(function ($tryOut) {
+            return [
+                'mata_pelajaran' => $tryOut->mata_pelajaran,
+                'tanggal_pelaksanaan' => $tryOut->tanggal_pelaksanaan,
+                'average_score' => $tryOut->subtopics->avg('skor'),
+            ];
+        });
+    
+        return Inertia::render('Siswa/Dashboard', [
+            'siswaInfo' => $siswaInfo,
+            'pembayaranInfo' => $pembayaranInfo,
+            'absensiInfo' => $absensiInfo,
+            'attendancePerMonth' => $attendancePerMonth,
+            'tryOutInfo' => $tryOutInfo,
         ]);
     }
+    public function getSubtopics($subject)
+{
+    // Fetch subtopics for the specified subject
+    $subtopics = Subtopic::where('mata_pelajaran', $subject)->get();
 
-    public function edit()
-    {
-        $siswa = Siswa::find(Auth::id()); // Retrieve the authenticated user
-        return Inertia::render('Siswa/Edit', ['siswa' => $siswa]);
-    }
-
-    public function update(Request $request)
-    {
-        $siswa = Siswa::find(Auth::id()); // Retrieve the authenticated user
-
-        $validatedData = $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:siswa,email,' . $siswa->id,
-            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'tempat_lahir' => 'required|string|max:255',
-            'tanggal_lahir' => 'required|date',
-            'alamat' => 'required|string',
-            'no_telpon' => 'nullable|string',
-            'kota' => 'required|string|max:255',
-            'no_wa' => 'nullable|string',
-            'instagram' => 'nullable|string',
-            'nama_sekolah' => 'required|string|max:255',
-            'alamat_sekolah' => 'required|string',
-            'kurikulum' => 'required|string|max:255',
-            'nama_ayah' => 'required|string|max:255',
-            'pekerjaan_ayah' => 'nullable|string|max:255',
-            'no_telp_hp_ayah' => 'nullable|string|max:255',
-            'no_wa_id_line_ayah' => 'nullable|string|max:255',
-            'email_ayah' => 'nullable|email|max:255',
-            'nama_ibu' => 'required|string|max:255',
-            'pekerjaan_ibu' => 'nullable|string|max:255',
-            'no_telp_hp_ibu' => 'nullable|string|max:255',
-            'no_wa_id_line_ibu' => 'nullable|string|max:255',
-            'email_ibu' => 'nullable|email|max:255',
-            'id_program_bimbingan' => 'nullable|exists:program_bimbingan,id',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        if ($request->hasFile('foto')) {
-            // Delete old photo if exists
-            if ($siswa->foto) {
-                Storage::delete('public/' . $siswa->foto);
-            }
-
-            $path = $request->file('foto')->store('fotosiswa', 'public');
-            $validatedData['foto'] = $path;
-        }
-
-        $siswa->update($validatedData);
-
-        return redirect()->route('siswa.edit')->with('success', 'Profile updated successfully.');
-    }
+    return response()->json($subtopics);
 }
+
+}    

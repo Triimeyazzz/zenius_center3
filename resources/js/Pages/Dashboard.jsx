@@ -413,7 +413,7 @@ function ChartComponent({ data, formatMonthName, chartType }) {
                     >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="month" />
-                        <YAxis tickFormatter={(value) => `Rp ${value}`} />
+                        <YAxis className="text-xs" tickFormatter={(value) => `Rp ${value}`} />
                         <Tooltip
                             formatter={(value) => [
                                 `Rp ${value.toLocaleString("id-ID")}`,
