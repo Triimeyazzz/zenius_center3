@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import StudentLayout from '@/Layouts/StudentLayout';
+import Notification from '@/Components/Notification'; // Import the Notification component
 
-const Index = ({ ulasan }) => {
+const Index = ({ ulasan,siswa, flash = {} }) => { 
   const [isOpen, setIsOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [notification, setNotification] = useState(flash.success || ''); // Get flash message
 
   const openModal = (id) => {
     setSelectedId(id);
@@ -18,15 +20,27 @@ const Index = ({ ulasan }) => {
 
   const handleDelete = () => {
     if (selectedId) {
-        console.log(selectedId); // Tambahkan ini untuk debug
-        Inertia.delete(route('siswa.ulasan.destroy', selectedId));
-        closeModal();
+      Inertia.delete(route('siswa.ulasan.destroy', selectedId), {
+        onSuccess: () => {
+          setNotification('Ulasan berhasil dihapus'); // Set notification message
+          closeModal();
+        },
+      });
     }
-};
+  };
 
+  const handleCloseNotification = () => {
+    setNotification('');
+  };
 
   return (
-    <StudentLayout>
+    <StudentLayout
+    siswa={siswa}   
+    >
+      {notification && (
+        <Notification message={notification} onClose={handleCloseNotification} />
+      )}
+      
       <h1 className="text-3xl font-bold mb-4">Ulasan Saya</h1>
       <a href="/siswa/ulasan/create" className="btn btn-primary mb-4">
         Tambah Ulasan

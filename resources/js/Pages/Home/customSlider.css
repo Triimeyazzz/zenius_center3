@@ -1,0 +1,36 @@
+.slick-dots {
+    display: flex !important; 
+    justify-content: center; 
+    gap: 35px; 
+    margin-top: 20px; 
+}
+
+.slick-dots li {
+    margin: 0; 
+}
+
+.slick-dots li button:before {
+    content: '';
+    width: 50px; 
+    height: 10px; 
+    background: linear-gradient(90deg, rgb(175, 76, 175), rgb(182, 182, 79));
+    border-radius: 5px;
+    transition: opacity 0.3s ease;
+    opacity: 0.5; 
+}
+
+.slick-list {
+    transition: height 0.5s ease;
+}
+
+
+
+.slick-dots li.slick-active button:before {
+    opacity: 1;
+}
+
+.ulasan-carousel .carousel .slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

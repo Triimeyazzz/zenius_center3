@@ -24,7 +24,7 @@ class AdminUlasanController extends Controller
     {
         $request->validate([
             'nama_pemberi_ulasan' => 'required|string',
-            'tipe_pemberi_ulasan' => 'required|in:alumni,orang_tua,lainnya',
+            'tipe_pemberi_ulasan' => 'required|in:alumni,orang_tua,lainnya,siswa',
             'foto_profile' => 'nullable|image|max:2048',
             'penilaian' => 'required|integer|min:1|max:5',
             'komentar' => 'required|string',

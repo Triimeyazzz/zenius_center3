@@ -15,6 +15,7 @@ class SiswaDashboardController extends Controller
 {
     public function index(Request $request)
     {
+
         $user = Auth::user();
         $siswa = Siswa::findOrFail($user->id);
     
@@ -93,7 +94,7 @@ class SiswaDashboardController extends Controller
         // Fetch TryOut information
         $tryOuts = TryOut::where('id_siswa', $siswa->id)
             ->with('subtopics')
-            ->orderBy('tanggal_pelaksanaan', 'desc')
+            ->orderBy('tanggal_pelaksanaan')
             ->take(5)
             ->get();
     
@@ -106,19 +107,42 @@ class SiswaDashboardController extends Controller
         });
     
         return Inertia::render('Siswa/Dashboard', [
+            'siswa' => $siswa,
             'siswaInfo' => $siswaInfo,
             'pembayaranInfo' => $pembayaranInfo,
             'absensiInfo' => $absensiInfo,
             'attendancePerMonth' => $attendancePerMonth,
             'tryOutInfo' => $tryOutInfo,
+            'subtopics' => $tryOuts->pluck('mata_pelajaran'),
         ]);
     }
     public function getSubtopics($subject)
+    {
+        $subtopics = Subtopic::where('mata_pelajaran', $subject)->get();
+        return response()->json($subtopics);
+    }
+    public function showAttendance(Request $request)
 {
-    // Fetch subtopics for the specified subject
-    $subtopics = Subtopic::where('mata_pelajaran', $subject)->get();
 
-    return response()->json($subtopics);
+    $user = Auth::user();
+    $siswa = Siswa::findOrFail($user->id);
+
+    $absensi = Absensi::where('siswa_id', $siswa->id)
+        ->orderBy('tanggal', 'desc')
+        
+        ->get();
+    $absensiInfo = $absensi->map(function ($item) {
+        return [
+            'tanggal' => $item->tanggal,
+            'status' => $item->status,
+            'keterangan' => $item->keterangan,
+        ];
+    });
+
+    return Inertia::render('Siswa/Attendance', [
+        'absensiInfo' => $absensiInfo,
+        'siswa' => $siswa
+    ]);
 }
 
 }    

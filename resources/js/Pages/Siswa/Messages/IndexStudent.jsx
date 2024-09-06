@@ -3,7 +3,7 @@ import { useForm } from '@inertiajs/inertia-react';
 import StudentLayout from '@/Layouts/StudentLayout';
 import { FaFileAlt, FaFileImage, FaFilePdf, FaFileAudio, FaFileVideo } from 'react-icons/fa';
 
-const IndexStudent = ({ messages, receiver, user }) => {
+const IndexStudent = ({ messages, receiver, user, siswa }) => {
   const { data, setData, post, processing, errors } = useForm({
     message: '',
     attachment: null,
@@ -92,7 +92,9 @@ const IndexStudent = ({ messages, receiver, user }) => {
   };
 
   return (
-    <StudentLayout siswa={user}>
+    <StudentLayout 
+    siswa={siswa}
+    >
       <div className="flex flex-col h-screen bg-gray-100">
         <header className="bg-white shadow-md px-4 py-2 flex items-center justify-between">
           <h1 className="text-xl font-semibold">Messages</h1>

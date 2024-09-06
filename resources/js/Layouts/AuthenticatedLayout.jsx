@@ -240,7 +240,7 @@ export default function Authenticated({ user, header, children }) {
                                 >
                                     <MdPayments />
                                     {!sidebarCollapsed && (
-                                        <span className="ml-3">Payments</span>
+                                        <span className="ml-3">Pembayaran </span>
                                     )}
                                 </NavLink>
                             </li>

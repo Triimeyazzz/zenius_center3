@@ -6,6 +6,8 @@ use App\Models\TryOut;
 use App\Models\Subtopic;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
+use ZipArchive;
 
 class TryOutController extends Controller
 {
@@ -117,5 +119,47 @@ public function store(Request $request, $siswaId)
         $tryOut->delete();
 
         return redirect()->route('tryout.index')->with('success', 'TryOut deleted successfully.');
+    }
+
+    public function backup()
+    {
+        $backupData = [];
+        $tryOuts = TryOut::with('subtopics')->get();
+
+        foreach ($tryOuts as $tryOut) {
+            $backupData[] = [
+                'id' => $tryOut->id,
+                'id_siswa' => $tryOut->id_siswa,
+                'mata_pelajaran' => $tryOut->mata_pelajaran,
+                'tanggal_pelaksanaan' => $tryOut->tanggal_pelaksanaan,
+                'subtopics' => $tryOut->subtopics->map(function ($subtopic) {
+                    return [
+                        'id' => $subtopic->id,
+                        'sub_mata_pelajaran' => $subtopic->sub_mata_pelajaran,
+                        'skor' => $subtopic->skor,
+                    ];
+                })->toArray(),
+            ];
+        }
+
+        $jsonBackup = json_encode($backupData, JSON_PRETTY_PRINT);
+        $backupFileName = 'backup_tryout_' . now()->format('Y_m_d_H_i_s') . '.json';
+
+        // Store the backup file
+        Storage::disk('local')->put($backupFileName, $jsonBackup);
+
+        // Optionally, create a zip archive
+        $zip = new ZipArchive;
+        $zipFileName = 'backup_tryout_' . now()->format('Y_m_d_H_i_s') . '.zip';
+
+        if ($zip->open(storage_path('app/' . $zipFileName), ZipArchive::CREATE) === TRUE) {
+            $zip->addFile(storage_path('app/' . $backupFileName), $backupFileName);
+            $zip->close();
+        }
+
+        // Delete the JSON backup file after zipping
+        Storage::delete($backupFileName);
+
+        return response()->download(storage_path('app/' . $zipFileName))->deleteFileAfterSend(true);
     }
 }

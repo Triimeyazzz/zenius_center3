@@ -28,7 +28,7 @@ const AboutUs = () => {
                 <section className="max-w-7xl mx-auto">
                     {/* Hero Section */}
                     <div
-                        className="relative mb-12 h-96 overflow-hidden rounded-lg shadow-lg"
+                        className="relative mb-12 h-96 overflow-hidden rounded-2xl shadow-lg"
                         data-aos="fade-up"
                     >
                         <img
@@ -221,7 +221,7 @@ const AboutUs = () => {
                     </div>
 
                     {/* Video Section */}
-                    <div className="relative overflow-hidden bg-white text-black py-16">
+                    <div className="relative overflow-hidden bg-white text-black py-16 rounded-2xl">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <h1 className="text-4xl font-bold text-center mb-12">
                                 Video Perusahaan
