@@ -94,10 +94,10 @@ export default function Index({
           alert("Data tidak tersedia untuk filter yang dipilih.");
           return;
         }
-      
+
         const header = ["Tanggal", "Nama Siswa", "Kelas", "Status", "Keterangan"];
         const wb = XLSX.utils.book_new();
-      
+
         Object.entries(filteredData).forEach(([date, records]) => {
           const dataToExport = records.map((record) => {
             return {
@@ -108,13 +108,13 @@ export default function Index({
               Keterangan: record.keterangan,
             };
           });
-      
+
           const ws = XLSX.utils.json_to_sheet(dataToExport, {
             header: header,
           });
           XLSX.utils.book_append_sheet(wb, ws, date);
         });
-      
+
         XLSX.writeFile(wb, "daftar_absensi.xlsx");
       };
 
@@ -261,6 +261,12 @@ export default function Index({
                         Daftar Absensi
                     </h1>
                     <div className="flex space-x-4">
+                        <Link
+                            href={route("absensi.scan")}
+                            className="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition"
+                        >
+                            Scan Absen
+                        </Link>
                         <Link
                             href={route("absensi.create")}
                             className="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition"

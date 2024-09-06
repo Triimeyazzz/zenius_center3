@@ -20,6 +20,7 @@ class NotifikasiController extends Controller
 
     public function store(Request $request)
     {
+        dd($request->all());
         $notifikasi = Notifikasi::create($request->all());
         return response()->json($notifikasi, 201);
     }

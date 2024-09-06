@@ -6,6 +6,7 @@ use App\Models\Siswa;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class SiswaController extends Controller
 {
@@ -170,5 +171,10 @@ public function update(Request $request, Siswa $siswa)
     {
         $siswa->delete();
         return redirect()->route('adminsiswa.index')->with('success', 'Siswa berhasil dihapus.');
+    }
+
+    public function cetakqr($id) {
+        $qr = QrCode::generate($id);
+        return $qr;
     }
 }

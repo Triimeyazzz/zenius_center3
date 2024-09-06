@@ -8,6 +8,7 @@ import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
 import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx'; // Adjusted import
+import { Inertia } from '@inertiajs/inertia';
 
 // Register chart components
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
@@ -28,13 +29,13 @@ export default function Index({ pembayaran, totalPemasukan, totalTagihan, sisaTa
         doc.setFontSize(16);
         doc.text('Ringkasan Pembayaran', 14, 20);
         doc.setFontSize(12);
-    
+
         autoTable(doc, {
             head: [['Siswa', 'Jumlah', 'Status']],
             body: filteredPembayaran.map(p => [p.siswa.nama, `Rp ${p.jumlah.toLocaleString()}`, p.status]),
             startY: 30,
         });
-    
+
         if (chartRef.current) {
             html2canvas(chartRef.current).then((canvas) => {
                 const imgData = canvas.toDataURL('image/png');
@@ -47,36 +48,41 @@ export default function Index({ pembayaran, totalPemasukan, totalTagihan, sisaTa
             doc.save('pembayaran_summary.pdf');
         }
     };
-    
+
     // Download Excel function
     const handleDownloadExcel = () => {
         const wsData = [
             ['Siswa', 'Jumlah', 'Status'],
             ...filteredPembayaran.map(p => [p.siswa.nama, `Rp ${p.jumlah.toLocaleString()}`, p.status])
         ];
-    
+
         const ws = XLSX.utils.aoa_to_sheet(wsData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Summary');
-    
+
         // Add chart data as an additional sheet
         const chartWsData = [
             ['Month-Year', 'Total Pemasukan'],
             ...pemasukanPerBulan.map(item => [`${item.year}-${item.month.toString().padStart(2, '0')}`, item.total])
         ];
-    
+
         const chartWs = XLSX.utils.aoa_to_sheet(chartWsData);
         XLSX.utils.book_append_sheet(wb, chartWs, 'Pemasukan per Bulan');
-    
+
         XLSX.writeFile(wb, 'pembayaran_summary.xlsx');
     };
-    
+
     // Data for CSV
     const csvData = filteredPembayaran.map(p => ({
         Siswa: p.siswa.nama,
         Jumlah: `Rp ${p.jumlah.toLocaleString()}`,
         Status: p.status
     }));
+
+    const handleKirimNotif = () =>{
+        Inertia.post(route('kirimEmail'));
+    }
+
 
     const csvHeaders = [
         { label: 'Siswa', key: 'Siswa' },
@@ -143,6 +149,12 @@ export default function Index({ pembayaran, totalPemasukan, totalTagihan, sisaTa
                         >
                             Export Excel
                         </button>
+                        <button
+                            onClick={handleKirimNotif}
+                            className="ml-4 bg-teal-600 hover:bg-teal-800 text-white font-bold py-2 px-4 rounded"
+                        >
+                            Kirim Notif
+                        </button>
                     </div>
                 </div>
                 <div className="bg-white shadow-md rounded-lg px-6 pt-4 pb-6 mb-6">
@@ -160,6 +172,7 @@ export default function Index({ pembayaran, totalPemasukan, totalTagihan, sisaTa
                                 <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">Siswa</th>
                                 <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">Kelas</th>
                                 <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">Jumlah</th>
+                                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">Tgl Jatuh Tempo</th>
                                 <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">Status</th>
                                 <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">Aksi</th>
                             </tr>
@@ -170,6 +183,7 @@ export default function Index({ pembayaran, totalPemasukan, totalTagihan, sisaTa
                                     <td className="px-5 py-5 text-sm text-gray-900">{p.siswa.nama}</td>
                                     <td className="px-5 py-5 text-sm text-gray-900">{p.siswa.kelas}</td>
                                     <td className="px-5 py-5 text-sm text-gray-900">Rp {p.jumlah.toLocaleString()}</td>
+                                    <td className="px-5 py-5 text-sm text-gray-900">{p.tgl_jatuh_tempo}</td>
                                     <td className="px-5 py-5 text-sm text-gray-900">{p.status}</td>
                                     <td className="px-5 py-5 text-sm">
                                         <a href={route('pembayaran.show', p.id)} className="text-blue-600 hover:text-blue-800">

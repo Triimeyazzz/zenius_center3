@@ -12,7 +12,7 @@ export default function Login({ status, canResetPassword }) {
     useEffect(() => {
         return () => {
             reset("password");
-        };
+        };                                  
     }, []);
 
     const submit = (e) => {
