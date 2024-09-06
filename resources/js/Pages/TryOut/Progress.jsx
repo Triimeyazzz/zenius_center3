@@ -23,8 +23,8 @@ const Progress = ({ siswa, chartData }) => {
   return (
     <div className="p-6 bg-gray-50 rounded-lg shadow-lg">
       <div className="flex justify-between mb-4">
-        <a href="/tryout" className="text-purple-500 hover:text-purple-700 transition duration-200">Kembali</a>
-        <a href={route('tryout.create', siswa.id)} className="text-purple-500 hover:text-purple-700 transition duration-200">Tambah nilai</a>
+        <a href="/tryout" className="text-white hover:text-white transition duration-200 bg-purple-700 p-2 rounded hover:bg-purple-800">Kembali</a>
+        <a href={route('tryout.create', siswa.id)} className="text-white hover:text-white transition duration-200 bg-purple-700 p-2 rounded hover:bg-purple-800">Tambah nilai</a>
       </div>
 
       <h1 className="text-3xl font-bold text-center text-purple-600 mb-6">Progress - {siswa.nama}</h1>
@@ -46,7 +46,7 @@ const Progress = ({ siswa, chartData }) => {
         {chartData.datasets.map((dataset, index) => (
           <div key={index} className="mb-4 border-b border-gray-300 pb-2">
             <h2 className="font-semibold text-lg text-purple-600">{dataset.label}</h2>
-            <p className="text-gray-600">Average Score: <span className="font-bold text-purple-700">{dataset.averageScore}</span></p>
+            <p className="text-gray-600">Nilai Rata-rata: <span className="font-bold text-purple-700">{dataset.averageScore}</span></p>
           </div>
         ))}
       </div>

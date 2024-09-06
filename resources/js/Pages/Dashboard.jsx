@@ -189,7 +189,7 @@ export default function Dashboard({ auth }) {
 
                             {dashboardData &&
                                 dashboardData.pemasukanPerBulan && (
-                                    <div className="mt-10">
+                                    <div className="mt-10 ">
                                         <h3 className="text-lg font-semibold mb-4">
                                             Pemasukan Per Bulan
                                         </h3>
@@ -297,7 +297,7 @@ function DashboardCard({ title, value, icon }) {
             <div className="text-4xl mr-4 text-white">{icon}</div>
             <div className="text-white">
                 <h3 className="text-lg font-semibold mb-1">{title}</h3>
-                <p className="text-1xl font-bold">{value}</p>
+                <p className="text-1xl font-bold hover:scale-125 duration-300">{value}</p>
             </div>
         </div>
     );
@@ -357,13 +357,13 @@ function DataTable({ title, data, fields }) {
 
 function DataTableSiswa({ title, data, fields }) {
     return (
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div className="bg-white shadow-lg rounded-lg overflow-hidden ">
             <h4 className="text-md font-semibold mb-2 px-4 py-2 border-b bg-purple-500 text-white transition-colors duration-200">
                 {title}
             </h4>
-            <div className="grid grid-cols-4 gap-4 p-4">
+            <div className="grid grid-cols-4 gap-4 p-4 ">
                 {data.map((item, index) => (
-                    <div key={index} className="flex flex-col items-center">
+                    <div key={index} className="flex flex-col items-center hover:scale-110 duration-300">
                         <img
                             src={`storage/fotos/${item.foto}`}
                             alt={`${item.nama}'s photo`}
@@ -413,7 +413,7 @@ function ChartComponent({ data, formatMonthName, chartType }) {
                     >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="month" />
-                        <YAxis tickFormatter={(value) => `Rp ${value}`} />
+                        <YAxis className="text-xs" tickFormatter={(value) => `Rp ${value}`} />
                         <Tooltip
                             formatter={(value) => [
                                 `Rp ${value.toLocaleString("id-ID")}`,
@@ -469,7 +469,7 @@ function ChartComponent({ data, formatMonthName, chartType }) {
                     >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="month" />
-                        <YAxis tickFormatter={(value) => `Rp ${value}`} />
+                        <YAxis className="text-xs" tickFormatter={(value) => `Rp ${value}`} />
                         <Tooltip
                             formatter={(value) => [
                                 `Rp ${value.toLocaleString("id-ID")}`,
@@ -485,7 +485,7 @@ function ChartComponent({ data, formatMonthName, chartType }) {
     };
 
     return (
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden p-4 -z-0">
+        <div className="bg-white shadow-lg rounded-lg overflow-hidden p-4 -z-0 ">
             <ResponsiveContainer width="100%" height={400}>
                 {renderChart()}
             </ResponsiveContainer>

@@ -51,6 +51,8 @@ export default function Index({siswa = [], auth}) {
         return siswa.map((item) => ({
             ID: item.id,
             Nama: item.nama,
+            Email: item.email,
+            JenisKelamin: item.jenis_kelamin,
             Kelas: item.kelas,
             Email: item.email,
             TglLahir: item.tanggal_lahir,

@@ -2,122 +2,123 @@
 namespace App\Http\Controllers;
 
 use App\Models\Siswa;
+use App\Models\Pembayaran;
+use App\Models\Absensi;
 use App\Models\TryOut;
-use App\Models\Absensi; 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use App\Models\Pembayaran; 
+use Carbon\Carbon;
+use App\Models\Subtopic;
 
 class SiswaDashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $user = Siswa::with(['tryOuts', 'absensis', 'pembayarans'])->find(Auth::id());
-        $tryOuts = $user ? $user->tryOuts : [];
-        $absensi = $user ? $user->absensis : [];
-        $pembayarans = $user ? $user->pembayarans : [];
-
-        
-
-        // Calculate total amount to be paid
-        $totalToPay = $pembayarans->where('status', 'pending')->sum('jumlah');
-        // Calculate total payments
-        $totalPayments = $pembayarans->sum('jumlah');
-
-        // Prepare payment rows
-        $paymentRows = $pembayarans->map(function($payment) {
+        $user = Auth::user();
+        $siswa = Siswa::findOrFail($user->id);
+    
+        // Fetch student information
+        $siswaInfo = [
+        'nama' => $siswa->nama,
+        'email' => $siswa->email,
+        'jenis_kelamin' => $siswa->jenis_kelamin,
+        'tempat_lahir' => $siswa->tempat_lahir,
+        'tanggal_lahir' => $siswa->tanggal_lahir,
+        'alamat' => $siswa->alamat,
+        'no_telpon' => $siswa->no_telpon,
+        'kota' => $siswa->kota,
+        'no_wa' => $siswa->no_wa,
+        'instagram' => $siswa->instagram,
+        'nama_sekolah' => $siswa->nama_sekolah,
+        'alamat_sekolah' => $siswa->alamat_sekolah,
+        'kurikulum' => $siswa->kurikulum,
+        'nama_ayah' => $siswa->nama_ayah,
+        'pekerjaan_ayah' => $siswa->pekerjaan_ayah,
+        'no_telp_hp_ayah' => $siswa->no_telp_hp_ayah,
+        'no_wa_id_line_ayah' => $siswa->no_wa_id_line_ayah,
+        'email_ayah' => $siswa->email_ayah,
+        'nama_ibu' => $siswa->nama_ibu,
+        'pekerjaan_ibu' => $siswa->pekerjaan_ibu,
+        'no_telp_hp_ibu' => $siswa->no_telp_hp_ibu,
+        'no_wa_id_line_ibu' => $siswa->no_wa_id_line_ibu,
+        'kelas' => $siswa->kelas,
+        'email_ibu' => $siswa->email_ibu,
+        'foto' => $siswa->foto,
+        'mulai_bimbingan' => $siswa->mulai_bimbingan,
+        'jam_bimbingan' => $siswa->jam_bimbingan,
+        'hari_bimbingan' => $siswa->hari_bimbingan,
+        ];
+    
+        // Fetch payment information
+        $pembayaran = Pembayaran::where('siswa_id', $siswa->id)->with('cicilan')->get();
+        $totalTagihan = $pembayaran->sum('jumlah');
+        $totalBayar = $pembayaran->flatMap->cicilan->sum('jumlah');
+        $sisaTagihan = $totalTagihan - $totalBayar;
+    
+        $pembayaranInfo = [
+            'totalTagihan' => $totalTagihan,
+            'totalBayar' => $totalBayar,
+            'sisaTagihan' => $sisaTagihan,
+        ];
+    
+        // Fetch attendance information
+        $absensi = Absensi::where('siswa_id', $siswa->id)
+            ->orderBy('tanggal', 'desc')
+            ->take(5)
+            ->get();
+    
+        $absensiInfo = $absensi->map(function ($item) {
             return [
-                'tanggal' => $payment->tanggal,
-                'jumlah' => $payment->jumlah,
+                'tanggal' => $item->tanggal,
+                'status' => $item->status,
+                'keterangan' => $item->keterangan,
             ];
         });
-
-        // Prepare data for charts and tables
-        $labels = $tryOuts->pluck('tanggal_pelaksanaan')
-                          ->map(fn($date) => date('M Y', strtotime($date)))
-                          ->unique()
-                          ->values();
-        $data = $labels->map(function ($label) use ($tryOuts) {
-            return $tryOuts->where('tanggal_pelaksanaan', 'like', "%{$label}%")->sum('skor');
-        });
-
-        $absensiLabels = $absensi->pluck('tanggal')->unique()->values();
-        $absensiData = $absensiLabels->map(function ($label) use ($absensi) {
-            return $absensi->where('tanggal', $label)->count();
-        });
-
-        $absensiDetails = $absensi->map(function($record) {
+    
+        // Fetch monthly attendance summary
+        $monthlyAttendance = Absensi::where('siswa_id', $siswa->id)
+            ->selectRaw('MONTH(tanggal) as bulan, COUNT(*) as total_hadir, SUM(status = "Hadir") as total_hadir')
+            ->groupBy('bulan')
+            ->orderBy('bulan', 'asc')
+            ->get();
+    
+        $attendancePerMonth = $monthlyAttendance->map(function ($item) {
             return [
-                'tanggal' => $record->tanggal,
-                'status' => $record->status,
-                'keterangan' => $record->keterangan
+                'bulan' => $item->bulan,
+                'total_hadir' => $item->total_hadir,
             ];
         });
-
+    
+        // Fetch TryOut information
+        $tryOuts = TryOut::where('id_siswa', $siswa->id)
+            ->with('subtopics')
+            ->orderBy('tanggal_pelaksanaan', 'desc')
+            ->take(5)
+            ->get();
+    
+        $tryOutInfo = $tryOuts->map(function ($tryOut) {
+            return [
+                'mata_pelajaran' => $tryOut->mata_pelajaran,
+                'tanggal_pelaksanaan' => $tryOut->tanggal_pelaksanaan,
+                'average_score' => $tryOut->subtopics->avg('skor'),
+            ];
+        });
+    
         return Inertia::render('Siswa/Dashboard', [
-            'user' => $user,
-            'chartLabels' => $labels,
-            'chartData' => $data,
-            'absensiLabels' => $absensiLabels,
-            'absensiData' => $absensiData,
-            'absensiDetails' => $absensiDetails,
-            'totalToPay' => $totalToPay,
-            'totalPayments' => $totalPayments, // Add this line
-            'paymentRows' => $paymentRows, // Add this line
+            'siswaInfo' => $siswaInfo,
+            'pembayaranInfo' => $pembayaranInfo,
+            'absensiInfo' => $absensiInfo,
+            'attendancePerMonth' => $attendancePerMonth,
+            'tryOutInfo' => $tryOutInfo,
         ]);
     }
-    public function edit()
-    {
-        $siswa = Siswa::find(Auth::id()); // Retrieve the authenticated user
-        return Inertia::render('Siswa/Edit', ['siswa' => $siswa]);
-    }
+    public function getSubtopics($subject)
+{
+    // Fetch subtopics for the specified subject
+    $subtopics = Subtopic::where('mata_pelajaran', $subject)->get();
 
-    public function update(Request $request)
-    {
-        $siswa = Siswa::find(Auth::id()); // Retrieve the authenticated user
-
-        $validatedData = $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:siswa,email,' . $siswa->id,
-            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'tempat_lahir' => 'required|string|max:255',
-            'tanggal_lahir' => 'required|date',
-            'alamat' => 'required|string',
-            'no_telpon' => 'nullable|string',
-            'kota' => 'required|string|max:255',
-            'no_wa' => 'nullable|string',
-            'instagram' => 'nullable|string',
-            'nama_sekolah' => 'required|string|max:255',
-            'alamat_sekolah' => 'required|string',
-            'kurikulum' => 'required|string|max:255',
-            'nama_ayah' => 'required|string|max:255',
-            'pekerjaan_ayah' => 'nullable|string|max:255',
-            'no_telp_hp_ayah' => 'nullable|string|max:255',
-            'no_wa_id_line_ayah' => 'nullable|string|max:255',
-            'email_ayah' => 'nullable|email|max:255',
-            'nama_ibu' => 'required|string|max:255',
-            'pekerjaan_ibu' => 'nullable|string|max:255',
-            'no_telp_hp_ibu' => 'nullable|string|max:255',
-            'no_wa_id_line_ibu' => 'nullable|string|max:255',
-            'email_ibu' => 'nullable|email|max:255',
-            'id_program_bimbingan' => 'nullable|exists:program_bimbingan,id',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        if ($request->hasFile('foto')) {
-            // Delete old photo if exists
-            if ($siswa->foto) {
-                Storage::delete('public/' . $siswa->foto);
-            }
-
-            $path = $request->file('foto')->store('fotosiswa', 'public');
-            $validatedData['foto'] = $path;
-        }
-
-        $siswa->update($validatedData);
-
-        return redirect()->route('siswa.edit')->with('success', 'Profile updated successfully.');
-    }
+    return response()->json($subtopics);
 }
+
+}    

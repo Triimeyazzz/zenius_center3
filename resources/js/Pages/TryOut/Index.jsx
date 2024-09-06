@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 const Index = ({ siswas, auth }) => {
     const [searchTerm, setSearchTerm] = useState('');
-
+    
     const filteredSiswas = siswas.filter(siswa =>
         siswa.nama.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -42,6 +42,7 @@ const Index = ({ siswas, auth }) => {
                                 <a href={route('tryout.progress', siswa.id)} className="text-lg font-medium text-purple-600 hover:underline">
                                     {siswa.nama}
                                 </a>
+                                <p className="text-gray-600 ">{siswa.kelas}</p>
                             </li>
                         ))}
                     </ul>

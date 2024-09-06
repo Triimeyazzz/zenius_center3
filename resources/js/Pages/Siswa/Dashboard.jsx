@@ -1,193 +1,236 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Head } from '@inertiajs/react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar, ResponsiveContainer } from "recharts";
 import StudentLayout from '@/Layouts/StudentLayout';
-import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
+import { FaInfoCircle, FaMoneyBillWave, FaClipboardCheck, FaChartLine } from 'react-icons/fa';
 
-// Register Chart.js components
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
+const Dashboard = ({ siswaInfo, pembayaranInfo, absensiInfo, attendancePerMonth, tryOutInfo, user, siswa }) => {
+  const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  const [isLineChart, setIsLineChart] = useState(true);
+  const [selectedSubject, setSelectedSubject] = useState(null);
+  const [subtopics, setSubtopics] = useState([]);
 
-const Dashboard = ({ user, chartLabels = [], chartData = [], absensiLabels = [], absensiData = [], absensiDetails = [], totalToPay, totalPayments, paymentRows: paymentRowsData }) => {
-    // Data for the performance chart
-    const performanceData = {
-        labels: chartLabels,
-        datasets: [
-            {
-                label: 'Skor Try Out dari Waktu ke Waktu',
-                data: chartData,
-                borderColor: 'rgba(153, 102, 255, 1)', // Ungu
-                backgroundColor: 'rgba(153, 102, 255, 0.2)', // Ungu
-                fill: true,
-            }
-        ],
-    };
+  const toggleChartType = () => {
+    setIsLineChart(!isLineChart);
+  };
 
-    // Options for the performance chart
-    const performanceOptions = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top',
-                labels: {
-                    font: {
-                        size: 14,
-                        color: 'rgba(153, 102, 255, 1)', // Ungu
-                    },
-                },
-            },
-            tooltip: {
-                callbacks: {
-                    label: (context) => `Skor: ${context.raw}`,
-                },
-            },
-        },
-        scales: {
-            x: {
-                title: {
-                    display: true,
-                    text: 'Tanggal Pelaksanaan',
-                    color: 'rgba(153, 102, 255, 1)', // Ungu
-                },
-                ticks: {
-                    autoSkip: true,
-                    maxTicksLimit: 10,
-                    color: 'rgba(153, 102, 255, 0.8)', // Ungu
-                },
-            },
-            y: {
-                title: {
-                    display: true,
-                    text: 'Skor',
-                    color: 'rgba(153, 102, 255, 1)', // Ungu
-                },
-                beginAtZero: true,
-                suggestedMax: 100,
-                ticks: {
-                    color: 'rgba(153, 102, 255, 0.8)', // Ungu
-                },
-            },
-        },
-    };
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const { mata_pelajaran, tanggal_pelaksanaan, average_score } = payload[0].payload;
+      return (
+        <div className="bg-white border rounded p-2 shadow-md">
+          <p className="font-semibold">{mata_pelajaran}</p>
+          <p>{`Tanggal: ${tanggal_pelaksanaan}`}</p>
+          <p>{`Skor Rata-rata: ${average_score}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
 
-    // Prepare data for the monthly attendance table
-    const monthlyAttendance = absensiLabels.reduce((acc, label, index) => {
-        const month = new Date(label).toLocaleString('default', { month: 'long', year: 'numeric' });
-        if (!acc[month]) {
-            acc[month] = 0;
-        }
-        acc[month] += absensiData[index];
-        return acc;
-    }, {});
+  const fetchSubtopics = async (subject) => {
+    const response = await axios.get(`/siswa/dashboard/subtopics/${subject}`);
+    setSubtopics(response.data);
+};
 
-    // Prepare rows for the monthly attendance table
-    const monthlyRows = Object.keys(monthlyAttendance).map((month, index) => (
-        <tr key={index}>
-            <td className="border px-4 py-2">{month}</td>
-            <td className="border px-4 py-2">{monthlyAttendance[month]}</td>
-        </tr>
-    ));
 
-    // Prepare rows for the detailed attendance table
-    const detailRows = absensiDetails.map((detail, index) => (
-        <tr key={index}>
-            <td className="border px-4 py-2">{detail.tanggal}</td>
-            <td className="border px-4 py-2">{detail.status}</td>
-            <td className="border px-4 py-2">{detail.keterangan}</td>
-        </tr>
-    ));
+  const closeSubtopicModal = () => {
+    setSelectedSubject(null);
+    setSubtopics([]);
+  };
 
-    // Prepare rows for the payment table
-    const paymentRows = paymentRowsData.map((payment, index) => (
-        <tr key={index}>
-            <td className="border px-4 py-2">{payment.tanggal}</td>
-            <td className="border px-4 py-2">{payment.jumlah.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</td>
-        </tr>
-    ));
-
+  const SubtopicModal = ({ subject, subtopics, onClose }) => {
     return (
-        <StudentLayout siswa={user}>
-            <div className="p-6 bg-yellow-50">
-                <h1 className="text-4xl font-bold mb-4 text-purple-800">Selamat datang, {user.nama}!</h1>
-                <p className="text-lg mb-6 text-gray-700">
-                    Di sini Anda bisa melihat ringkasan absensi Anda serta grafik performa try out Anda. Manfaatkan informasi ini untuk mengevaluasi kemajuan Anda dan merencanakan langkah selanjutnya.
-                </p>
-
-                <div className="bg-white shadow-lg rounded-lg p-4 mb-6 border-t-4 border-purple-500">
-                    <h2 className="text-xl font-semibold mb-2 text-purple-700">Jumlah yang Harus Dibayar</h2>
-                    <p className="text-gray-600 mb-4">
-                        Total pembayaran yang harus Anda lakukan saat ini. 
-                    </p>
-                    <p className="text-2xl font-bold text-purple-800">{totalToPay.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</p>
-                </div>
-
-                <div className="bg-white shadow-lg rounded-lg p-4 mb-6 border-t-4 border-green-500">
-                    <h2 className="text-xl font-semibold mb-2 text-green-700">Laporan Pembayaran</h2>
-                    <p className="text-gray-600 mb-4">
-                        Berikut adalah total pembayaran yang telah Anda lakukan serta rinciannya.
-                    </p>
-                    <p className="text-gray-700 mb-4">Total Pembayaran: {totalPayments.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</p>
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full bg-white border border-gray-300">
-                            <thead>
-                                <tr>
-                                    <th className="border px-4 py-2 text-left">Tanggal</th>
-                                    <th className="border px-4 py-2 text-left">Jumlah</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {paymentRows}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div className="bg-white shadow-lg rounded-lg p-4 mb-6 border-t-4 border-purple-500">
-                    <h2 className="text-xl font-semibold mb-2 text-purple-700">Laporan Absensi Bulanan</h2>
-                    <p className="text-gray-600 mb-4">
-                        Pantau kehadiran Anda per bulan dengan melihat tabel ini.
-                    </p>
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full bg-white border border-gray-300">
-                            <thead>
-                                <tr>
-                                    <th className="border px-4 py-2 text-left">Bulan</th>
-                                    <th className="border px-4 py-2 text-left">Jumlah Hari</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {monthlyRows}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div className="bg-white shadow-lg rounded-lg p-4 mb-6 border-t-4 border-purple-500">
-                    <h2 className="text-xl font-semibold mb-2 text-purple-700">Detail Absensi</h2>
-                    <p className="text-gray-600 mb-4">
-                        Lihat detail kehadiran Anda termasuk tanggal, status, dan keterangan.
-                    </p>
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full bg-white border border-gray-300">
-                            <thead>
-                                <tr>
-                                    <th className="border px-4 py-2 text-left">Tanggal</th>
-                                    <th className="border px-4 py-2 text-left">Status</th>
-                                    <th className="border px-4 py-2 text-left">Keterangan</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {detailRows}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div className="bg-white shadow-lg rounded-lg p-4 mb-6 border-t-4 border-purple-500">
-                    <h2 className="text-xl font-semibold mb-2 text-purple-700">Grafik Performa Try Out</h2>
-                    <Line data={performanceData} options={performanceOptions} />
-                </div>
-            </div>
-        </StudentLayout>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="bg-white rounded-lg p-4">
+          <h2 className="text-xl font-semibold mb-2">Subtopik untuk {subject}</h2>
+          <ul>
+            {subtopics.map((subtopic, index) => (
+              <li key={index} className="text-gray-700">
+                {subtopic.name} {/* Adjust based on your subtopic data structure */}
+              </li>
+            ))}
+          </ul>
+          <button
+            className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors duration-300"
+            onClick={onClose}
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
     );
+  };
+
+  return (
+    <StudentLayout siswa={siswa}>
+      <Head title="Dashboard Siswa" />
+
+      <div className="container mx-auto p-6">
+        <h1 className="text-4xl font-bold mb-8 text-center text-purple-600">Selamat Datang {siswaInfo.nama}</h1>
+
+        {/* Student Info Section */}
+        <div className="mb-6 p-6 bg-white rounded-lg shadow-lg border-l-4 border-purple-500">
+          <h2 className="text-2xl font-semibold mb-4 text-purple-600 flex items-center">
+            <FaInfoCircle className="mr-2" /> Informasi Siswa
+          </h2>
+          <p className="mb-4 text-gray-700">
+            Berikut adalah informasi penting mengenai Anda. 
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/** Student info cards **/}
+            {Object.entries(siswaInfo).map(([key, value], index) => (
+              <div className="p-4 bg-gray-100 rounded-lg shadow hover:shadow-xl transition-shadow duration-300" key={index}>
+                <p><strong>{key.replace(/_/g, ' ').toUpperCase()}:</strong> {value || 'Tidak tersedia'}</p>
+              </div>
+            ))}
+            <p><strong>Foto</strong>
+            <img                                                 
+            src={`/storage/fotos/${siswaInfo.foto}`}
+            alt="Foto siswa"
+            className="w-36 h-36 object-cover rounded-full border-2 border-gray-200"
+            />
+            </p>
+          </div>
+        </div>
+
+        {/* Payment Info Section */}
+        <div className="mb-6 p-6 bg-white rounded-lg shadow-lg border-l-4 border-green-500">
+          <h2 className="text-xl font-semibold mb-4 text-green-600 flex items-center">
+            <svg className="w-6 h-6 mr-2 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h18M3 9h18M3 15h18M3 21h18" />
+            </svg>
+            Informasi Pembayaran
+          </h2>
+          <p className="mb-4 text-gray-700">
+            Lihat informasi terkait pembayaran Anda.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 bg-gray-100 rounded shadow">
+              <p className="font-bold text-gray-800">Total Tagihan:</p>
+              <p className="text-green-600 font-semibold">Rp {pembayaranInfo.totalTagihan.toLocaleString()}</p>
+              <div className="w-full bg-gray-300 rounded h-2">
+                <div className="bg-green-500 h-2 rounded" style={{ width: `${(pembayaranInfo.totalBayar / pembayaranInfo.totalTagihan) * 100}%` }}></div>
+              </div>
+            </div>
+            <div className="p-4 bg-gray-100 rounded shadow">
+              <p className="font-bold text-gray-800">Total Bayar:</p>
+              <p className="text-green-600 font-semibold">Rp {pembayaranInfo.totalBayar.toLocaleString()}</p>
+            </div>
+            <div className="p-4 bg-gray-100 rounded shadow">
+              <p className="font-bold text-gray-800">Sisa Tagihan:</p>
+              <p className="text-red-600 font-semibold">Rp {pembayaranInfo.sisaTagihan.toLocaleString()}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Monthly Attendance Section */}
+        <div className="mb-6 p-6 bg-white rounded-lg shadow-lg border-l-4 border-blue-500">
+          <h2 className="text-2xl font-semibold mb-4 text-blue-600 flex items-center">
+            <FaClipboardCheck className="mr-2" /> Absensi Per Bulan
+          </h2>
+          <p className="mb-4 text-gray-700">
+            Berikut adalah ringkasan kehadiran Anda selama setiap bulan. Cek apakah ada bulan dengan kehadiran yang perlu ditingkatkan.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border">
+              <thead className="bg-blue-100">
+                <tr>
+                  <th className="px-4 py-2 border-b text-blue-700">Bulan</th>
+                  <th className="px-4 py-2 border-b text-blue-700">Total Hadir</th>
+                </tr>
+              </thead>
+              <tbody>
+                {attendancePerMonth.map((item, index) => (
+                  <tr key={index} className="hover:bg-blue-50">
+                    <td className="px-4 py-2 border-b text-gray-800">{monthNames[item.bulan - 1]}</td>
+                    <td className="px-4 py-2 border-b text-gray-800">{item.total_hadir}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Recent Attendance Section */}
+        <div className="mb-6 p-6 bg-white rounded-lg shadow-lg border-l-4 border-indigo-500">
+          <h2 className="text-2xl font-semibold mb-4 text-indigo-600 flex items-center">
+            <FaClipboardCheck className="mr-2" /> Absensi Terbaru
+          </h2>
+          <p className="mb-4 text-gray-700">
+            Lihat rincian kehadiran Anda yang terbaru. Perhatikan setiap kehadiran yang mungkin memerlukan perhatian.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border">
+              <thead className="bg-indigo-100">
+                <tr>
+                  <th className="px-4 py-2 border-b text-indigo-700">Tanggal</th>
+                  <th className="px-4 py-2 border-b text-indigo-700">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {absensiInfo.map((item, index) => (
+                  <tr key={index} className="hover:bg-indigo-50">
+                    <td className="px-4 py-2 border-b text-gray-800">{item.tanggal}</td>
+                    <td className="px-4 py-2 border-b text-gray-800">{item.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Tryout Section */}
+        <div className="mb-6 p-6 bg-white rounded-lg shadow-lg border-l-4 border-orange-500">
+          <h2 className="text-2xl font-semibold mb-4 text-orange-600 flex items-center">
+            <FaChartLine className="mr-2" /> Rangkuman Tryout
+          </h2>
+          <p className="mb-4 text-gray-700">
+            Berikut adalah ringkasan nilai tryout Anda. Klik untuk melihat subtopik terkait.
+          </p>
+          <ResponsiveContainer width="100%" height={300}>
+            {isLineChart ? (
+              <LineChart data={tryOutInfo}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="mata_pelajaran" />
+                <YAxis />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Line type="monotone" dataKey="average_score" stroke="#82ca9d" />
+              </LineChart>
+            ) : (
+              <BarChart data={tryOutInfo}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="mata_pelajaran" />
+                <YAxis />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Bar dataKey="average_score" fill="#8884d8" />
+              </BarChart>
+            )}
+          </ResponsiveContainer>
+          <button
+            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors duration-300"
+            onClick={toggleChartType}
+          >
+            {isLineChart ? 'Tampilkan sebagai Bar Chart' : 'Tampilkan sebagai Line Chart'}
+          </button>
+          {tryOutInfo.map((item, index) => (
+            <div key={index} className="mt-4 cursor-pointer text-blue-600 hover:underline" onClick={() => {
+              setSelectedSubject(item.mata_pelajaran);
+              fetchSubtopics(item.mata_pelajaran);
+            }}>
+              {item.mata_pelajaran}
+            </div>
+          ))}
+        </div>
+
+        {selectedSubject && (
+          <SubtopicModal subject={selectedSubject} subtopics={subtopics} onClose={closeSubtopicModal} />
+        )}
+      </div>
+    </StudentLayout>
+  );
 };
 
 export default Dashboard;
