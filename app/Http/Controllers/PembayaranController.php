@@ -15,7 +15,7 @@ class PembayaranController extends Controller
     {
         $pembayaran = Pembayaran::with('siswa', 'cicilan')->get();
         $totalPemasukan = Cicilan::sum('jumlah');
-        $totalTagihan = Pembayaran::sum('jumlah');
+        $totalTagihan = Pembayaran::where('status', '!=', 'batal')->sum('jumlah');
         $sisaTagihan = $totalTagihan - $totalPemasukan;
         $pemasukanPerBulan = Cicilan::select(
             DB::raw('YEAR(dibayar_pada) as year'),
@@ -46,6 +46,7 @@ class PembayaranController extends Controller
         $validated = $request->validate([
             'siswa_id' => 'required|exists:siswa,id',
             'jumlah' => 'required|numeric|min:0',
+            'tgl_jatuh_tempo' => 'required',
         ]);
 
         $pembayaran = Pembayaran::create($validated + ['status' => 'pending']);

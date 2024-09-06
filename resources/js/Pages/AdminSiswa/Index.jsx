@@ -4,6 +4,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import DeleteConfirmationModal from "@/Components/DeleteConfirmationModal";
 import { CSVLink } from "react-csv";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link } from "@inertiajs/react";
 
 export default function Index({siswa = [], auth}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -157,6 +158,9 @@ export default function Index({siswa = [], auth}) {
                                     Foto
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider border-b border-gray-200">
+                                    QrCode
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider border-b border-gray-200">
                                     Nama
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider border-b border-gray-200">
@@ -205,6 +209,9 @@ export default function Index({siswa = [], auth}) {
                                                 alt={item.nama}
                                                 className="w-16 h-16 object-cover rounded-full border-2 border-gray-200"
                                             />
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                            <Link href={route('adminsiswa.cetakqr', item.id)} className="inline-flex items-center px-4 py-2 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-sm hover:bg-red-700 hover:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 transition duration-150 ease-in-out">Cetak Qr</Link>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                             {item.nama}

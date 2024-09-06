@@ -6,6 +6,7 @@ export default function Create({ siswa }) {
     const { data, setData, post, processing, errors } = useForm({
         siswa_id: '',
         jumlah: '',
+        tgl_jatuh_tempo: '',
     });
 
     const handleSubmit = (e) => {
@@ -59,6 +60,21 @@ export default function Create({ siswa }) {
                     />
                     {errors.jumlah && <div className="text-red-500 text-sm mt-1">{errors.jumlah}</div>}
                 </div>
+
+                <div className="mb-6">
+                    <label htmlFor="tgl_jatuh_tempo" className="block text-sm font-medium text-gray-700">
+                        Jatuh Tempo
+                    </label>
+                    <input
+                        type="date"
+                        id="tgl_jatuh_tempo"
+                        value={data.tgl_jatuh_tempo}
+                        onChange={(e) => setData('tgl_jatuh_tempo', e.target.value)}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50"
+                    />
+                    {errors.tgl_jatuh_tempo && <div className="text-red-500 text-sm mt-1">{errors.tgl_jatuh_tempo}</div>}
+                </div>
+
 
                 <div className="flex items-center justify-end">
                     <button

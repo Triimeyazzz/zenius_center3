@@ -33,6 +33,7 @@
         "date-fns": "^3.6.0",
         "file-saver": "^2.0.5",
         "html2canvas": "^1.4.1",
+        "html5-qrcode": "^2.3.8",
         "jspdf": "^2.5.1",
         "jspdf-autotable": "^3.8.2",
         "lodash": "^4.17.21",

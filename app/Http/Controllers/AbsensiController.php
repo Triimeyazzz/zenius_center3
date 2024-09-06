@@ -88,4 +88,28 @@ class AbsensiController extends Controller
 
         return redirect()->route('absensi.index')->with('success', 'Data berhasil dihapus.');
     }
+<<<<<<< HEAD
+
+    public function scan() {
+        return inertia('Absensi/Scan');
+    }
+
+    public function scanQr(Request $request) {
+        $siswa = Siswa::find($request->id);
+        Absensi::updateOrCreate(
+            [
+                'siswa_id' => $siswa->id,
+                'tanggal' => date('Y-m-d'),
+            ],
+            [
+                'status' => "Hadir",
+                'keterangan' => null,
+            ]
+        );
+
+        return back();
+    }
 }
+=======
+}
+>>>>>>> 33a88d446ab097de4db959b53c083ce15a4340fa

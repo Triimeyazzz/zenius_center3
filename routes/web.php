@@ -20,6 +20,8 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\AdminUlasanController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\KirimEmailController;
+use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\SiswaUlasanController;
 use App\Http\Controllers\ContactController;
 
@@ -81,10 +83,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/siswa/{siswa}/export-pdf', [SiswaController::class, 'exportPdf'])->name('siswa.exportPdf');
         Route::get('/get-pdf-url/{siswa}', [SiswaController::class, 'getPdfUrl']);
         Route::get('/adminsiswa/count', [SiswaController::class, 'count']);
+        Route::get('/adminsiswa/cetakqr/{siswa}', [SiswaController::class, 'cetakqr'])->name('adminsiswa.cetakqr');
 
 
         Route::get('absensi', [AbsensiController::class, 'index'])->name('absensi.index');
         Route::get('absensi/create', [AbsensiController::class, 'create'])->name('absensi.create');
+        Route::get('absensi/scan', [AbsensiController::class, 'scan'])->name('absensi.scan');
+        Route::post('absensi/scanQr', [AbsensiController::class, 'scanQr'])->name('absensi.scanQr');
         Route::post('absensi', [AbsensiController::class, 'store'])->name('absensi.store');
         Route::delete('/absensi/{id}', [AbsensiController::class, 'destroy'])->name('absensi.destroy');
 
@@ -92,22 +97,26 @@ Route::middleware('auth')->group(function () {
         Route::get('/messages/{receiver_id}', [MessageController::class, 'showConversation'])->name('messages.conversation');
         Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
 
-Route::resource('pembayaran', PembayaranController::class);
-Route::post('pembayaran/{pembayaran}/bayar-cicilan', [PembayaranController::class, 'bayarCicilan'])->name('pembayaran.bayar-cicilan');
-Route::get('pembayaran/create', [PembayaranController::class, 'create'])->name('pembayaran.create');
-Route::post('pembayaran', [PembayaranController::class, 'store'])->name('pembayaran.store');
-Route::get('pembayaran/financial-summary', [PembayaranController::class, 'financialSummary'])->name('pembayaran.financial-summary');
-Route::delete('/pembayaran/cicilan/{id}', [PembayaranController::class, 'destroyCicilan'])->name('pembayaran.delete-cicilan');
-Route::post('/pembayaran/{pembayaran}/batal', [PembayaranController::class, 'batal'])->name('pembayaran.batal');
-Route::delete('/pembayaran/{id}/cancel', [PembayaranController::class, 'cancelNew'])->name('pembayaran.cancel');
+        Route::resource('pembayaran', PembayaranController::class);
+        Route::post('pembayaran/{pembayaran}/bayar-cicilan', [PembayaranController::class, 'bayarCicilan'])->name('pembayaran.bayar-cicilan');
+        Route::get('pembayaran/create', [PembayaranController::class, 'create'])->name('pembayaran.create');
+        Route::post('pembayaran', [PembayaranController::class, 'store'])->name('pembayaran.store');
+        Route::get('pembayaran/financial-summary', [PembayaranController::class, 'financialSummary'])->name('pembayaran.financial-summary');
+        Route::delete('/pembayaran/cicilan/{id}', [PembayaranController::class, 'destroyCicilan'])->name('pembayaran.delete-cicilan');
+        Route::post('/pembayaran/{pembayaran}/batal', [PembayaranController::class, 'batal'])->name('pembayaran.batal');
+        Route::delete('/pembayaran/{id}/cancel', [PembayaranController::class, 'cancelNew'])->name('pembayaran.cancel');
 
-Route::get('ulasan', [AdminUlasanController::class, 'index'])->name('ulasan.index');
-Route::get('ulasan/create', [AdminUlasanController::class, 'create'])->name('ulasan.create');
+        Route::get('ulasan', [AdminUlasanController::class, 'index'])->name('ulasan.index');
+        Route::get('ulasan/create', [AdminUlasanController::class, 'create'])->name('ulasan.create');
 
-Route::post('ulasan', [AdminUlasanController::class, 'store'])->name('ulasan.store');
-Route::delete('/ulasan/{id}', [AdminUlasanController::class, 'destroy'])->name('ulasan.destroy');
-Route::post('ulasan', [AdminUlasanController::class, 'store'])->name('ulasan.store');
-Route::delete('/ulasan/{ulasan}', [AdminUlasanController::class, 'destroy'])->name('ulasan.destroy');
+        Route::post('kirim-email', KirimEmailController::class)->name('kirimEmail');
+
+        Route::post('ulasan', [AdminUlasanController::class, 'store'])->name('ulasan.store');
+        Route::delete('/ulasan/{id}', [AdminUlasanController::class, 'destroy'])->name('ulasan.destroy');
+        Route::post('ulasan', [AdminUlasanController::class, 'store'])->name('ulasan.store');
+        Route::delete('/ulasan/{ulasan}', [AdminUlasanController::class, 'destroy'])->name('ulasan.destroy');
+
+        Route::any('kirimEmail', KirimEmailController::class)->name('kirimemail');
 
 
 });

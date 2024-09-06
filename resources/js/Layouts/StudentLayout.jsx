@@ -50,6 +50,7 @@ const StudentLayout = ({ children, siswa }) => {
             <Link href="/siswa/dashboard" className="text-white hover:text-gray-300">Dashboard</Link>
             <Link href="/siswa/messages" className="text-white hover:text-gray-300">Messages</Link>
             <Link href="/siswa/ulasan" className="text-white hover:text-gray-300">Ulasan</Link>
+            <Link href="/siswa/notifikasi" className="text-white hover:text-gray-300">Notifikasi</Link>
           </div>
 
           {/* Profile Dropdown */}

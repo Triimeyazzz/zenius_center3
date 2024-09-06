@@ -86,6 +86,26 @@ export default function Index({
             return;
         }
 
+<<<<<<< HEAD
+        const header = ["Tanggal", "Nama Siswa", "Kelas", "Status", "Keterangan"];
+        const wb = XLSX.utils.book_new();
+
+        Object.entries(filteredData).forEach(([date, records]) => {
+          const dataToExport = records.map((record) => {
+            return {
+              Tanggal: date,
+              "Nama Siswa": record.siswa.nama,
+              Kelas: record.siswa.kelas,
+              Status: record.status,
+              Keterangan: record.keterangan,
+            };
+          });
+
+          const ws = XLSX.utils.json_to_sheet(dataToExport, {
+            header: header,
+          });
+          XLSX.utils.book_append_sheet(wb, ws, date);
+=======
         const wb = XLSX.utils.book_new();
 
         Object.entries(filteredData).forEach(([date, records]) => {
@@ -101,6 +121,7 @@ export default function Index({
                 header: ["Tanggal", "Nama Siswa", "Kelas", "Status", "Keterangan"],
             });
             XLSX.utils.book_append_sheet(wb, ws, date);
+>>>>>>> 33a88d446ab097de4db959b53c083ce15a4340fa
         });
 
         XLSX.writeFile(wb, "daftar_absensi.xlsx");
@@ -193,6 +214,12 @@ export default function Index({
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-3xl font-bold text-purple-800">Daftar Absensi</h1>
                     <div className="flex space-x-4">
+                        <Link
+                            href={route("absensi.scan")}
+                            className="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition"
+                        >
+                            Scan Absen
+                        </Link>
                         <Link
                             href={route("absensi.create")}
                             className="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition"
