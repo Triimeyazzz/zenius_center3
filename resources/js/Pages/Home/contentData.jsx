@@ -29,15 +29,7 @@ const contentData = [
         aosImage: "fade-left",
         aosText: "fade-right",
     },
-    {
-        id: 4,
-        imgSrc: "/images/Generasiemas.png",
-        imgAlt: "Generasi Emas",
-        heading: "Kelas Zen-Core",
-        text: "Skill dan knowledge dasar (fundamental skills) yang harus dikuasai oleh semua orang terlepas dari apa pun jenjang pendidikan, jurusan, atau bidang kerjaannya.",
-        aosImage: "fade-left",
-        aosText: "fade-right",
-    },
+    
     {
         id: 5,
         imgSrc: "/images/Generasiemas.png",

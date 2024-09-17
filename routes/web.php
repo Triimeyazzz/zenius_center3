@@ -23,6 +23,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KirimEmailController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\SiswaUlasanController;
+use App\Http\Controllers\ContactController;
+
 
 
 Route::get('/', function () {
@@ -33,6 +35,8 @@ Route::get('/Home', [HomeController::class, 'index'])->name('Home.Home');
 Route::get('/About', function () {
     return Inertia::render('Home/AboutUs');
 })->name('About');
+
+Route::post('/Home', [ContactController::class, 'send']);
 
 Route::get('/Testimoni', function () {
     return Inertia::render('Home/TestimoniComponent');
@@ -67,6 +71,7 @@ Route::middleware('auth')->group(function () {
         Route::get('tryout/{siswa}/create', [TryOutController::class, 'create'])->name('tryout.create');
         Route::post('tryout/{siswa}', [TryOutController::class, 'store'])->name('tryout.store');
         Route::delete('/tryout/{id}', [TryOutController::class, 'destroy'])->name('tryout.destroy');
+        Route::get('/tryout/backup', [TryOutController::class, 'backup'])->name('tryout.backup');
 
         Route::get('/adminsiswa', [SiswaController::class, 'index'])->name('adminsiswa.index');
         Route::get('/adminsiswa/create', [SiswaController::class, 'create'])->name('adminsiswa.create');
@@ -140,7 +145,8 @@ Route::middleware(['auth:siswa'])->group(function () {
     // Dashboard siswa
     Route::get('/siswa/dashboard', [SiswaDashboardController::class, 'index'])->name('siswa.dashboard');
     Route::get('/siswa/dashboard/subtopics/{subject}', [SiswaDashboardController::class, 'getSubtopics'])->name('siswa.getSubtopics');
-    
+    Route::get('/siswa/absensi', [SiswaDashboardController::class, 'showAttendance'])->name('absensi.show');
+
     Route::get('/siswa/edit', [SiswaController::class, 'edit'])->name('siswa.edit');
     Route::post('/siswa/update', [SiswaController::class, 'update'])->name('siswa.update');
 

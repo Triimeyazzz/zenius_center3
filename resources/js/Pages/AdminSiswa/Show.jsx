@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-export default function Show() {
+export default function Show({ siswa }) {
+    const [loading, setLoading] = useState(false);
 
-    const exportToPDF = () => {
+    const exportToPDF = async () => {
         const doc = new jsPDF();
         doc.setFontSize(16);
 
@@ -38,7 +39,6 @@ export default function Show() {
             headStyles: { fillColor: [0, 0, 255] },
             styles: { cellPadding: 5, fontSize: 12, lineColor: [0, 0, 0], lineWidth: 0.1 },
             margin: { horizontal: 10 },
-            columnStyles: { text: { cellPadding: 3, fontSize: 12, lineWidth: 0.1 } },
         });
 
         // School Information
@@ -56,7 +56,6 @@ export default function Show() {
             headStyles: { fillColor: [0, 255, 0] },
             styles: { cellPadding: 5, fontSize: 12, lineColor: [0, 0, 0], lineWidth: 0.1 },
             margin: { horizontal: 10 },
-            columnStyles: { text: { cellPadding: 3, fontSize: 12, lineWidth: 0.1 } },
         });
 
         // Parent Information
@@ -81,7 +80,6 @@ export default function Show() {
             headStyles: { fillColor: [255, 200, 0] },
             styles: { cellPadding: 5, fontSize: 12, lineColor: [0, 0, 0], lineWidth: 0.1 },
             margin: { horizontal: 10 },
-            columnStyles: { text: { cellPadding: 3, fontSize: 12, lineWidth: 0.1 } },
         });
 
         // Guidance Information
@@ -99,7 +97,6 @@ export default function Show() {
             headStyles: { fillColor: [200, 0, 200] },
             styles: { cellPadding: 5, fontSize: 12, lineColor: [0, 0, 0], lineWidth: 0.1 },
             margin: { horizontal: 10 },
-            columnStyles: { text: { cellPadding: 3, fontSize: 12, lineWidth: 0.1 } },
         });
 
         // Add photo if available
@@ -107,16 +104,20 @@ export default function Show() {
             const imgData = `/storage/fotos/${siswa.foto}`; // Ensure this is a valid URL
             const img = new Image();
             img.src = imgData;
+
+            setLoading(true);
             img.onload = () => {
                 doc.addPage();
                 doc.setFontSize(14);
                 doc.text('Foto Siswa:', 14, 20);
                 doc.addImage(imgData, 'JPEG', 14, 30, 100, 100); // Adjusted size for the image
                 doc.save(`Detail_Siswa_${siswa.nama}.pdf`);
+                setLoading(false);
             };
             img.onerror = () => {
                 console.error('Image could not be loaded');
                 doc.save(`Detail_Siswa_${siswa.nama}.pdf`);
+                setLoading(false);
             };
         } else {
             doc.save(`Detail_Siswa_${siswa.nama}.pdf`);
@@ -236,7 +237,10 @@ export default function Show() {
                     <div className="p-6 bg-gray-100">
                         <h2 className="text-2xl font-semibold mb-4 text-gray-700">Foto Siswa</h2>
                         <div className="flex justify-center">
-                            <img src={`/storage/fotos/${siswa.foto}`} alt="Foto Siswa" className="w-48 h-48 object-cover rounded-lg" />
+                            <img 
+                            src={`/storage/fotos/${siswa.foto}`}
+                            alt="Foto Siswa" 
+                            className="w-48 h-48 object-cover rounded-lg" />
                         </div>
                     </div>
                 )}
@@ -253,4 +257,4 @@ export default function Show() {
             </div>
         </div>
     );
-};
+}

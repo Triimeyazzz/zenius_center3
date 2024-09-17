@@ -60,13 +60,95 @@ function sortDataByMonth(data) {
     );
 }
 
-export default function Dashboard({ auth }) {
+function Dashboard({ auth }) {
     const [dashboardData, setDashboardData] = useState(null);
     const [detailedData, setDetailedData] = useState(null);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [chartType, setChartType] = useState("bar");
-
+    const [notes, setNotes] = useState({});
+    const [currentNote, setCurrentNote] = useState("");
     useEffect(() => {
+        // Retrieve notes from localStorage on component mount
+        const savedNotes = localStorage.getItem("notes");
+        if (savedNotes) {
+            setNotes(JSON.parse(savedNotes));
+        }
+    }, []);
+
+    const handleDateChange = (date) => {
+        setSelectedDate(date);
+    };
+
+    const handleNoteChange = (e) => {
+        setCurrentNote(e.target.value);
+    };
+
+    const saveNote = () => {
+        const dateKey = selectedDate.toDateString();
+        const updatedNotes = {
+            ...notes,
+            [dateKey]: currentNote,
+        };
+
+        // Update state and save notes to localStorage
+        setNotes(updatedNotes);
+        localStorage.setItem("notes", JSON.stringify(updatedNotes));
+        setCurrentNote(""); // Clear the current note input
+    };
+
+    const deleteNote = (dateKey) => {
+        const updatedNotes = { ...notes };
+        delete updatedNotes[dateKey];
+
+        // Update state and save updated notes to localStorage
+        setNotes(updatedNotes);
+        localStorage.setItem("notes", JSON.stringify(updatedNotes));
+    };
+
+    const getMonthlyNotes = (month, year) => {
+        return Object.entries(notes)
+            .filter(([date]) => {
+                const noteDate = new Date(date);
+                return noteDate.getMonth() === month && noteDate.getFullYear() === year;
+            })
+            .map(([date, note]) => (
+                <div key={date} className="border rounded-lg p-3 mb-2 bg-gray-100 shadow-sm hover:shadow-md transition-shadow flex justify-between items-center">
+                    <div>
+                        <strong>{date}</strong>: {note}
+                    </div>
+                    <button
+                        onClick={() => deleteNote(date)}
+                        className="ml-4 bg-red-500 text-white rounded-lg px-2 py-1 hover:bg-red-600 transition-colors"
+                    >
+                        Delete
+                    </button>
+                </div>
+            ));
+    };
+
+    const tileClassName = ({ date, view }) => {
+        const dateKey = date.toDateString();
+        const today = new Date();
+        let classes = "";
+    
+        if (view === "month") {
+            // Highlight today's date
+            if (
+                date.getDate() === today.getDate() &&
+                date.getMonth() === today.getMonth() &&
+                date.getFullYear() === today.getFullYear()
+            ) {
+                classes += " bg-blue-200 rounded-full"; // Highlight today
+            }
+    
+            // Check if there's a note for this date and add a visible border
+            if (notes[dateKey]) {
+                classes += " border-2 border-red-500"; // Add a border if a note exists
+            }
+        }
+        return classes;
+    };
+        useEffect(() => {
         const fetchData = async () => {
             try {
                 const [countResponse, dataResponse] = await Promise.all([
@@ -107,11 +189,7 @@ export default function Dashboard({ auth }) {
         return monthNames[month - 1];
     };
 
-    const handleDateChange = (newDate) => {
-        setSelectedDate(newDate);
-        console.log("Selected date:", newDate);
-    };
-
+    
     const hijriDate = moment(selectedDate).format("iDD/iMM/iYYYY");
 
     const handleToggleDarkMode = () => {
@@ -240,39 +318,45 @@ export default function Dashboard({ auth }) {
                                         />
                                     </div>
                                 )}
+<div className="flex flex-wrap justify-between mt-10">
+        <div className="w-full md:w-1/2 p-2">
+            <h3 className="text-lg font-semibold mb-4">Kalender Gregorian</h3>
+            <div className="border rounded-lg shadow-lg p-4 bg-white">
+                <Calendar
+                    onChange={handleDateChange}
+                    value={selectedDate}
+                    className="react-calendar rounded-lg"
+                    tileClassName={tileClassName}
+                    tileContent={({ date }) => (
+                        <div className="text-sm text-gray-700">{date.getDate()}</div>
+                    )}
+                />
+                <div className="mt-4">
+                    <h4 className="text-md font-semibold">Notes for {selectedDate.toDateString()}:</h4>
+                    <textarea
+                        value={currentNote}
+                        onChange={handleNoteChange}
+                        className="border rounded-lg w-full p-2 mt-2"
+                        rows={3}
+                    />
+                    <button
+                        onClick={saveNote}
+                        className="mt-2 bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 transition-colors"
+                    >
+                        Save Note
+                    </button>
+                </div>
+            </div>
+        </div>
 
-                            <div className="mt-10">
-                                <h3 className="text-lg font-semibold mb-4">
-                                    Kalender Gregorian
-                                </h3>
-                                <div className="border rounded-lg shadow-lg p-4">
-                                    <Calendar
-                                        onChange={handleDateChange}
-                                        value={selectedDate}
-                                        className="react-calendar rounded-lg"
-                                        tileClassName={({ date, view }) => {
-                                            const today = new Date();
-                                            if (view === "month") {
-                                                if (
-                                                    date.getDate() ===
-                                                        today.getDate() &&
-                                                    date.getMonth() ===
-                                                        today.getMonth() &&
-                                                    date.getFullYear() ===
-                                                        today.getFullYear()
-                                                ) {
-                                                    return "bg-blue-200 rounded-full";
-                                                }
-                                            }
-                                            return "";
-                                        }}
-                                        tileContent={({ date }) => (
-                                            <div className="text-sm text-gray-700">
-                                                {date.getDate()}
-                                            </div>
-                                        )}
-                                    />
-
+        <div className="w-full md:w-1/2 p-2">
+            <h3 className="text-lg font-semibold mb-4">Saved Notes</h3>
+            <div className="bg-white border rounded-lg shadow-lg p-4">
+                {getMonthlyNotes(selectedDate.getMonth(), selectedDate.getFullYear())}
+            </div>
+        </div>
+    </div><div>
+    <div className="">
                                     <h3 className="text-lg font-semibold mb-4 mt-8">
                                         Kalender Hijriah
                                     </h3>
@@ -477,7 +561,7 @@ function ChartComponent({ data, formatMonthName, chartType }) {
                             ]}
                         />
                         <Legend />
-                        <Bar dataKey="total" fill="#7b1fa1" />
+                        <Bar dataKey="total" fill="#21409a" />
                     </BarChart>
                 );
         }
@@ -492,3 +576,5 @@ function ChartComponent({ data, formatMonthName, chartType }) {
         </div>
     );
 }
+
+export default Dashboard;

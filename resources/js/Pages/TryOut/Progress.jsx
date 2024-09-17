@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { Inertia } from '@inertiajs/inertia';
 
 const Progress = ({ siswa, chartData }) => {
   const [selectedSubject, setSelectedSubject] = useState(null);
@@ -20,11 +21,23 @@ const Progress = ({ siswa, chartData }) => {
     }
   };
 
+  const handleBackup = () => {
+    Inertia.visit(route('tryout.backup'), {
+      onSuccess: () => {
+        alert('Backup successfully created and downloaded.');
+      },
+      onError: () => {
+        alert('An error occurred while creating the backup.');
+      }
+    });
+  };
+
   return (
     <div className="p-6 bg-gray-50 rounded-lg shadow-lg">
       <div className="flex justify-between mb-4">
         <a href="/tryout" className="text-white hover:text-white transition duration-200 bg-purple-700 p-2 rounded hover:bg-purple-800">Kembali</a>
         <a href={route('tryout.create', siswa.id)} className="text-white hover:text-white transition duration-200 bg-purple-700 p-2 rounded hover:bg-purple-800">Tambah nilai</a>
+        <button onClick={handleBackup} className="text-white hover:text-white transition duration-200 bg-green-600 p-2 rounded hover:bg-green-700">Backup Data</button>
       </div>
 
       <h1 className="text-3xl font-bold text-center text-purple-600 mb-6">Progress - {siswa.nama}</h1>

@@ -68,7 +68,8 @@ const Navbar = () => {
                             <NavLink
                                 className='text-yellow-400 hover:text-yellow-200'
                                 href="/Home"
-                                active={route().current('Home')}
+                                active={route().current('/Home')}
+
                                 onClick={closeNavbar}
                             >
                                 Home

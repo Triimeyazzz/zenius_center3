@@ -1,11 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Head } from "@inertiajs/react";
 import AppLayout from "@/Layouts/AppLayout";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
 import "./wallpaper.css";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,112 +15,95 @@ import dataPisa from "./bardataPISA";
 import dataProblems from "./dataProblem";
 import WhatsAppLink from "./WhatsAppLink";
 import contentData from "./contentData";
-import komponen from "./KomponenBelajar";
-import CardHarga from "@/Components/cardHarga";
-import DataHarga from "./DataHarga";
+import KomponenBelajar from './KomponenBelajar';
 import { Link } from "@inertiajs/react";
 import Footer from "@/Components/Footer";
-import TestimoniData from "./TestimoniData";
-import Carousel2 from "react-multi-carousel";
-import "react-multi-carousel/lib/styles.css";
+import "./customSlider.css"; // Assuming you save the CSS in this file
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import CSS for carousel
 
 const chunkArray = (arr, size) => {
+    
     const chunkedArr = [];
     for (let i = 0; i < arr.length; i += size) {
         chunkedArr.push(arr.slice(i, i + size));
     }
     return chunkedArr;
 };
-const responsive = {
-    superLargeDesktop: {
-        breakpoint: { max: 4000, min: 3000 },
-        items: 3,
-    },
-    desktop: {
-        breakpoint: { max: 3000, min: 1024 },
-        items: 3,
-    },
-    tablet: {
-        breakpoint: { max: 1024, min: 464 },
-        items: 2,
-    },
-    mobile: {
-        breakpoint: { max: 464, min: 0 },
-        items: 1,
-    },
-};
 
-const HomeComponent = ({ displayText, ulasanData }) => {
+const HomeComponent = ({ displayText, ulasan = [] }) => {
+    const [itemsPerSlide, setItemsPerSlide] = useState(1); // Default to 1 item per slide
     useEffect(() => {
         AOS.init({ duration: 1000 });
     }, []);
 
-    const groupedTestimonials = chunkArray(TestimoniData, 4);
-    const renderStars = (rating) => {
-        return (
-            <div className="flex justify-center">
-                {[1, 2, 3, 4, 5].map((star) => (
-                    <svg
-                        key={star}
-                        className={`w-6 h-6 ${
-                            star <= rating ? "text-yellow-400" : "text-gray-300"
-                        }`}
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path d="M12 17.27L18.18 21 16.54 13.97 22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                    </svg>
-                ))}
-            </div>
-        );
+    const settings = {
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 3000,
+        arrows: true,
+        adaptiveHeight: true, 
+        fade: true, 
     };
+    
+    console.log(ulasan);
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 640) { // Mobile screens
+                setItemsPerSlide(1);
+            } else {
+                setItemsPerSlide(4); // Default to 4 items for larger screens
+            }
+        };
+
+        handleResize(); // Set initial value based on the current window size
+        window.addEventListener("resize", handleResize); // Listen for window resize events
+
+        return () => {
+            window.removeEventListener("resize", handleResize); // Clean up the event listener
+        };
+    }, []);
     return (
-        <div className="relative">
+        <>
             <Head title="New Primagama Fatmawati Home" />
 
             <AppLayout>
-                <div className="mx-auto w-full max-w-screen-xl">
-                    <div className="w-full mb-10 h-full">
-                        <img
-                            src="./images/spanduk 459x217 cmyk.jpg"
-                            alt="spanduk"
-                        />
-                    </div>
-                    <div className="grid grid-cols-1 gap-8 items-center">
-                        <div className="text-center z-20" data-aos="fade-up">
-                            <Carousel
-                                autoPlay
-                                infiniteLoop
-                                showThumbs={false}
-                                showStatus={false}
-                                showArrows={true}
-                                className="mx-auto mb-8 relative top-1 w-full"
-                            >
-                                <div className="w-full">
-                                    <img
-                                        src="/images/spanduk 459x217 cmyk.jpg"
-                                        alt="Slide 1"
-                                        className="object-cover w-full h-[600px]"
-                                    />
-                                </div>
-                                <div className="w-full">
-                                    <img
-                                        src="/images/main1.png"
-                                        alt="Slide 2"
-                                        className="object-cover w-full h-[600px]"
-                                    />
-                                </div>
-                                <div className="w-full">
-                                    <img
-                                        src="/images/main2.jpg"
-                                        alt="Slide 3"
-                                        className="object-cover w-full h-[600px]"
-                                    />
-                                </div>
-                                {/* Add more slides as needed */}
-                            </Carousel>
+                <div className="mx-auto w-full max-w-screen-xl mt-3 rounded-3xl">
+                    <Slider {...settings} className="w-full mb-10 h-full rounded-3xl">
+                        <div>
+                            <img
+                                src="./images/spanduk 459x217 cmyk.jpg"
+                                alt="spanduk"
+                                className="w-full h-auto object-cover rounded-3xl"
+                            />
                         </div>
-                    </div>
+                        <div>
+                            <img
+                                src="./images/main4.jpg"
+                                alt="another spanduk"
+                                className="w-full h-auto object-cover rounded-3xl"
+                            />
+                        </div>
+                        <div>
+                            <img
+                                src="./images/main2.jpg"
+                                alt="another spanduk"
+                                className="w-full h-auto object-cover rounded-3xl"
+                            />
+                        </div>
+                        <div>
+                            <img
+                                src="./images/banner1.jpg"
+                                alt="spanduk"
+                                className="w-full h-auto object-cover rounded-3xl"
+                            />
+                        </div>
+                    </Slider>
                 </div>
                 <div className="relative overflow-hidden bg-gray-100 text-black py-16">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -138,7 +122,7 @@ const HomeComponent = ({ displayText, ulasanData }) => {
                                 options={dataPisa.barOptions}
                             />
                         </div>
-                        <div className="relative overflow-hidden bg-white shadow-lg text-black py-16">
+                        <div className="relative overflow-hidden bg-white shadow-lg text-black py-16 rounded-3xl">
                             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                                 <h1 className="text-4xl font-bold text-center mb-12 text-purple-800">
                                     Faktor-faktor{" "}
@@ -157,7 +141,7 @@ const HomeComponent = ({ displayText, ulasanData }) => {
                                             key={index}
                                             data-aos="fade-up"
                                             data-aos-delay={`${index * 100}`}
-                                            className="text-lg mb-8 text-gray-600 bg-white hover:shadow-2xl shadow-xl p-3 text-center rounded-lg"
+                                            className="text-lg mb-8 text-gray-600 bg-white hover:shadow-2xl shadow-xl p-3 text-center rounded-xl"
                                         >
                                             <h2 className="text-xl font-semibold mb-2">
                                                 <b>{item.title}</b>
@@ -219,6 +203,7 @@ const HomeComponent = ({ displayText, ulasanData }) => {
                         </div>
                     </div>
                 </div>
+                
                 <div className="bg-gray-100 text-gray-800 relative z-30 py-16">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
@@ -300,167 +285,107 @@ const HomeComponent = ({ displayText, ulasanData }) => {
                         ))}
                     </div>
                 </div>
-                <div className="relative overflow-hidden bg-white text-black py-16">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <img
-                            src="./images/Reverse.png"
-                            alt="Logo"
-                            className="absolute inset-0 w-1/2  opacity-10 m-auto"
+                <div className="container mx-auto py-6">
+            <h2 className="text-2xl font-bold text-center mb-6">Komponen Belajar</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                {KomponenBelajar.map((item) => (
+                    <div key={item.id} className="flex flex-col items-center">
+                        <img 
+                            src={item.imgSrc} 
+                            alt={item.imgAlt} 
+                            className="w-20 h-20 object-cover rounded-full mb-2" 
                         />
-                        <h1 className="text-4xl font-bold text-center mb-12">
-                            Komponen Belajar
-                        </h1>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                            {komponen.map((item) => (
+                        <h3 className="text-sm font-medium text-center">{item.title}</h3>
+                    </div>
+                ))}
+            </div>
+        </div>
+                        <div className="relative overflow-hidden bg-gray-100 text-black py-16">
+    <div className="mx-auto w-full max-w-screen-xl mt-6 p-4">
+        <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">
+            Ulasan Terbaru
+        </h1>
+        <Carousel
+            showArrows={true}
+            infiniteLoop={true}
+            showThumbs={false}
+            className="ulasan-carousel"
+            swipeable={true}
+        >
+            {ulasan.reduce((acc, item, index) => {
+                if (index % itemsPerSlide === 0) {
+                    acc.push([]);
+                }
+                acc[acc.length - 1].push(item);
+                return acc;
+            }, []).map((group, groupIndex) => {
+                const expandedStates = group.map(() => useState(false));
+
+                return (
+                    <div key={groupIndex} className="flex justify-center">
+                        {group.map((item, index) => {
+                            const [isExpanded, setIsExpanded] = expandedStates[index];
+                            const shortComment = item.komentar.length > 100 ? item.komentar.substring(0, 100) + '...' : item.komentar;
+
+                            return (
                                 <div
                                     key={item.id}
-                                    className="text-center"
-                                    data-aos="fade-up"
-                                    data-aos-delay={`${item.id * 100}`}
+                                    className="bg-white shadow-lg rounded-lg p-4 mx-2 transition-transform transform hover:scale-105 w-full sm:w-1/3 md:w-1/4" // Use responsive widths
                                 >
-                                    <img
-                                        src={item.imgSrc}
-                                        alt={item.imgAlt}
-                                        className="w-16 h-16 mx-auto mb-4"
-                                    />
-                                    <h2 className="text-xl font-semibold mb-2">
-                                        {item.title}
-                                    </h2>
-                                    <p>{item.text}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-                <div className="bg-gray-100 text-gray-800 relative z-30 py-16">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center" data-aos="fade-up">
-                            <h1 className="text-4xl font-bold mb-4">
-                                Biaya Investasi T.P 2024-2025
-                            </h1>
-                        </div>
-                        <Carousel2
-                            responsive={responsive}
-                            autoPlay
-                            infinite
-                            arrows
-                        >
-                            {DataHarga.map((kelas) => (
-                                <div key={kelas.id} className="p-4">
-                                    <CardHarga
-                                        title={kelas.title}
-                                        price={kelas.price}
-                                        facilities={kelas.facilities}
-                                        sampai={kelas.sampai}
-                                        program={kelas.program}
-                                    />
-                                </div>
-                            ))}
-                        </Carousel2>
-                    </div>
-                </div>
-                <div className="bg-white text-gray-800 py-16">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-30">
-                        <div className="text-center mb-8" data-aos="fade-up">
-                            <h1 className="text-4xl font-bold mb-4">
-                                Apa Kata Mereka?
-                            </h1>
-                        </div>
-                        <Carousel
-                            responsive={responsive}
-                            autoPlay
-                            infinite
-                            arrows
-                        >
-                            {groupedTestimonials.map((group, index) => (
-                                <div
-                                    key={index}
-                                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
-                                >
-                                    {group.map((testimonial, idx) => (
-                                        <div
-                                            key={idx}
-                                            className="testimonial-item bg-white p-6 rounded-lg shadow-md "
-                                        >
-                                            <img
-                                                src={testimonial.image}
-                                                alt={`${testimonial.name} photo`}
-                                                className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
-                                            />
-                                            <h2 className="text-lg font-semibold text-center">
-                                                {testimonial.name}
-                                            </h2>
-                                            <p className="text-gray-600 mb-2">
-                                                {testimonial.role}
-                                            </p>
-                                            <p className="text-gray-800">
-                                                {testimonial.text}
-                                            </p>
-                                            {/* <a
-                                                href=""
-                                                className="text-blue-500 mt-2 inline-block"
-                                            >
-                                                See More
-                                            </a> */}
-                                        </div>
-                                    ))}
-                                </div>
-                            ))}
-                        </Carousel>
-                        <div className="text-center mt-8">
-                            <a href="/Testimoni" className="text-blue-500">
-                                Lihat Semua Testimoni
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <WhatsAppLink />
-                {/* Ulasan Section */}
-                {/* <div className="bg-gray-100 text-gray-800 py-16">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-8" data-aos="fade-up">
-                            <h1 className="text-4xl font-bold mb-4 text-purple-800">
-                                Apa Kata Mereka?
-                            </h1>
-                        </div>
-                        <Carousel
-                            responsive={responsive}
-                            autoPlay
-                            infinite
-                            arrows
-                            showDots={true}
-                            dotListClass="custom-dot-list-style"
-                            itemClass="carousel-item-padding-20-px"
-                        >
-                            {ulasanData.map((ulasan) => (
-                                <div
-                                    key={ulasan.id}
-                                    className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 duration-300"
-                                >
-                                    <div className="flex items-center justify-center mb-4">
+                                    <div className="flex flex-col items-center mb-4">
                                         <img
-                                            src={`storage/fotos/${ulasan.siswa.foto}`}
-                                            alt={`${ulasan.siswa.nama} photo`}
-                                            className="w-24 h-24 rounded-full border-4 border-purple-500 shadow-lg"
+                                            src={
+                                                item.foto_profile_pemberi_ulasan
+                                                    ? `/storage/fotos/${item.foto_profile_pemberi_ulasan}`
+                                                    : item.foto_profile
+                                                    ? `/storage/${item.foto_profile}`
+                                                    : "/path/to/default/image.png"
+                                            }
+                                            alt={`${item.nama_pemberi_ulasan || item.siswa?.name} Profile`}
+                                            className="rounded-t-2xl border-4 border-yellow-400 mb-2 transition-transform transform hover:scale-110 "
                                         />
+                                        <p className="font-semibold text-lg text-gray-800">
+                                            {item.nama_pemberi_ulasan}
+                                        </p>
+                                        <p className="text-sm text-gray-500">
+                                            {item.tipe_pemberi_ulasan}
+                                        </p>
                                     </div>
-                                    <h2 className="text-xl font-semibold text-center mb-2 text-purple-900">
-                                        {ulasan.siswa.nama}
-                                    </h2>
-                                    <p className="text-gray-600 mb-2 text-center">
-                                        {ulasan.siswa.email}
+                                    <p className={`text-gray-700 mb-4 text-md italic text-justify ${isExpanded ? '' : 'line-clamp-3'}`}>
+                                        {isExpanded ? item.komentar : shortComment}
                                     </p>
-                                    <div className="text-center mb-2">
-                                        {renderStars(ulasan.penilaian)}{" "}
+                                    <button 
+                                        className="text-blue-500 text-sm mt-2"
+                                        onClick={() => setIsExpanded(!isExpanded)}
+                                    >
+                                        {isExpanded ? 'See Less' : 'See More'}
+                                    </button>
+                                    <div className="flex items-center justify-center mt-4">
+                                        <div className="text-lg text-yellow-500">
+                                            {Array.from({ length: 5 }, (_, starIndex) => (
+                                                <span key={starIndex}>
+                                                    {starIndex < item.penilaian ? '⭐' : '☆'}
+                                                </span>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <p className="text-gray-800 text-center">
-                                        {ulasan.komentar}
-                                    </p>
                                 </div>
-                            ))}
-                        </Carousel>
+                            );
+                        })}
                     </div>
-                </div> */}
+                );
+            })}
+        </Carousel>
+        <div className="flex justify-center bg-slate-50 p-5 rounded-3xl">
+            <a href="#" className="text-purple-700 hover:text-purple-500 hover:scale-105  duration-300"><b> Lihat lebih banyak </b></a>
+        </div>
+    </div>
+</div>
+
+
+
+                <WhatsAppLink />
+
                 <div
                     className="md:col-span-1 text-center relative top-2"
                     data-aos="fade-left"
@@ -479,7 +404,7 @@ const HomeComponent = ({ displayText, ulasanData }) => {
                 </div>
                 <Footer />
             </AppLayout>
-        </div>
+        </>
     );
 };
 

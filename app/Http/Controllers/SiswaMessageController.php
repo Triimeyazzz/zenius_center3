@@ -13,6 +13,9 @@ class SiswaMessageController extends Controller
 {
     public function index()
     {
+        $user = Auth::user();
+        $siswa = Siswa::findOrFail($user->id);
+        
         $siswa = Auth::guard('siswa')->user();
         $messages = Message::where(function ($query) use ($siswa) {
                 $query->where('receiver_id', $siswa->id)
@@ -41,6 +44,7 @@ class SiswaMessageController extends Controller
         $admins = User::where('role', 'admin')->get();
 
         return Inertia::render('Siswa/Messages/Index', [
+            'siswa' => $siswa,
             'messages' => $messages,
             'admins' => $admins,
         ]);
@@ -77,4 +81,6 @@ class SiswaMessageController extends Controller
 
         return redirect()->back()->with('success', 'Message sent successfully!');
     }
+
+
 }
