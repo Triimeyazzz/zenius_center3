@@ -88,7 +88,7 @@ class AbsensiController extends Controller
 
         return redirect()->route('absensi.index')->with('success', 'Data berhasil dihapus.');
     }
-<<<<<<< HEAD
+
 
     public function scan() {
         return inertia('Absensi/Scan');
@@ -110,6 +110,4 @@ class AbsensiController extends Controller
         return back();
     }
 }
-=======
-}
->>>>>>> 33a88d446ab097de4db959b53c083ce15a4340fa
+

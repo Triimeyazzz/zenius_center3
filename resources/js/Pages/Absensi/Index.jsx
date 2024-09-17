@@ -86,7 +86,6 @@ export default function Index({
             return;
         }
 
-<<<<<<< HEAD
         const header = ["Tanggal", "Nama Siswa", "Kelas", "Status", "Keterangan"];
         const wb = XLSX.utils.book_new();
 
@@ -105,23 +104,6 @@ export default function Index({
             header: header,
           });
           XLSX.utils.book_append_sheet(wb, ws, date);
-=======
-        const wb = XLSX.utils.book_new();
-
-        Object.entries(filteredData).forEach(([date, records]) => {
-            const dataToExport = records.map((record) => ({
-                Tanggal: date,
-                "Nama Siswa": record.siswa.nama,
-                Kelas: record.siswa.kelas,
-                Status: record.status,
-                Keterangan: record.keterangan,
-            }));
-
-            const ws = XLSX.utils.json_to_sheet(dataToExport, {
-                header: ["Tanggal", "Nama Siswa", "Kelas", "Status", "Keterangan"],
-            });
-            XLSX.utils.book_append_sheet(wb, ws, date);
->>>>>>> 33a88d446ab097de4db959b53c083ce15a4340fa
         });
 
         XLSX.writeFile(wb, "daftar_absensi.xlsx");

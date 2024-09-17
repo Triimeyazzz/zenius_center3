@@ -19,7 +19,7 @@ class KirimEmailController extends Controller
         $siswa = Pembayaran::with('siswa')->where('tgl_jatuh_tempo', date('Y-m-d'))->where('status','pending')->get();
         foreach ($siswa as $s) {
             $data = [
-                'jumlah' => $s->jumlah,
+                'jumlah' => number_format($s->jumlah, 0,0,'.'),
                 'tgl_jatuh_tempo' => $s->tgl_jatuh_tempo,
                 'nama' => $s->siswa->nama,
             ];
