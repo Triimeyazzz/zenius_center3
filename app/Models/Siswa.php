@@ -80,7 +80,6 @@ class Siswa extends Model implements Authenticatable
         static::deleting(function ($siswa) {
             $siswa->tryOuts()->delete();
             $siswa->absensis()->delete();
-            $siswa->messages()->delete();
         });
     }
 

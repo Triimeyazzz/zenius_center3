@@ -2,8 +2,8 @@ import React from "react";
 import { useForm } from "@inertiajs/inertia-react";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
 
-const Edit = ({ user, roles, auth }) => {
-    const { data, setData, put, delete: destroy, processing, errors } = useForm({
+export default function Edit({ user, roles, auth }) {
+    const { data, setData, post, delete: destroy, processing, errors } = useForm({
         name: user.name || "",
         email: user.email || "",
         password: "",
@@ -12,12 +12,16 @@ const Edit = ({ user, roles, auth }) => {
         alamat: user.alamat || "",
         role: user.role || "",
         profile_picture: null, // Add this to manage file input
+        _method: "PUT"
     });
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        put(`/users/${user.id}`, {
-            data: data.profile_picture ? { ...data, profile_picture: data.profile_picture } : data
+        console.log(data);
+
+        post(`/users/${user.id}`,{
+             preserveState: true,
         });
     };
 
@@ -32,12 +36,13 @@ const Edit = ({ user, roles, auth }) => {
             });
         }
     };
-console.log(data)
+
     return (
         <Authenticated user={auth.user} header={<h2>Edit Page</h2>}>
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <form
+                        autoComplete="off"
                         onSubmit={handleSubmit}
                         className="bg-gray-50 p-6 rounded-lg shadow-md mb-6"
                         encType="multipart/form-data" // Add this attribute for file uploads
@@ -48,7 +53,7 @@ console.log(data)
                         <div className="mb-4">
                             {user.profile_picture && (
                                 <img
-                                    src={`/users/${user.id}/profile_pictures/${user.profile_picture}`}
+                                    src={`/storage/${user.profile_picture}`}
                                     alt="Profile"
                                     className="w-24 h-24 object-cover rounded-full mb-2"
                                 />
@@ -85,6 +90,7 @@ console.log(data)
                             value={data.password}
                             onChange={(e) => setData('password', e.target.value)}
                             className="w-full p-2 border border-gray-300 rounded-md mb-4"
+                            autoComplete="off"
                         />
                         {errors.password && <div className="text-red-600 mb-4">{errors.password}</div>}
 
@@ -147,6 +153,4 @@ console.log(data)
             </div>
         </Authenticated>
     );
-};
-
-export default Edit;
+}

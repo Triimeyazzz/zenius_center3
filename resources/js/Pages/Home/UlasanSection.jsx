@@ -42,7 +42,7 @@ const UlasanSection = ({ ulasanData }) => {
                     {ulasanData.map((ulasan) => (
                         <div
                             key={ulasan.id}
-                            className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 duration-300"
+                            className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 duration-300 w-full sm:h-1/2"
                         >
                             <div className="flex items-center justify-center mb-4">
                                 <img

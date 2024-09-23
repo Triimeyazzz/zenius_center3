@@ -47,7 +47,7 @@ const SelectField = ({ label, id, name, value, onChange, options, multiple = fal
 // ini yang baru pake export default function
 export default function Edit () {
     const { siswa } = usePage().props;
-    const { data, setData, put, errors } = useForm({
+    const { data, setData, post, errors } = useForm({
         nama: siswa.nama || "",
         email: siswa.email || "",
         password: "",
@@ -74,6 +74,7 @@ export default function Edit () {
         mulai_bimbingan: siswa.mulai_bimbingan || "",
         jam_bimbingan: siswa.jam_bimbingan || "",
         hari_bimbingan: JSON.parse(siswa.hari_bimbingan || '[]'),
+        _method: 'PUT'
         });
 
 
@@ -81,7 +82,7 @@ export default function Edit () {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
 
-    const handleChange = (e) => {
+    const handleChange = async (e) => {
         e.preventDefault();
         const { name, value, type, files } = e.target;
         if (type === "file") {
@@ -99,7 +100,7 @@ export default function Edit () {
 
         e.preventDefault();
         setIsSubmitting(true);
-        put(route("adminsiswa.update", siswa.id), {
+        post(route("adminsiswa.update", siswa.id), {
             preserveState: true,
             onSuccess: () => {
                 console.log('eror');

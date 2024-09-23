@@ -205,9 +205,11 @@ export default function Index({siswa = [], auth}) {
                                     >
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <img
-                                                src={`storage/fotos/${item.foto}`}
+                                                src={`/storage/${item.foto}`}
                                                 alt={item.nama}
-                                                className="w-16 h-16 object-cover rounded-full border-2 border-gray-200"
+                                                className="mx-auto object-cover rounded-full border-2 border-gray-200"
+                                                width={"100"}
+                                                height={"100"}
                                             />
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">

@@ -23,7 +23,7 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import CSS for carousel
 
 const chunkArray = (arr, size) => {
-    
+
     const chunkedArr = [];
     for (let i = 0; i < arr.length; i += size) {
         chunkedArr.push(arr.slice(i, i + size));
@@ -46,10 +46,10 @@ const HomeComponent = ({ displayText, ulasan = [] }) => {
         autoplay: true,
         autoplaySpeed: 3000,
         arrows: true,
-        adaptiveHeight: true, 
-        fade: true, 
+        adaptiveHeight: true,
+        fade: true,
     };
-    
+
     console.log(ulasan);
 
     useEffect(() => {
@@ -203,7 +203,7 @@ const HomeComponent = ({ displayText, ulasan = [] }) => {
                         </div>
                     </div>
                 </div>
-                
+
                 <div className="bg-gray-100 text-gray-800 relative z-30 py-16">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
@@ -290,10 +290,10 @@ const HomeComponent = ({ displayText, ulasan = [] }) => {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                 {KomponenBelajar.map((item) => (
                     <div key={item.id} className="flex flex-col items-center">
-                        <img 
-                            src={item.imgSrc} 
-                            alt={item.imgAlt} 
-                            className="w-20 h-20 object-cover rounded-full mb-2" 
+                        <img
+                            src={item.imgSrc}
+                            alt={item.imgAlt}
+                            className="w-20 h-20 object-cover rounded-full mb-2"
                         />
                         <h3 className="text-sm font-medium text-center">{item.title}</h3>
                     </div>
@@ -330,7 +330,7 @@ const HomeComponent = ({ displayText, ulasan = [] }) => {
                             return (
                                 <div
                                     key={item.id}
-                                    className="bg-white shadow-lg rounded-lg p-4 mx-2 transition-transform transform hover:scale-105 w-full sm:w-1/3 md:w-1/4" // Use responsive widths
+                                    className="bg-white shadow-lg rounded-lg p-4 mx-2 transition-transform transform hover:scale-105 w-full" // Use responsive widths
                                 >
                                     <div className="flex flex-col items-center mb-4">
                                         <img
@@ -354,7 +354,7 @@ const HomeComponent = ({ displayText, ulasan = [] }) => {
                                     <p className={`text-gray-700 mb-4 text-md italic text-justify ${isExpanded ? '' : 'line-clamp-3'}`}>
                                         {isExpanded ? item.komentar : shortComment}
                                     </p>
-                                    <button 
+                                    <button
                                         className="text-blue-500 text-sm mt-2"
                                         onClick={() => setIsExpanded(!isExpanded)}
                                     >

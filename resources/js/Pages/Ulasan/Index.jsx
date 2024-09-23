@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
-const Index = ({ ulasan, auth }) => {
+export default function Index({ ulasan, auth }){
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUlasanId, setSelectedUlasanId] = useState(null);
 
   const handleDelete = (id) => {
-    Inertia.delete(`/ulasan/${id}`, {
+    Inertia.delete(route('ulasan.destroy', id), {
       onSuccess: () => {
         // Optionally, you could add a success message here if needed
         closeModal(); // Close the modal after deletion
@@ -93,7 +93,7 @@ const Index = ({ ulasan, auth }) => {
                   )}
                 </p>
                 <div className="flex justify-end">
-                 
+
                   {/* Hapus Button */}
                   <button
                     onClick={() => openModal(item.id)}
@@ -116,14 +116,14 @@ const Index = ({ ulasan, auth }) => {
             <h3 className="text-lg font-semibold mb-4">Konfirmasi Hapus</h3>
             <p>Apakah Anda yakin ingin menghapus ulasan ini?</p>
             <div className="mt-4 flex justify-end">
-              <button 
-                onClick={closeModal} 
+              <button
+                onClick={closeModal}
                 className="mr-2 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition duration-300"
               >
                 Batal
               </button>
-              <button 
-                onClick={() => handleDelete(selectedUlasanId)} 
+              <button
+                onClick={() => handleDelete(selectedUlasanId)}
                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-300"
               >
                 Hapus
@@ -135,5 +135,3 @@ const Index = ({ ulasan, auth }) => {
     </AuthenticatedLayout>
   );
 };
-
-export default Index;

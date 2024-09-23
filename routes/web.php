@@ -112,7 +112,6 @@ Route::middleware('auth')->group(function () {
         Route::post('kirim-email', KirimEmailController::class)->name('kirimEmail');
 
         Route::post('ulasan', [AdminUlasanController::class, 'store'])->name('ulasan.store');
-        Route::delete('/ulasan/{id}', [AdminUlasanController::class, 'destroy'])->name('ulasan.destroy');
         Route::post('ulasan', [AdminUlasanController::class, 'store'])->name('ulasan.store');
         Route::delete('/ulasan/{ulasan}', [AdminUlasanController::class, 'destroy'])->name('ulasan.destroy');
 
@@ -159,7 +158,6 @@ Route::middleware(['auth:siswa'])->group(function () {
     Route::get('/siswa/ulasan', [SiswaUlasanController::class, 'index'])->name('siswa.ulasan.index');
     Route::get('/siswa/ulasan/create', [SiswaUlasanController::class, 'create'])->name('siswa.ulasan.create');
     Route::post('/siswa/ulasan', [SiswaUlasanController::class, 'store'])->name('siswa.ulasan.store');
-    Route::delete('/siswa/ulasan/{id}', [SiswaUlasanController::class, 'destroy'])->name('siswa.ulasan.destroy');
     Route::get('/siswa/ulasan/{id}/edit', [SiswaUlasanController::class, 'edit'])->name('siswa.ulasan.edit');
     Route::delete('/siswa/ulasan/{ulasan}', [SiswaUlasanController::class, 'destroy'])
     ->name('siswa.ulasan.destroy');

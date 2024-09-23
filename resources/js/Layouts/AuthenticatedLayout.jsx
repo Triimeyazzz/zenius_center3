@@ -108,7 +108,7 @@ export default function Authenticated({ user, header, children }) {
                     <div className="border-t border-gray-200">
                         <div className="px-4 py-6 flex items-center space-x-4 hover:bg-gray-50 transition-colors duration-300">
                             <img
-                                src={`storage/${user.profile_picture}`}
+                                src={`/storage/${user.profile_picture}`}
                                 alt={user.nama}
                                 className={`w-14 h-14 object-cover rounded-full border-2 border-gray-200 shadow-sm transition-transform duration-500 hover:scale-105 ${
                                     sidebarCollapsed ? "w-14 h-14" : ""

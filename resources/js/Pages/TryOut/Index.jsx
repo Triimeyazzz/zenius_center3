@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 const Index = ({ siswas, auth }) => {
     const [searchTerm, setSearchTerm] = useState('');
-    
+
     const filteredSiswas = siswas.filter(siswa =>
         siswa.nama.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -15,7 +15,7 @@ const Index = ({ siswas, auth }) => {
         >
             <div className="p-6 bg-white shadow-md rounded-lg">
                 <h1 className="text-2xl font-bold mb-4 text-gray-800">Pilih Siswa</h1>
-                
+
                 {/* Search Bar */}
                 <div className="mb-4">
                     <input
@@ -34,7 +34,7 @@ const Index = ({ siswas, auth }) => {
                             <li key={siswa.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg shadow-sm">
                                 {/* Student Photo */}
                                 <img
-                                    src={`storage/fotos/${siswa.foto}`}
+                                    src={`/storage/${siswa.foto}`}
                                     alt={siswa.nama}
                                     className="w-16 h-16 object-cover rounded-full"
                                 />

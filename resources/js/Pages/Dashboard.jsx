@@ -130,7 +130,7 @@ function Dashboard({ auth }) {
         const dateKey = date.toDateString();
         const today = new Date();
         let classes = "";
-    
+
         if (view === "month") {
             // Highlight today's date
             if (
@@ -140,7 +140,7 @@ function Dashboard({ auth }) {
             ) {
                 classes += " bg-blue-200 rounded-full"; // Highlight today
             }
-    
+
             // Check if there's a note for this date and add a visible border
             if (notes[dateKey]) {
                 classes += " border-2 border-red-500"; // Add a border if a note exists
@@ -189,7 +189,7 @@ function Dashboard({ auth }) {
         return monthNames[month - 1];
     };
 
-    
+
     const hijriDate = moment(selectedDate).format("iDD/iMM/iYYYY");
 
     const handleToggleDarkMode = () => {
@@ -421,7 +421,7 @@ function DataTable({ title, data, fields }) {
                                 >
                                     {field === "foto" ? (
                                         <img
-                                        src={`storage/fotos/${item.foto}`}
+                                        src={`/storage/${item.foto}`}
                                         alt="Student Photo"
                                             className="h-10 w-10 rounded-full object-cover"
                                         />
@@ -449,7 +449,7 @@ function DataTableSiswa({ title, data, fields }) {
                 {data.map((item, index) => (
                     <div key={index} className="flex flex-col items-center hover:scale-110 duration-300">
                         <img
-                            src={`storage/fotos/${item.foto}`}
+                            src={`/storage/${item.foto}`}
                             alt={`${item.nama}'s photo`}
                             className="w-16 h-16 rounded-full object-cover mb-2"
                         />
