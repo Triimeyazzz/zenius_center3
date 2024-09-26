@@ -1,117 +1,112 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from '@inertiajs/inertia-react';
 import NavLink from '@/Components/NavLink';
-import './wallpaper.css';  // Ensure the CSS file is imported
-import NotFound from './NotFound';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, ChevronDown } from 'lucide-react';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
-        // Example of checking authentication status from local storage
         const checkAuth = () => {
-            const token = localStorage.getItem('authToken'); // Replace with your auth token check
+            const token = localStorage.getItem('authToken');
             setIsAuthenticated(!!token);
         };
         checkAuth();
+
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 20);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const toggleNavbar = () => {
-        setIsOpen(!isOpen);
-    };
-
-    const closeNavbar = () => {
-        setIsOpen(false);
-    };
+    const toggleNavbar = () => setIsOpen(!isOpen);
+    const closeNavbar = () => setIsOpen(false);
 
     const scrollToContact = (e) => {
-        e.preventDefault();  // Prevent default click behavior
+        e.preventDefault();
         const contactSection = document.getElementById('Contact');
         if (contactSection) {
             contactSection.scrollIntoView({ behavior: 'smooth' });
         }
-        closeNavbar();  // Close the navbar after scrolling
+        closeNavbar();
+    };
+
+    const navbarVariants = {
+        hidden: { opacity: 0, y: -50 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+    };
+
+    const linkVariants = {
+        hidden: { opacity: 0, y: -20 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
     };
 
     return (
-        <nav className="bg-gradient-to-r from-purple-950 to-blue-800 p-4 sticky top-0 z-50">
-            <div className="container mx-auto flex justify-between items-center">
-                <div className="text-white text-lg font-bold pl-4">
-                    <Link href="/Home">
-                        <img src="images/Logo White.png" className="h-11" alt="" />
-                    </Link>
+        <motion.nav
+            initial="hidden"
+            animate="visible"
+            variants={navbarVariants}
+            className={`fixed w-full top-0 z-50 transition-all duration-300 ${
+                scrolled ? 'bg-purple-900 shadow-lg' : 'bg-transparent'
+            }`}
+        >
+            <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+                <Link href="/Home" className="flex items-center space-x-2">
+                    <img src="/images/Logo White.png" className="h-10" alt="Logo" />
+                    <span className="text-white text-xl font-bold">NewPrimagama</span>
+                </Link>
+
+                <div className="hidden lg:flex space-x-8 items-center">
+                    {['/Home', '/About', 'Contact', isAuthenticated ? 'Dashboard' : 'Login'].map((item, index) => (
+                        <motion.div key={item} variants={linkVariants}>
+                            <NavLink
+                                href={item === 'Contact' ? '#' : `/${item.toLowerCase().replace(' ', '-')}`}
+                                className="text-white hover:text-yellow-300 transition-colors duration-300"
+                                onClick={item === 'Contact' ? scrollToContact : undefined}
+                            >
+                                {item}
+                            </NavLink>
+                        </motion.div>
+                    ))}
                 </div>
+
                 <div className="lg:hidden">
-                    <button
-                        onClick={toggleNavbar}
-                        className="text-white focus:outline-none focus:text-white"
-                    >
-                        <svg
-                            className="h-6 w-6"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M4 6h16M4 12h16m-7 6h7"
-                            />
-                        </svg>
+                    <button onClick={toggleNavbar} className="text-white focus:outline-none">
+                        {isOpen ? <X size={24} /> : <Menu size={24} />}
                     </button>
                 </div>
-                <div className={`lg:flex lg:flex-grow items-center ${isOpen ? 'block' : 'hidden'}`}>
-                    <div className="lg:flex lg:items-center lg:justify-end lg:flex-grow">
-                        <div className="flex flex-col lg:flex-row lg:space-x-8 lg:items-center lg:space-y-4 space-y-4">
-                            <NavLink
-                                className='text-yellow-400 hover:text-yellow-200'
-                                href="/Home"
-                                active={route().current('/Home')}
-
-                                onClick={closeNavbar}
-                            >
-                                Home
-                            </NavLink>
-                            <NavLink
-                                className='text-yellow-400 hover:text-yellow-200'
-                                href="/About"
-                                active={route().current('About')}
-                                onClick={closeNavbar}
-                            >
-                                About Us
-                            </NavLink>
-                            <NavLink
-                                className='text-yellow-400 hover:text-yellow-200'
-                                onClick={scrollToContact}
-                            >
-                                Contact
-                            </NavLink>
-                            {isAuthenticated ? (
-                                <NavLink
-                                    className='text-yellow-400 hover:text-yellow-200'
-                                    href="/siswa/dashboard"
-                                    onClick={closeNavbar}
-                                >
-                                    Siswa Dashboard
-                                </NavLink>
-                            ) : (
-                                <NavLink
-                                    className='text-yellow-400 hover:text-yellow-200'
-                                    href="/login"
-                                    active={route().current('Login')}
-                                    onClick={closeNavbar}
-                                >
-                                    Login
-                                </NavLink>
-                            )}
-                            <NavLink component={NotFound} /> {/* Route for 404 page */}
-                        </div>
-                    </div>
-                </div>
             </div>
-        </nav>
+
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="lg:hidden bg-purple-900"
+                    >
+                        <div className="container mx-auto px-4 py-4 flex flex-col space-y-4">
+                            {['Home', 'About Us', 'Contact', isAuthenticated ? 'Dashboard' : 'Login'].map((item) => (
+                                <NavLink
+                                    key={item}
+                                    href={item === 'Contact' ? '#' : `/${item.toLowerCase().replace(' ', '-')}`}
+                                    className="text-white hover:text-yellow-300 transition-colors duration-300"
+                                    onClick={item === 'Contact' ? scrollToContact : closeNavbar}
+                                >
+                                    {item}
+                                </NavLink>
+                            ))}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </motion.nav>
     );
 };
 

@@ -1,5 +1,7 @@
-// contentData.js
-// Data untuk konten bagian
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+
 const contentData = [
     {
         id: 1,
@@ -29,7 +31,7 @@ const contentData = [
         aosImage: "fade-left",
         aosText: "fade-right",
     },
-    
+
     {
         id: 5,
         imgSrc: "/images/Generasiemas.png",
@@ -94,5 +96,73 @@ const contentData = [
         aosText: "fade-right",
     },
 ];
+const ContentSection = () => {
+  const [expandedId, setExpandedId] = useState(null);
 
-export default contentData;
+  const toggleExpand = (id) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
+  return (
+    <div className="bg-gradient-to-b from-gray-100 to-white text-gray-800 py-16 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <motion.h1 
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-4xl font-bold mb-12 text-center text-purple-800"
+        >
+          {contentData[0].title}
+        </motion.h1>
+
+        <div className="grid gap-8">
+          {contentData.map((data, index) => (
+            <motion.div
+              key={data.id}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="bg-white rounded-lg shadow-lg overflow-hidden"
+            >
+              <div 
+                className="p-6 cursor-pointer flex justify-between items-center"
+                onClick={() => toggleExpand(data.id)}
+              >
+                <h2 className="text-2xl font-semibold text-purple-700">{data.heading}</h2>
+                {expandedId === data.id ? <ChevronUp /> : <ChevronDown />}
+              </div>
+
+              <motion.div
+                initial={false}
+                animate={{ height: expandedId === data.id ? 'auto' : 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <div className="p-6 pt-0 grid md:grid-cols-3 gap-6 items-center">
+                  <div className="md:col-span-1">
+                    <img
+                      src={data.imgSrc}
+                      alt={data.imgAlt}
+                      className="w-full rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <p className="text-lg text-gray-700">{data.text}</p>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      <img
+        src="./images/Reverse.png"
+        alt="Background"
+        className="absolute inset-0 w-full h-full object-cover opacity-5"
+      />
+    </div>
+  );
+};
+
+export default ContentSection;

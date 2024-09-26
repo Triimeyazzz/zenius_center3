@@ -34,7 +34,7 @@ const Index = ({ siswas, auth }) => {
                             <li key={siswa.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg shadow-sm">
                                 {/* Student Photo */}
                                 <img
-                                    src={`/storage/${siswa.foto}`}
+                                    src={`/storage/fotos/${siswa.foto}`}
                                     alt={siswa.nama}
                                     className="w-16 h-16 object-cover rounded-full"
                                 />

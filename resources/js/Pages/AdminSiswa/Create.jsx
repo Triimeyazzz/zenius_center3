@@ -36,6 +36,8 @@ export default function Create() {
         mulai_bimbingan: '',
         jam_bimbingan: '',
         hari_bimbingan: [], // Handle multiple selections
+        nama_ptn_tujuan: '',
+        jurusan_tujuan: '',
     });
 
 
@@ -126,7 +128,9 @@ export default function Create() {
                                     'Kelas 11 SMA',
                                     'Kelas 12 SMA',
                                     'Alumni SMA'
-                                ]}
+                                ]},
+                                { label: 'Nama PTN tujuan', name: 'nama_ptn_tujuan', type: 'text' },
+                                { label: 'Jurusan PTN tujuan', name: 'jurusan_tujuan', type: 'text' },
                             ].map(({ label, name, type, options }) => (
                                 <div className="mb-4" key={name}>
                                     <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>

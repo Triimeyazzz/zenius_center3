@@ -83,7 +83,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/siswa/{siswa}/export-pdf', [SiswaController::class, 'exportPdf'])->name('siswa.exportPdf');
         Route::get('/get-pdf-url/{siswa}', [SiswaController::class, 'getPdfUrl']);
         Route::get('/adminsiswa/count', [SiswaController::class, 'count']);
-        Route::get('/adminsiswa/cetakqr/{siswa}', [SiswaController::class, 'cetakqr'])->name('adminsiswa.cetakqr');
+        Route::get('/admin/siswa/cetakqr/{id}', [SiswaController::class, 'cetakqr'])->name('adminsiswa.cetakqr');
 
 
         Route::get('absensi', [AbsensiController::class, 'index'])->name('absensi.index');

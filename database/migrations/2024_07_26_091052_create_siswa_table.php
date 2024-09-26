@@ -42,6 +42,8 @@ return new class extends Migration
             $table->date('mulai_bimbingan')->nullable(); // Add mulai_bimbingan column
             $table->time('jam_bimbingan')->nullable(); // Add jam_bimbingan column
             $table->json('hari_bimbingan')->nullable(); // Add hari_bimbingan column
+            $table->string('nama_ptn_tujuan')->nullable();
+            $table->string('jurusan_tujuan')->nullable();
             $table->timestamps();
         });
     }

@@ -96,6 +96,7 @@ class AbsensiController extends Controller
 
     public function scanQr(Request $request) {
         $siswa = Siswa::find($request->id);
+    
         Absensi::updateOrCreate(
             [
                 'siswa_id' => $siswa->id,
@@ -106,8 +107,17 @@ class AbsensiController extends Controller
                 'keterangan' => null,
             ]
         );
+    
+        // Flash message sukses
+        session()->flash('success', 'Scan berhasil! Absensi untuk ' . $siswa->nama . ' telah tercatat.');
+        
+        // Untuk memastikan, tambahkan log
+        logger()->info('Flash message set successfully');
+    
+        // Redirect kembali ke halaman sebelumnya
+        return back()->with('success', 'Scan berhasil! Absensi untuk ' . $siswa->nama . ' telah tercatat.');
 
-        return back();
     }
+        
 }
 

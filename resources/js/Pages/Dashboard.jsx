@@ -449,7 +449,7 @@ function DataTableSiswa({ title, data, fields }) {
                 {data.map((item, index) => (
                     <div key={index} className="flex flex-col items-center hover:scale-110 duration-300">
                         <img
-                            src={`/storage/${item.foto}`}
+                            src={`/storage/fotos/${item.foto}`}
                             alt={`${item.nama}'s photo`}
                             className="w-16 h-16 rounded-full object-cover mb-2"
                         />

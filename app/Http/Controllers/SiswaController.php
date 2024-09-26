@@ -73,7 +73,9 @@ class SiswaController extends Controller
             'kelas' => 'nullable|string',
             'mulai_bimbingan' => 'required|date',
             'jam_bimbingan' => 'required',
-            'hari_bimbingan' => 'required|array'
+            'hari_bimbingan' => 'required|array',
+            'nama_ptn_tujuan' => 'nullable|string',
+            'jurusan_tujuan' => 'nullable|string',
         ]);
 
     // Create a new Siswa instance
@@ -141,7 +143,10 @@ public function update(Request $request, Siswa $siswa)
         'email_ibu' => 'nullable|string|email|max:255',
         'mulai_bimbingan' => 'required|date',
         'jam_bimbingan' => 'required|date_format:H:i',
-        'hari_bimbingan' => 'required|array'
+        'hari_bimbingan' => 'required|array',
+        'nama_ptn_tujuan' => 'nullable|string|max:255',
+        'jurusan_tujuan' => 'nullable|string|max:255',
+
     ]);
 
     if ($request->hasFile('foto')) {

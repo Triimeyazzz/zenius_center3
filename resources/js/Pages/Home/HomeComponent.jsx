@@ -11,11 +11,11 @@ import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookAtlas, faCheck } from "@fortawesome/free-solid-svg-icons";
-import dataPisa from "./bardataPISA";
-import dataProblems from "./dataProblem";
+import IndonesiaEducationFunFacts from "./IndonesiaEducationFunFacts";
+import ProblemSection from "./ProblemSection";
 import WhatsAppLink from "./WhatsAppLink";
-import contentData from "./contentData";
-import KomponenBelajar from './KomponenBelajar';
+import ContentSection from "./ContentSection";
+import LearningComponentsGrid from "./LearningComponentsGrid";
 import { Link } from "@inertiajs/react";
 import Footer from "@/Components/Footer";
 import "./customSlider.css"; // Assuming you save the CSS in this file
@@ -105,201 +105,16 @@ const HomeComponent = ({ displayText, ulasan = [] }) => {
                         </div>
                     </Slider>
                 </div>
-                <div className="relative overflow-hidden bg-gray-100 text-black py-16">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-8" data-aos="fade-up">
-                            <h1 className="text-4xl font-bold mb-4 text-purple-900">
-                                Skor{" "}
-                                <span className="text-yellow-400">
-                                    {" "}
-                                    PISA 2023
-                                </span>
-                            </h1>
-                        </div>
-                        <div className="relative h-96" data-aos="fade-up">
-                            <Bar
-                                data={dataPisa.barData}
-                                options={dataPisa.barOptions}
-                            />
-                        </div>
-                        <div className="relative overflow-hidden bg-white shadow-lg text-black py-16 rounded-3xl">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <h1 className="text-4xl font-bold text-center mb-12 text-purple-800">
-                                    Faktor-faktor{" "}
-                                    <span className="text-yellow-400">
-                                        PISA
-                                    </span>
-                                </h1>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                                    <img
-                                        src="./images/PISA.png"
-                                        alt="Logo"
-                                        className="absolute inset-0 w-1/2  opacity-10 m-auto"
-                                    />
-                                    {dataPisa.description.map((item, index) => (
-                                        <div
-                                            key={index}
-                                            data-aos="fade-up"
-                                            data-aos-delay={`${index * 100}`}
-                                            className="text-lg mb-8 text-gray-600 bg-white hover:shadow-2xl shadow-xl p-3 text-center rounded-xl"
-                                        >
-                                            <h2 className="text-xl font-semibold mb-2">
-                                                <b>{item.title}</b>
-                                            </h2>
-                                            <p>{item.text}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <div className="bg-white text-gray-800 relative z-30 py-16">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center bg-white">
-                            <div
-                                className="md:col-span-3 text-center"
-                                data-aos="fade-up"
-                            >
-                                <h1 className="text-4xl font-bold mb-4 text-purple-800">
-                                    {dataProblems.title}
-                                </h1>
-                            </div>
-                            <div
-                                className="md:col-span-1 text-center relative top-2"
-                                data-aos="fade-right"
-                            >
-                                <img
-                                    src={dataProblems.imageUrl}
-                                    alt={dataProblems.imageAlt}
-                                    className="w-80 mx-auto"
-                                />
-                            </div>
-                            <div
-                                className="md:col-span-2 text-black"
-                                data-aos="fade-left"
-                            >
-                                <p className="text-lg mb-8">
-                                    <ul className="mb-2">
-                                        {dataProblems.issues.map(
-                                            (issue, index) => (
-                                                <li key={index}>
-                                                    <FontAwesomeIcon
-                                                        icon={faCheck}
-                                                        style={{
-                                                            color: "#63E6BE",
-                                                            marginRight: "5px",
-                                                        }}
-                                                    />
-                                                    {issue}
-                                                </li>
-                                            )
-                                        )}
-                                    </ul>
-                                    {dataProblems.conclusion}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <IndonesiaEducationFunFacts />
 
-                <div className="bg-gray-100 text-gray-800 relative z-30 py-16">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-                            <div
-                                className="md:col-span-3 text-center"
-                                data-aos="fade-up"
-                            >
-                                <h1 className="text-4xl font-bold mb-4">
-                                    {contentData[0].title}
-                                </h1>
-                            </div>
-                        </div>
-                        <img
-                            src="./images/Reverse.png"
-                            alt="Logo"
-                            className="absolute inset-0   opacity-10 m-auto"
-                        />
-                        {contentData.map((data, index) => (
-                            <div
-                                key={data.id}
-                                className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center"
-                            >
-                                {index % 2 === 0 ? (
-                                    <>
-                                        <div
-                                            className="md:col-span-1 text-center relative top-2"
-                                            data-aos={data.aosImage}
-                                        >
-                                            <img
-                                                src={data.imgSrc}
-                                                alt={data.imgAlt}
-                                                className="w-80 mx-auto"
-                                            />
-                                        </div>
-                                        <div
-                                            className="md:col-span-2 text-black"
-                                            data-aos={data.aosText}
-                                        >
-                                            <h1
-                                                data-aos="fade-up"
-                                                className="text-4xl font-bold mb-4"
-                                            >
-                                                {data.heading}
-                                            </h1>
-                                            <p className="text-lg mb-8">
-                                                {data.text}
-                                            </p>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        <div
-                                            className="md:col-span-2 text-black"
-                                            data-aos={data.aosText}
-                                        >
-                                            <h1
-                                                data-aos="fade-up"
-                                                className="text-4xl font-bold mb-4"
-                                            >
-                                                {data.heading}
-                                            </h1>
-                                            <p className="text-lg mb-8">
-                                                {data.text}
-                                            </p>
-                                        </div>
-                                        <div
-                                            className="md:col-span-1 text-center relative top-2"
-                                            data-aos={data.aosImage}
-                                        >
-                                            <img
-                                                src={data.imgSrc}
-                                                alt={data.imgAlt}
-                                                className="w-80 mx-auto"
-                                            />
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                <div className="container mx-auto py-6">
-            <h2 className="text-2xl font-bold text-center mb-6">Komponen Belajar</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                {KomponenBelajar.map((item) => (
-                    <div key={item.id} className="flex flex-col items-center">
-                        <img
-                            src={item.imgSrc}
-                            alt={item.imgAlt}
-                            className="w-20 h-20 object-cover rounded-full mb-2"
-                        />
-                        <h3 className="text-sm font-medium text-center">{item.title}</h3>
-                    </div>
-                ))}
-            </div>
-        </div>
+                <ProblemSection />
+                
+                <ContentSection />
+
+<LearningComponentsGrid />
+
+
                         <div className="relative overflow-hidden bg-gray-100 text-black py-16">
     <div className="mx-auto w-full max-w-screen-xl mt-6 p-4">
         <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">
@@ -402,7 +217,6 @@ const HomeComponent = ({ displayText, ulasan = [] }) => {
                         ></iframe>
                     </div>
                 </div>
-                <Footer />
             </AppLayout>
         </>
     );
